@@ -7,7 +7,7 @@
   <style>
     :root {
       --bg: #0f1115; --card: #1a1d24; --border: #2a2f3a; --text: #e6e8ec;
-      --muted: #9aa3b2; --accent: #3b82f6; --green: #22c55e;
+      --muted: #9aa3b2; --accent: #3b82f6;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -36,7 +36,7 @@
     }
     .options label:hover { border-color: var(--accent); }
     .options input { accent-color: var(--accent); }
-    input[type="text"], input[type="number"], input[type="date"], textarea, select {
+    input[type="text"], input[type="number"], input[type="date"], input[type="url"], textarea, select {
       background: #252a33; border: 1px solid var(--border); color: var(--text);
       padding: 7px 10px; border-radius: 8px; font-size: 0.86rem; width: 100%; max-width: 100%;
     }
@@ -65,16 +65,12 @@
     .chk-block .name { font-size: 0.88rem; font-weight: 600; margin-bottom: 6px; color: #93c5fd; }
     .chk-block ul { margin: 0 0 8px 18px; font-size: 0.8rem; color: var(--muted); }
     .chk-block li { margin-bottom: 2px; }
-    .preview { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-    .preview img {
-      max-width: 140px; max-height: 100px; border-radius: 6px; border: 1px solid var(--border);
-      object-fit: cover;
-    }
+    .chk-block input[type="url"] { margin-top: 4px; }
   </style>
 </head>
 <body>
   <h1>Apex 每日報告產生器 <span class="ver">v1.1</span></h1>
-  <p class="sub">左右 = 策略｜≥3 張圖日誌｜LLM Remark｜一次填寫</p>
+  <p class="sub">左右 = 策略｜填 3 個 TradingView 圖連結｜LLM Remark</p>
 
   <div class="card">
     <h2>基本資訊</h2>
@@ -136,67 +132,45 @@
   </div>
 
   <div class="card">
-    <h2>4. 圖表日誌（必須 ≥3 張）</h2>
-    <p class="hint">更小周期的畫圖不要出現在更高周期，保持美觀簡潔。時區 UTC-4。</p>
+    <h2>4. 圖表連結（TradingView，至少 3 個）</h2>
+    <p class="hint">貼上已標記好的 TradingView 圖表分享連結。更小周期標記不要出現在更高周期。時區 UTC-4。</p>
 
     <div class="chk-block">
       <div class="name">圖1｜HTF-D</div>
       <ul>
-        <li>標記周開盤價 (Wo)</li>
-        <li>標記程序起點與終點</li>
+        <li>周開盤價 (Wo)</li>
+        <li>程序起點與終點</li>
         <li>豎線標記交易日</li>
       </ul>
-      <div class="options">
-        <label><input type="radio" name="chartHTF" value="Yes"> 已完成</label>
-        <label><input type="radio" name="chartHTF" value="No"> 未完成</label>
-      </div>
+      <input type="url" id="linkHTF" placeholder="https://www.tradingview.com/x/... 或 snapshot 連結" />
     </div>
 
     <div class="chk-block">
       <div class="name">圖2｜LTF-H4</div>
       <ul>
-        <li>標記日開盤價 (DO)</li>
+        <li>日開盤價 (DO)</li>
         <li>啟動時間視角</li>
-        <li>標記交易的 H4 蠟燭</li>
-        <li>左側環境（沒有就跳過）</li>
-        <li>右側環境（沒有就跳過）</li>
+        <li>交易的 H4 蠟燭</li>
+        <li>左側 / 右側環境（沒有就跳過）</li>
         <li>極點環境：主動 + 被動 + 工程 + 預設</li>
       </ul>
-      <div class="options">
-        <label><input type="radio" name="chartH4" value="Yes"> 已完成</label>
-        <label><input type="radio" name="chartH4" value="No"> 未完成</label>
-      </div>
+      <input type="url" id="linkH4" placeholder="https://www.tradingview.com/x/..." />
     </div>
 
     <div class="chk-block">
       <div class="name">圖3｜LTF-H1</div>
       <ul>
-        <li>標記日開盤價 (DO)</li>
-        <li>啟動時間視角</li>
-        <li>標記紅綠燈階段</li>
-        <li>左側 / 右側環境</li>
-        <li>極點環境：主動 + 被動 + 工程 + 預設</li>
-        <li>H1 無特殊補充可省略（H4 已能識別時）</li>
+        <li>日開盤價 (DO)</li>
+        <li>啟動時間視角 / 紅綠燈</li>
+        <li>左右環境、極點環境</li>
+        <li>無特殊補充可留空</li>
       </ul>
-      <div class="options">
-        <label><input type="radio" name="chartH1" value="Yes"> 已完成</label>
-        <label><input type="radio" name="chartH1" value="No"> 未完成</label>
-        <label><input type="radio" name="chartH1" value="跳過"> 可跳過</label>
-      </div>
+      <input type="url" id="linkH1" placeholder="https://www.tradingview.com/x/...（可留空）" />
     </div>
 
-    <div class="row">
-      <label class="title">≥3 張圖已備妥</label>
-      <div class="options">
-        <label><input type="radio" name="chartsOk" value="Yes"> Yes</label>
-        <label><input type="radio" name="chartsOk" value="No"> No</label>
-      </div>
-    </div>
-
-    <div class="row" style="align-items:flex-start;flex-direction:column">
-      <label class="title" style="min-width:auto;margin-bottom:6px">本機預覽截圖（可選，不上傳伺服器）</label>
-      <input type="file" id="chartFiles" accept="image/*" multiple />
-      <div class="preview" id="preview"></div>
+    <div class="chk-block">
+      <div class="name">額外圖（可選）</div>
+      <input type="url" id="linkExtra" placeholder="第 4 張或以上，可留空" />
     </div>
   </div>
 
@@ -236,22 +210,15 @@
 
   <script>
     document.getElementById('date').valueAsDate = new Date();
-
-    document.getElementById('chartFiles').addEventListener('change', function(e) {
-      const box = document.getElementById('preview');
-      box.innerHTML = '';
-      [...e.target.files].forEach(f => {
-        const img = document.createElement('img');
-        img.src = URL.createObjectURL(f);
-        box.appendChild(img);
-      });
-    });
-
     function val(name) {
       const el = document.querySelector(`input[name="${name}"]:checked`);
       return el ? el.value : '—';
     }
     function id(i) { return document.getElementById(i).value || '—'; }
+    function link(i) {
+      const v = document.getElementById(i).value.trim();
+      return v || '—';
+    }
     function countYes() {
       let n = 0;
       ['active','passive','engineering','preset'].forEach(k => { if (val(k) === 'Yes') n++; });
@@ -260,6 +227,8 @@
     function buildObj() {
       const c = countYes();
       const abcd = c >= 4 ? '2+2' : c === 3 ? '2+1' : c >= 1 ? '1+1' : '—';
+      const linkHTF = link('linkHTF'), linkH4 = link('linkH4'), linkH1 = link('linkH1'), linkExtra = link('linkExtra');
+      const chartsOk = (linkHTF !== '—' && linkH4 !== '—') ? 'Yes' : 'No';
       return {
         date: id('date'), symbol: id('symbol'),
         news: val('news'), bias: val('bias'), kz: val('kz'),
@@ -269,8 +238,7 @@
         engineering: val('engineering'), preset: val('preset'),
         abcd, grade: val('grade'), llm: val('llm'), llmRemark: id('llmRemark'),
         traded: val('traded'),
-        chartHTF: val('chartHTF'), chartH4: val('chartH4'), chartH1: val('chartH1'),
-        chartsOk: val('chartsOk'),
+        linkHTF, linkH4, linkH1, linkExtra, chartsOk,
         pnl: id('pnl'), trades: id('trades'), wins: id('wins'), rr: id('rr'),
         winrate: id('winrate'), qualified: id('qualified'),
         qualifiedDay: val('qualifiedDay'), violate: val('violate'), notes: id('notes')
@@ -301,11 +269,11 @@
 - LLM Remark：${o.llmRemark}
 - 是否執行：${o.traded}
 
-四、圖表日誌（≥3張）
-- HTF-D：${o.chartHTF}
-- LTF-H4：${o.chartH4}
-- LTF-H1：${o.chartH1}
-- ≥3張已備妥：${o.chartsOk}
+四、TradingView 圖表連結
+- HTF-D：${o.linkHTF}
+- LTF-H4：${o.linkH4}
+- LTF-H1：${o.linkH1}
+- 額外：${o.linkExtra}
 
 五、績效
 - PnL：$ ${o.pnl}
@@ -328,16 +296,15 @@
       o.wins = Number(o.wins) || 0;
       o.rr = o.rr === '—' ? '' : o.rr;
       o.llmRemark = o.llmRemark === '—' ? '' : o.llmRemark;
+      ['linkHTF','linkH4','linkH1','linkExtra'].forEach(k => { if (o[k] === '—') o[k] = ''; });
       navigator.clipboard.writeText(JSON.stringify(o, null, 2)).then(() => alert('JSON 已複製'));
     }
     function resetForm() {
       if (!confirm('確定清空？')) return;
       document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
-      document.querySelectorAll('input[type="number"], input[type="text"], textarea').forEach(el => el.value = '');
+      document.querySelectorAll('input[type="number"], input[type="text"], input[type="url"], textarea').forEach(el => el.value = '');
       document.getElementById('date').valueAsDate = new Date();
       ['symbol','leftEnv','rightEnv'].forEach(i => document.getElementById(i).selectedIndex = 0);
-      document.getElementById('preview').innerHTML = '';
-      document.getElementById('chartFiles').value = '';
       document.getElementById('report').textContent = '填寫上方選項後點「產生報告」';
     }
   </script>

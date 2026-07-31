@@ -27,6 +27,7 @@
     .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
     .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
     .row4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}
+    .row6{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
     button{background:var(--blue);color:#fff;border:none;padding:8px 12px;border-radius:8px;font-weight:600;cursor:pointer;font-size:0.84rem;margin:3px 4px 3px 0}
     button.secondary{background:#334155}button.danger{background:var(--red)}
     table{width:100%;border-collapse:collapse;font-size:0.68rem}
@@ -38,7 +39,7 @@
     .live{font-size:0.75rem;color:#86efac;margin-bottom:8px}
     .tag{display:inline-block;padding:1px 5px;border-radius:4px;background:#1e293b;font-size:0.68rem}
     .auto{color:#86efac}
-    @media(max-width:700px){.row2,.row3,.row4{grid-template-columns:1fr}}
+    @media(max-width:900px){.row6{grid-template-columns:1fr 1fr 1fr}.row2,.row3,.row4{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -104,8 +105,22 @@
 
   <div class="card">
     <h2>篩選</h2>
-    <div class="row4">
+    <div class="row3">
+      <div><label>左側</label>
+        <select id="fLeft" onchange="render()">
+          <option value="">全部</option>
+          <option>普通(打牌逻辑)</option><option>AMD</option><option>SMT</option><option>跳水</option><option>MMXM</option>
+        </select>
+      </div>
+      <div><label>右側</label>
+        <select id="fRight" onchange="render()">
+          <option value="">全部</option>
+          <option>套杀</option><option>三驱动</option><option>NDOG</option><option>NWOG</option><option>SMT</option><option>普通(打牌逻辑)</option>
+        </select>
+      </div>
       <div><label>LLM rank</label><select id="fLlm" onchange="render()"><option value="">全部</option><option>A</option><option>B</option><option>C</option><option>未使用</option></select></div>
+    </div>
+    <div class="row3">
       <div><label>主動</label><select id="fActive" onchange="render()"><option value="">全部</option><option>Yes</option><option>No</option></select></div>
       <div><label>被動</label><select id="fPassive" onchange="render()"><option value="">全部</option><option>Yes</option><option>No</option></select></div>
       <div><label>ABCD</label><select id="fAbcd" onchange="render()"><option value="">全部</option><option>2+2</option><option>2+1</option><option>1+1</option></select></div>
@@ -140,14 +155,6 @@
       return n>=4?'2+2':n===3?'2+1':n>=1?'1+1':'—';
     }
 
-    /**
-     * 固定風險模型（Apex Daily SL 對齊）
-     * avgLoss = riskPerTrade（預設 $100）
-     * netProfit = wins*avgWin - losses*risk
-     * avgWin = (netProfit + losses*risk) / wins
-     * RR = avgWin / risk
-     * PF = (wins*avgWin) / (losses*risk)
-     */
     function calcFromFixedRisk(netProfit, trades, wins, risk){
       const t=Number(trades)||0;
       const w=Number(wins)||0;
@@ -155,26 +162,16 @@
       const r=Number(risk)>0?Number(risk):100;
       const losses=Math.max(0, t-w);
       const wr=t>0?(w/t*100):0;
-
       let avgWin=null, rr=null, pf=null;
-
       if(w>0 && !isNaN(np)){
         avgWin=(np + losses*r) / w;
         if(avgWin>0){
           rr=avgWin / r;
-          if(losses>0){
-            pf=(w*avgWin) / (losses*r);
-          } else {
-            pf=999; // 無虧損單
-          }
+          pf=losses>0?(w*avgWin)/(losses*r):999;
         }
       } else if(w===0 && t>0 && !isNaN(np)){
-        // 全虧
-        avgWin=0;
-        rr=0;
-        pf=0;
+        avgWin=0; rr=0; pf=0;
       }
-
       return {wr, avgWin, avgLoss:r, rr, pf, losses, risk:r};
     }
 
@@ -184,14 +181,11 @@
       const wins=document.getElementById('wins').value;
       const risk=document.getElementById('riskPerTrade').value || 100;
       const d=calcFromFixedRisk(np, trades, wins, risk);
-
       document.getElementById('winRate').value=d.wr?d.wr.toFixed(1):'';
       document.getElementById('avgLoss').value=d.avgLoss;
       document.getElementById('avgWin').value=d.avgWin!=null?d.avgWin.toFixed(2):'';
       document.getElementById('rr').value=d.rr!=null?d.rr.toFixed(2):'';
-      document.getElementById('profitFactor').value=
-        d.pf==null?'':(d.pf>=999?'999':d.pf.toFixed(2));
-
+      document.getElementById('profitFactor').value=d.pf==null?'':(d.pf>=999?'999':d.pf.toFixed(2));
       const dd=document.getElementById('maxDD').value;
       document.getElementById('livePreview').textContent=
         `自動(風險$${d.risk}/筆) → 勝率 ${d.wr?d.wr.toFixed(1):'—'}% · RR ${d.rr!=null?d.rr.toFixed(2):'—'} · PF ${d.pf!=null?(d.pf>=999?'∞':d.pf.toFixed(2)):'—'} · 均盈 $${d.avgWin!=null?d.avgWin.toFixed(1):'—'} · 淨利 $${np||0} · 回撤 $${dd||0}`;
@@ -199,10 +193,14 @@
 
     function filtered(){
       let d=load();
+      const fLeft=document.getElementById('fLeft').value;
+      const fRight=document.getElementById('fRight').value;
       const fl=document.getElementById('fLlm').value;
       const fa=document.getElementById('fActive').value;
       const fp=document.getElementById('fPassive').value;
       const fab=document.getElementById('fAbcd').value;
+      if(fLeft) d=d.filter(r=>(r.leftEnv||'')===fLeft);
+      if(fRight) d=d.filter(r=>(r.rightEnv||'')===fRight);
       if(fl) d=d.filter(r=>(r.llm||'')===fl);
       if(fa) d=d.filter(r=>(r.active||'')===fa);
       if(fp) d=d.filter(r=>(r.passive||'')===fp);
@@ -214,15 +212,17 @@
       const all=load();
       const data=filtered().sort((a,b)=>b.date.localeCompare(a.date));
 
-      document.getElementById('s-n').textContent=all.length;
-      const sumPnl=all.reduce((s,r)=>s+(Number(r.netProfit)||0),0);
-      const maxDD=all.reduce((m,r)=>Math.max(m,Number(r.maxDD)||0),0);
-      const avgWr=all.length?all.reduce((s,r)=>s+(Number(r.winRate)||0),0)/all.length:0;
-      const rrList=all.map(r=>Number(r.rr)).filter(x=>!isNaN(x)&&x>0);
+      // 統計用「目前篩選結果」
+      const src=data;
+      document.getElementById('s-n').textContent=src.length+(src.length!==all.length?` / ${all.length}`:'');
+      const sumPnl=src.reduce((s,r)=>s+(Number(r.netProfit)||0),0);
+      const maxDD=src.reduce((m,r)=>Math.max(m,Number(r.maxDD)||0),0);
+      const avgWr=src.length?src.reduce((s,r)=>s+(Number(r.winRate)||0),0)/src.length:0;
+      const rrList=src.map(r=>Number(r.rr)).filter(x=>!isNaN(x)&&x>0);
       const avgRr=rrList.length?rrList.reduce((a,b)=>a+b,0)/rrList.length:null;
-      const pfList=all.map(r=>Number(r.profitFactor)).filter(x=>!isNaN(x)&&x>0&&x<999);
+      const pfList=src.map(r=>Number(r.profitFactor)).filter(x=>!isNaN(x)&&x>0&&x<999);
       const avgPf=pfList.length?pfList.reduce((a,b)=>a+b,0)/pfList.length:0;
-      const best=all.reduce((m,r)=>Math.max(m,Number(r.netProfit)||-Infinity),all.length?0:0);
+      const best=src.reduce((m,r)=>Math.max(m,Number(r.netProfit)||-Infinity),src.length?0:0);
 
       const pnlEl=document.getElementById('s-pnl');
       pnlEl.textContent=(sumPnl>=0?'+':'')+'$'+sumPnl.toFixed(1);

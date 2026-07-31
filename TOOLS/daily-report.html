@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Apex 每日報告產生器</title>
+  <style>
+    :root {
+      --bg: #0f1115;
+      --card: #1a1d24;
+      --border: #2a2f3a;
+      --text: #e6e8ec;
+      --muted: #9aa3b2;
+      --accent: #3b82f6;
+      --green: #22c55e;
+      --red: #ef4444;
+      --yellow: #eab308;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 20px;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+    h1 { font-size: 1.5rem; margin-bottom: 8px; }
+    .sub { color: var(--muted); margin-bottom: 24px; font-size: 0.9rem; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+    }
+    .card h2 {
+      font-size: 1.05rem;
+      margin-bottom: 14px;
+      color: var(--accent);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 16px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .row label.title {
+      min-width: 180px;
+      font-size: 0.92rem;
+      color: var(--muted);
+    }
+    .options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .options label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: #252a33;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      border: 1px solid transparent;
+      transition: 0.15s;
+    }
+    .options label:hover { border-color: var(--accent); }
+    .options input { accent-color: var(--accent); }
+    input[type="text"], input[type="number"], input[type="date"], textarea, select {
+      background: #252a33;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      width: 100%;
+      max-width: 280px;
+    }
+    textarea { max-width: 100%; min-height: 70px; resize: vertical; }
+    .grid2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 600px) {
+      .grid2 { grid-template-columns: 1fr; }
+      .row label.title { min-width: 100%; }
+    }
+    .btns {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 20px 0 10px;
+    }
+    button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    button.secondary { background: #334155; }
+    button:hover { opacity: 0.9; }
+    #report {
+      background: #111827;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      white-space: pre-wrap;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.85rem;
+      line-height: 1.55;
+      min-height: 120px;
+      margin-top: 8px;
+    }
+    .tag-a { color: var(--green); }
+    .tag-b { color: var(--yellow); }
+    .tag-c { color: var(--red); }
+  </style>
+</head>
+<body>
+  <h1>Apex 每日報告產生器</h1>
+  <p class="sub">填完選項後點「產生報告」，可直接複製到 Notion 或 GitHub</p>
+
+  <!-- 基本資訊 -->
+  <div class="card">
+    <h2>基本資訊</h2>
+    <div class="grid2">
+      <div class="row">
+        <label class="title">日期</label>
+        <input type="date" id="date" />
+      </div>
+      <div class="row">
+        <label class="title">品種</label>
+        <select id="symbol">
+          <option value="MNQ">MNQ</option>
+          <option value="MES">MES</option>
+          <option value="MGC">MGC</option>
+          <option value="其他">其他</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- 開盤前準備 -->
+  <div class="card">
+    <h2>1. 開盤前準備</h2>
+    <div class="row">
+      <label class="title">檢查高影響新聞</label>
+      <div class="options">
+        <label><input type="radio" name="news" value="Yes"> Yes</label>
+        <label><input type="radio" name="news" value="No"> No</label>
+      </div>
+    </div>
+    <div class="row">
+      <label class="title">HTF Bias 已確定</label>
+      <div class="options">
+        <label><input type="radio" name="bias" value="Yes"> Yes</label>
+        <label><input type="radio" name="bias" value="No"> No</label>
+      </div>
+    </div>
+    <div class="row">
+      <label class="title">Killzone 時間確認</label>
+      <div class="options">
+        <label><input type="radio" name="kz" value="Yes"> Yes</label>
+        <label><input type="radio" name="kz" value="No"> No</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- 風險規則 -->
+  <div class="card">
+    <h2>2. 風險規則</h2>
+    <div class="row">
+      <label class="title">最多 1 張限制</label>
+      <div class="options">
+        <label><input type="radio" name="size" value="Yes"> Yes</label>
+        <label><input type="radio" name="size" value="No"> No</label>
+      </div>
+    </div>
+    <div class="row">
+      <label class="title">Daily SL $100 未觸及</label>
+      <div class="options">
+        <label><input type="radio" name="dailysl" value="Yes"> Yes</label>
+        <label><input type="radio" name="dailysl" value="No"> No</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Setup -->
+  <div class="card">
+    <h2>3. Setup 判定</h2>
+    <div class="row">
+      <label class="title">左側環境</label>
+      <select id="leftEnv">
+        <option value="">— 選擇 —</option>
+        <option>普通(打牌逻辑)</option>
+        <option>AMD</option>
+        <option>SMT</option>
+        <option>跳水</option>
+        <option>MMXM</option>
+        <option>無</option>
+      </select>
+    </div>
+    <div class="row">
+      <label class="title">右側環境</label>
+      <select id="rightEnv">
+        <option value="">— 選擇 —</option>
+        <option>三驱动</option>
+        <option>NDOG</option>
+        <option>SMT</option>
+        <option>NWOG</option>
+        <option>普通(打牌逻辑)</option>
+        <option>套杀</option>
+        <option>無</option>
+      </select>
+    </div>
+    <div class="row">
+      <label class="title">主動</label>
+      <div class="options">
+        <label><input type="radio" name="active" value="Yes"> Yes</label>
+        <label><input type="radio" name="active" value="No"> No</label>
+      </div>
+    </div>
+    <div class="row">
+      <label class="title">被動</label>
+      <div class="options">
+        <label><input type="radio" name="passive" value="Yes"> Yes</label>
+        <label><input type="radio" name="passive" value="No"> No</label>
+      </div>
+    </div>
+    <div class="row">
+      <label class="title">工程</label>
+      <div class="options">
+        <label><input type="radio" name="engineering" value="Yes"> Yes</label>
+        <label><input type="radio" name="engineering" value="No"> No</label>
+      </div>
+    </div>
+    <div class="row">
+      <label class="title">預設</label>
+      <div class="options">
+        <label><input type="radio" name="preset" value="Yes"> Yes</label>
+        <label><input type="radio" name="preset" value="No"> No</label>
+      </div>
+    </div>
+    <div class="row">
+      <label class="title">最終等級</label>
+      <div class="options">
+        <label><input type="radio" name="grade" value="A"> A</label>
+        <label><input type="radio" name="grade" value="B"> B</label>
+        <label><input type="radio" name="grade" value="C"> C</label>
+      </div>
+    </div>
+    <div class="row">
+      <label class="title">LLM 判斷</label>
+      <div class="options">
+        <label><input type="radio" name="llm" value="A"> A</label>
+        <label><input type="radio" name="llm" value="B"> B</label>
+        <label><input type="radio" name="llm" value="C"> C</label>
+        <label><input type="radio" name="llm" value="未使用"> 未使用</label>
+      </div>
+    </div>
+    <div class="row">
+      <label class="title">是否執行交易</label>
+      <div class="options">
+        <label><input type="radio" name="traded" value="Yes"> Yes</label>
+        <label><input type="radio" name="traded" value="No"> No</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- 績效 -->
+  <div class="card">
+    <h2>4. 績效數據</h2>
+    <div class="grid2">
+      <div class="row">
+        <label class="title">當日 PnL ($)</label>
+        <input type="number" id="pnl" step="0.01" placeholder="0.00" />
+      </div>
+      <div class="row">
+        <label class="title">當日交易數</label>
+        <input type="number" id="trades" min="0" placeholder="0" />
+      </div>
+      <div class="row">
+        <label class="title">當日盈利數</label>
+        <input type="number" id="wins" min="0" placeholder="0" />
+      </div>
+      <div class="row">
+        <label class="title">當日平均 RR</label>
+        <input type="number" id="rr" step="0.1" placeholder="0.0" />
+      </div>
+      <div class="row">
+        <label class="title">累計勝率 (%)</label>
+        <input type="number" id="winrate" step="0.1" placeholder="0.0" />
+      </div>
+      <div class="row">
+        <label class="title">合格日進度</label>
+        <input type="text" id="qualified" placeholder="例如 2/5" />
+      </div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <label class="title">是否達成合格日 (≥$250)</label>
+      <div class="options">
+        <label><input type="radio" name="qualifiedDay" value="Yes"> Yes</label>
+        <label><input type="radio" name="qualifiedDay" value="No"> No</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- 複盤 -->
+  <div class="card">
+    <h2>5. 複盤</h2>
+    <div class="row">
+      <label class="title">是否違反規則</label>
+      <div class="options">
+        <label><input type="radio" name="violate" value="Yes"> Yes</label>
+        <label><input type="radio" name="violate" value="No"> No</label>
+      </div>
+    </div>
+    <div class="row">
+      <label class="title">備註 / 改進點</label>
+      <textarea id="notes" placeholder="今天的觀察、情緒、改進..."></textarea>
+    </div>
+  </div>
+
+  <div class="btns">
+    <button onclick="generateReport()">產生報告</button>
+    <button class="secondary" onclick="copyReport()">複製報告</button>
+    <button class="secondary" onclick="resetForm()">清空</button>
+  </div>
+
+  <div class="card">
+    <h2>產生的報告</h2>
+    <div id="report">填寫上方選項後點「產生報告」</div>
+  </div>
+
+  <script>
+    // 預設今天日期
+    document.getElementById('date').valueAsDate = new Date();
+
+    function val(name) {
+      const el = document.querySelector(`input[name="${name}"]:checked`);
+      return el ? el.value : '—';
+    }
+    function id(id) {
+      return document.getElementById(id).value || '—';
+    }
+
+    function generateReport() {
+      const grade = val('grade');
+      const llm = val('llm');
+      const traded = val('traded');
+      const violate = val('violate');
+
+      const report = `【Apex 每日報告】
+日期：${id('date')}
+品種：${id('symbol')}
+
+一、開盤前準備
+- 高影響新聞檢查：${val('news')}
+- HTF Bias 已確定：${val('bias')}
+- Killzone 確認：${val('kz')}
+
+二、風險規則
+- 最多1張限制：${val('size')}
+- Daily SL $100 未觸及：${val('dailysl')}
+
+三、Setup 判定
+- 左側環境：${id('leftEnv')}
+- 右側環境：${id('rightEnv')}
+- 主動：${val('active')}｜被動：${val('passive')}｜工程：${val('engineering')}｜預設：${val('preset')}
+- 最終等級：${grade}
+- LLM 判斷：${llm}
+- 是否執行交易：${traded}
+
+四、績效數據
+- 當日 PnL：$ ${id('pnl')}
+- 當日交易數：${id('trades')} 筆
+- 當日盈利數：${id('wins')} 筆
+- 當日平均 RR：${id('rr')}
+- 累計勝率：${id('winrate')}%
+- 合格日進度：${id('qualified')}
+- 是否達成合格日：${val('qualifiedDay')}
+
+五、複盤
+- 是否違反規則：${violate}
+- 備註：${id('notes')}
+
+---
+同步確認：
+[ ] 已更新 Notion
+[ ] 已更新 GitHub PERFORMANCE/daily-log.md`;
+
+      document.getElementById('report').textContent = report;
+    }
+
+    function copyReport() {
+      const text = document.getElementById('report').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        alert('報告已複製到剪貼簿！');
+      });
+    }
+
+    function resetForm() {
+      if (confirm('確定要清空所有填寫內容？')) {
+        document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+        document.querySelectorAll('input[type="number"], input[type="text"], textarea').forEach(el => el.value = '');
+        document.getElementById('date').valueAsDate = new Date();
+        document.getElementById('symbol').selectedIndex = 0;
+        document.getElementById('leftEnv').selectedIndex = 0;
+        document.getElementById('rightEnv').selectedIndex = 0;
+        document.getElementById('report').textContent = '填寫上方選項後點「產生報告」';
+      }
+    }
+  </script>
+</body>
+</html>

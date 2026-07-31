@@ -14,16 +14,15 @@
     h1{font-size:1.35rem;margin-bottom:4px}
     .ver{display:inline-block;background:#1e3a5f;color:#93c5fd;font-size:0.75rem;padding:2px 8px;border-radius:6px;margin-left:6px;vertical-align:middle}
     .sub{color:var(--muted);font-size:0.82rem;margin-bottom:14px}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:12px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:12px}
     .stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center}
-    .stat .label{color:var(--muted);font-size:0.7rem}
-    .stat .value{font-size:1.1rem;font-weight:700}
+    .stat .label{color:var(--muted);font-size:0.68rem}
+    .stat .value{font-size:1.05rem;font-weight:700}
     .positive{color:var(--green)}.negative{color:var(--red)}
     .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px}
     .card h2{font-size:0.95rem;color:var(--blue);margin-bottom:10px;border-bottom:1px solid var(--border);padding-bottom:5px}
     label{display:block;font-size:0.75rem;color:var(--muted);margin-bottom:3px}
     input,select,textarea{width:100%;background:#1e2530;border:1px solid var(--border);color:var(--text);padding:7px 9px;border-radius:8px;font-size:0.85rem;margin-bottom:8px}
-    textarea{min-height:48px;resize:vertical}
     .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
     .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
     .row4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}
@@ -35,28 +34,29 @@
     .empty{color:var(--muted);text-align:center;padding:16px}
     .tag{display:inline-block;padding:1px 6px;border-radius:5px;font-size:0.7rem;background:#1e293b}
     a.chart{color:#93c5fd;text-decoration:none;font-size:0.7rem}
-    a.chart:hover{text-decoration:underline}
     .breakdown{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
     .bd-item{background:#1e2530;border-radius:8px;padding:8px 10px;font-size:0.78rem}
     .bd-item .k{color:var(--muted);margin-bottom:4px;font-weight:600}
     .hint{font-size:0.78rem;color:var(--muted);margin-bottom:8px}
+    .live{font-size:0.75rem;color:#93c5fd;margin-top:-4px;margin-bottom:8px}
     @media(max-width:700px){.row2,.row3,.row4{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
-  <h1>Apex Bootcamp <span class="ver">v1.1</span></h1>
-  <p class="sub">TradingView 圖連結 · LLM Remark · 左右=策略 · 多維分析</p>
+  <h1>Apex Bootcamp <span class="ver">v1.1 實盤</span></h1>
+  <p class="sub">自動計算 PnL / 交易數 / 勝率 / 平均 RR · <a class="chart" href="./backtest.html">Backtest 版 →</a></p>
 
   <div class="grid">
-    <div class="stat"><div class="label">總合 PnL</div><div class="value" id="s-pnl">$0</div></div>
-    <div class="stat"><div class="label">總交易</div><div class="value" id="s-trades">0</div></div>
-    <div class="stat"><div class="label">總勝率</div><div class="value" id="s-wr">0%</div></div>
+    <div class="stat"><div class="label">PnL ($)</div><div class="value" id="s-pnl">$0</div></div>
+    <div class="stat"><div class="label">交易數</div><div class="value" id="s-trades">0</div></div>
+    <div class="stat"><div class="label">勝率 %</div><div class="value" id="s-wr">0%</div></div>
+    <div class="stat"><div class="label">平均 RR</div><div class="value" id="s-rr">—</div></div>
     <div class="stat"><div class="label">合格日</div><div class="value" id="s-qd">0/5</div></div>
   </div>
 
   <div class="card">
     <h2>新增紀錄</h2>
-    <p class="hint">圖表請貼 TradingView 分享連結（至少 HTF-D + H4）。</p>
+    <p class="hint">填 PnL、交易數、盈利數後，勝率與累計指標自動計算。</p>
     <div class="row3">
       <div><label>日期</label><input type="date" id="date"/></div>
       <div><label>品種</label>
@@ -84,11 +84,12 @@
       <div><label>預設</label><select id="preset"><option>Yes</option><option>No</option></select></div>
     </div>
     <div class="row4">
-      <div><label>PnL ($)</label><input type="number" id="pnl" step="0.01"/></div>
-      <div><label>交易數</label><input type="number" id="trades" min="0"/></div>
-      <div><label>盈利數</label><input type="number" id="wins" min="0"/></div>
-      <div><label>RR</label><input type="number" id="rr" step="0.1"/></div>
+      <div><label>PnL ($)</label><input type="number" id="pnl" step="0.01" oninput="previewLive()"/></div>
+      <div><label>交易數</label><input type="number" id="trades" min="0" oninput="previewLive()"/></div>
+      <div><label>盈利數</label><input type="number" id="wins" min="0" oninput="previewLive()"/></div>
+      <div><label>當日平均 RR</label><input type="number" id="rr" step="0.1" oninput="previewLive()"/></div>
     </div>
+    <p class="live" id="livePreview">當日勝率：—</p>
     <div class="row2">
       <div><label>HTF-D 連結</label><input type="url" id="linkHTF" placeholder="TradingView URL"/></div>
       <div><label>H4 連結</label><input type="url" id="linkH4" placeholder="TradingView URL"/></div>
@@ -105,7 +106,7 @@
   </div>
 
   <div class="card">
-    <h2>篩選檢視</h2>
+    <h2>篩選（自動重算）</h2>
     <div class="row3">
       <div><label>品種</label><select id="fSymbol" onchange="render()"><option value="">全部</option></select></div>
       <div><label>左側</label><select id="fLeft" onchange="render()"><option value="">全部</option></select></div>
@@ -120,6 +121,7 @@
       <div class="stat"><div class="label">篩選 PnL</div><div class="value" id="f-pnl">$0</div></div>
       <div class="stat"><div class="label">篩選交易</div><div class="value" id="f-trades">0</div></div>
       <div class="stat"><div class="label">篩選勝率</div><div class="value" id="f-wr">0%</div></div>
+      <div class="stat"><div class="label">篩選平均 RR</div><div class="value" id="f-rr">—</div></div>
     </div>
   </div>
 
@@ -131,28 +133,38 @@
   <div class="card">
     <h2>歷史紀錄</h2>
     <table>
-      <thead><tr><th>日期</th><th>品種</th><th>左</th><th>右</th><th>等級</th><th>LLM</th><th>圖</th><th>PnL</th><th></th></tr></thead>
-      <tbody id="tbody"><tr><td colspan="9" class="empty">尚無紀錄</td></tr></tbody>
+      <thead><tr><th>日期</th><th>品種</th><th>左</th><th>右</th><th>等級</th><th>PnL</th><th>T/W</th><th>RR</th><th>圖</th><th></th></tr></thead>
+      <tbody id="tbody"><tr><td colspan="10" class="empty">尚無紀錄</td></tr></tbody>
     </table>
   </div>
 
   <script>
-    const KEY='apex_perf_v11b';
+    const KEY='apex_perf_v11c';
     const load=()=>{try{return JSON.parse(localStorage.getItem(KEY))||[]}catch{return[]}};
     const save=d=>localStorage.setItem(KEY,JSON.stringify(d));
-    const calc=d=>({pnl:d.reduce((s,r)=>s+Number(r.pnl||0),0),trades:d.reduce((s,r)=>s+Number(r.trades||0),0),wins:d.reduce((s,r)=>s+Number(r.wins||0),0),wr:0,qd:d.filter(r=>Number(r.pnl)>=250).length});
-    function withWr(c){c.wr=c.trades>0?(c.wins/c.trades*100):0;return c;}
+
+    function calc(d){
+      const pnl=d.reduce((s,r)=>s+Number(r.pnl||0),0);
+      const trades=d.reduce((s,r)=>s+Number(r.trades||0),0);
+      const wins=d.reduce((s,r)=>s+Number(r.wins||0),0);
+      const wr=trades>0?(wins/trades*100):0;
+      const qd=d.filter(r=>Number(r.pnl)>=250).length;
+      const rrList=d.map(r=>Number(r.rr)).filter(x=>!isNaN(x)&&x>0);
+      const avgRR=rrList.length?rrList.reduce((a,b)=>a+b,0)/rrList.length:null;
+      return {pnl,trades,wins,wr,qd,avgRR};
+    }
+
     function abcdOf(r){
       if(r.abcd) return r.abcd;
       let n=0; if(r.active==='Yes')n++; if(r.passive==='Yes')n++; if(r.engineering==='Yes')n++; if(r.preset==='Yes')n++;
       return n>=4?'2+2':n===3?'2+1':n>=1?'1+1':'—';
     }
     function chartLinks(r){
-      const parts=[];
-      if(r.linkHTF) parts.push(`<a class="chart" href="${r.linkHTF}" target="_blank">D</a>`);
-      if(r.linkH4) parts.push(`<a class="chart" href="${r.linkH4}" target="_blank">H4</a>`);
-      if(r.linkH1) parts.push(`<a class="chart" href="${r.linkH1}" target="_blank">H1</a>`);
-      return parts.join(' ')||'-';
+      const p=[];
+      if(r.linkHTF)p.push(`<a class="chart" href="${r.linkHTF}" target="_blank">D</a>`);
+      if(r.linkH4)p.push(`<a class="chart" href="${r.linkH4}" target="_blank">H4</a>`);
+      if(r.linkH1)p.push(`<a class="chart" href="${r.linkH1}" target="_blank">H1</a>`);
+      return p.join(' ')||'-';
     }
     function filtered(){
       let d=load(); const get=id=>document.getElementById(id).value;
@@ -161,34 +173,51 @@
     }
     function groupBy(data,keyFn){
       const m={}; data.forEach(r=>{const k=keyFn(r)||'—'; if(!m[k])m[k]=[]; m[k].push(r);});
-      return Object.entries(m).map(([k,arr])=>({k,...withWr(calc(arr))})).sort((a,b)=>b.pnl-a.pnl);
+      return Object.entries(m).map(([k,arr])=>({k,...calc(arr)})).sort((a,b)=>b.pnl-a.pnl);
     }
     function fillSelect(id,values){
       const el=document.getElementById(id); const cur=el.value; const first=el.options[0].outerHTML;
       el.innerHTML=first+[...new Set(values.filter(Boolean))].map(v=>`<option>${v}</option>`).join('');
       if([...el.options].some(o=>o.value===cur)) el.value=cur;
     }
+    function setPnl(id,val){
+      const el=document.getElementById(id);
+      el.textContent=(val>=0?'+':'')+'$'+val.toFixed(2);
+      el.className='value '+(val>=0?'positive':'negative');
+    }
+    function previewLive(){
+      const t=Number(document.getElementById('trades').value)||0;
+      const w=Number(document.getElementById('wins').value)||0;
+      const rr=document.getElementById('rr').value;
+      const wr=t>0?(w/t*100).toFixed(1)+'%':'—';
+      document.getElementById('livePreview').textContent=`當日勝率（自動）：${wr}`+(rr?` · RR：${rr}`:'');
+    }
     function render(){
       const all=load(); const data=filtered().sort((a,b)=>b.date.localeCompare(a.date));
-      const sAll=withWr(calc(all)), s=withWr(calc(data));
-      const setPnl=(id,val)=>{const el=document.getElementById(id); el.textContent=(val>=0?'+':'')+'$'+val.toFixed(2); el.className='value '+(val>=0?'positive':'negative');};
-      setPnl('s-pnl',sAll.pnl); document.getElementById('s-trades').textContent=sAll.trades;
-      document.getElementById('s-wr').textContent=sAll.wr.toFixed(1)+'%'; document.getElementById('s-qd').textContent=sAll.qd+'/5';
-      setPnl('f-pnl',s.pnl); document.getElementById('f-trades').textContent=s.trades; document.getElementById('f-wr').textContent=s.wr.toFixed(1)+'%';
+      const sAll=calc(all), s=calc(data);
+      setPnl('s-pnl',sAll.pnl);
+      document.getElementById('s-trades').textContent=sAll.trades;
+      document.getElementById('s-wr').textContent=sAll.wr.toFixed(1)+'%';
+      document.getElementById('s-rr').textContent=sAll.avgRR!=null?sAll.avgRR.toFixed(2):'—';
+      document.getElementById('s-qd').textContent=sAll.qd+'/5';
+      setPnl('f-pnl',s.pnl);
+      document.getElementById('f-trades').textContent=s.trades;
+      document.getElementById('f-wr').textContent=s.wr.toFixed(1)+'%';
+      document.getElementById('f-rr').textContent=s.avgRR!=null?s.avgRR.toFixed(2):'—';
       fillSelect('fSymbol',all.map(r=>r.symbol)); fillSelect('fLeft',all.map(r=>r.leftEnv)); fillSelect('fRight',all.map(r=>r.rightEnv));
       const dims=[['品種',r=>r.symbol],['左側',r=>r.leftEnv],['右側',r=>r.rightEnv],['等級',r=>r.grade],['LLM',r=>r.llm],['ABCD',r=>abcdOf(r)]];
       document.getElementById('breakdown').innerHTML=dims.map(([title,fn])=>{
         const g=groupBy(all,fn); if(!g.length) return '';
-        return `<div class="bd-item"><div class="k">${title}</div>`+g.map(x=>`<div>${x.k}: <b class="${x.pnl>=0?'positive':'negative'}">$${x.pnl.toFixed(1)}</b> · ${x.trades}筆 · ${x.wr.toFixed(0)}%</div>`).join('')+`</div>`;
+        return `<div class="bd-item"><div class="k">${title}</div>`+g.map(x=>`<div>${x.k}: <b class="${x.pnl>=0?'positive':'negative'}">$${x.pnl.toFixed(1)}</b> · ${x.trades}筆 · ${x.wr.toFixed(0)}%`+(x.avgRR!=null?` · RR ${x.avgRR.toFixed(1)}`:'')+`</div>`).join('')+`</div>`;
       }).join('');
       const tb=document.getElementById('tbody');
-      if(!data.length){tb.innerHTML='<tr><td colspan="9" class="empty">尚無紀錄</td></tr>';return;}
+      if(!data.length){tb.innerHTML='<tr><td colspan="10" class="empty">尚無紀錄</td></tr>';return;}
       tb.innerHTML=data.map(r=>`<tr>
         <td>${r.date}</td><td><span class="tag">${r.symbol||'-'}</span></td>
-        <td>${r.leftEnv||'-'}</td><td>${r.rightEnv||'-'}</td>
-        <td>${r.grade||'-'}</td><td>${r.llm||'-'}</td>
-        <td>${chartLinks(r)}</td>
+        <td>${r.leftEnv||'-'}</td><td>${r.rightEnv||'-'}</td><td>${r.grade||'-'}</td>
         <td class="${r.pnl>=0?'positive':'negative'}">${r.pnl>=0?'+':''}${Number(r.pnl).toFixed(1)}</td>
+        <td>${r.trades}/${r.wins}</td><td>${r.rr||'-'}</td>
+        <td>${chartLinks(r)}</td>
         <td><button class="danger" style="padding:2px 6px;font-size:0.7rem" onclick="removeRecord('${r.id}')">刪</button></td>
       </tr>`).join('');
     }
@@ -209,10 +238,12 @@
         linkHTF:document.getElementById('linkHTF').value.trim(),
         linkH4:document.getElementById('linkH4').value.trim(),
         linkH1:document.getElementById('linkH1').value.trim(),
-        pnl:Number(pnl), trades:Number(trades), wins:Number(wins), rr:document.getElementById('rr').value||''
+        pnl:Number(pnl), trades:Number(trades), wins:Number(wins),
+        rr:document.getElementById('rr').value?Number(document.getElementById('rr').value):''
       });
       save(d); render();
       ['pnl','trades','wins','rr','llmRemark','linkHTF','linkH4','linkH1'].forEach(i=>document.getElementById(i).value='');
+      document.getElementById('livePreview').textContent='當日勝率：—';
     }
     function removeRecord(id){if(!confirm('刪除？'))return;save(load().filter(r=>r.id!==id));render();}
     function importJSON(){
@@ -227,7 +258,8 @@
           active:o.active||'No', passive:o.passive||'No', engineering:o.engineering||'No', preset:o.preset||'No', abcd,
           grade:o.grade||'-', llm:o.llm||'未使用', llmRemark:o.llmRemark||'',
           linkHTF:o.linkHTF||'', linkH4:o.linkH4||'', linkH1:o.linkH1||'',
-          pnl:Number(o.pnl)||0, trades:Number(o.trades)||0, wins:Number(o.wins)||0, rr:o.rr||''
+          pnl:Number(o.pnl)||0, trades:Number(o.trades)||0, wins:Number(o.wins)||0,
+          rr:o.rr!==''&&o.rr!=null?Number(o.rr):''
         });
         save(d); render(); alert('已匯入');
       }catch(e){alert('JSON 格式錯誤');}
@@ -235,8 +267,8 @@
     function exportData(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(load(),null,2)],{type:'application/json'}));a.download='apex-v1.1-performance.json';a.click();}
     function exportMarkdown(){
       const data=load().sort((a,b)=>a.date.localeCompare(b.date));
-      let md='# Apex Bootcamp v1.1\n\n| 日期 | 品種 | 左 | 右 | 等級 | LLM | HTF | H4 | H1 | PnL |\n|---|---|---|---|---|---|---|---|---|---|\n';
-      data.forEach(r=>{md+=`| ${r.date} | ${r.symbol} | ${r.leftEnv||'-'} | ${r.rightEnv||'-'} | ${r.grade} | ${r.llm} | ${r.linkHTF||'-'} | ${r.linkH4||'-'} | ${r.linkH1||'-'} | ${r.pnl} |\n`;});
+      let md='# Apex 實盤 v1.1\n\n| 日期 | 品種 | 左 | 右 | PnL | 交易 | 盈利 | RR |\n|---|---|---|---|---|---|---|---|\n';
+      data.forEach(r=>{md+=`| ${r.date} | ${r.symbol} | ${r.leftEnv||'-'} | ${r.rightEnv||'-'} | ${r.pnl} | ${r.trades} | ${r.wins} | ${r.rr||'-'} |\n`;});
       const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([md],{type:'text/markdown'}));a.download='daily-log-v1.1.md';a.click();
     }
     function clearData(){if(confirm('清空全部？')){localStorage.removeItem(KEY);render();}}

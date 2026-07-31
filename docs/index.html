@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Apex Bootcamp v1.0</title>
+  <title>Apex Bootcamp v1.1</title>
   <style>
     :root {
       --bg:#0b0e13; --card:#151a22; --border:#2a3341; --text:#e8eaed;
@@ -22,7 +22,8 @@
     .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px}
     .card h2{font-size:0.95rem;color:var(--blue);margin-bottom:10px;border-bottom:1px solid var(--border);padding-bottom:5px}
     label{display:block;font-size:0.75rem;color:var(--muted);margin-bottom:3px}
-    input,select{width:100%;background:#1e2530;border:1px solid var(--border);color:var(--text);padding:7px 9px;border-radius:8px;font-size:0.85rem;margin-bottom:8px}
+    input,select,textarea{width:100%;background:#1e2530;border:1px solid var(--border);color:var(--text);padding:7px 9px;border-radius:8px;font-size:0.85rem;margin-bottom:8px}
+    textarea{min-height:56px;resize:vertical}
     .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
     .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
     .row4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}
@@ -41,8 +42,8 @@
   </style>
 </head>
 <body>
-  <h1>Apex Bootcamp <span class="ver">v1.0</span></h1>
-  <p class="sub">一次紀錄 → 總合 + 各維度獨立分析｜左右環境 = 策略</p>
+  <h1>Apex Bootcamp <span class="ver">v1.1</span></h1>
+  <p class="sub">≥3張圖日誌 · LLM Remark · 左右=策略 · 一次紀錄多維分析</p>
 
   <div class="grid">
     <div class="stat"><div class="label">總合 PnL</div><div class="value" id="s-pnl">$0</div></div>
@@ -52,8 +53,8 @@
   </div>
 
   <div class="card">
-    <h2>新增紀錄（一次填完）</h2>
-    <p class="hint">左右環境即策略。同一筆紀錄自動進入品種 / 左 / 右 / 等級 / LLM / ABCD 獨立統計。</p>
+    <h2>新增紀錄</h2>
+    <p class="hint">左右環境=策略。圖表請另截 ≥3 張（D/H4/H1），此處記錄完成狀態與 LLM Remark。</p>
     <div class="row3">
       <div><label>日期</label><input type="date" id="date"/></div>
       <div><label>品種</label>
@@ -66,10 +67,10 @@
       <div><label>等級</label><select id="grade"><option>A</option><option>B</option><option>C</option><option>-</option></select></div>
     </div>
     <div class="row3">
-      <div><label>左側環境（策略）</label>
+      <div><label>左側環境</label>
         <select id="leftEnv"><option value="">—</option><option>普通(打牌逻辑)</option><option>AMD</option><option>SMT</option><option>跳水</option><option>MMXM</option><option>無</option></select>
       </div>
-      <div><label>右側環境（策略）</label>
+      <div><label>右側環境</label>
         <select id="rightEnv"><option value="">—</option><option>三驱动</option><option>NDOG</option><option>SMT</option><option>NWOG</option><option>普通(打牌逻辑)</option><option>套杀</option><option>無</option></select>
       </div>
       <div><label>LLM</label><select id="llm"><option>A</option><option>B</option><option>C</option><option>未使用</option></select></div>
@@ -85,6 +86,15 @@
       <div><label>交易數</label><input type="number" id="trades" min="0"/></div>
       <div><label>盈利數</label><input type="number" id="wins" min="0"/></div>
       <div><label>RR</label><input type="number" id="rr" step="0.1"/></div>
+    </div>
+    <div class="row3">
+      <div><label>HTF-D 圖</label><select id="chartHTF"><option>Yes</option><option>No</option></select></div>
+      <div><label>H4 圖</label><select id="chartH4"><option>Yes</option><option>No</option></select></div>
+      <div><label>H1 圖</label><select id="chartH1"><option>Yes</option><option>No</option><option>跳過</option></select></div>
+    </div>
+    <div class="row2">
+      <div><label>≥3張已備妥</label><select id="chartsOk"><option>Yes</option><option>No</option></select></div>
+      <div><label>LLM Remark</label><input type="text" id="llmRemark" placeholder="LLM 理由摘要"/></div>
     </div>
     <button onclick="addRecord()">新增</button>
     <button class="secondary" onclick="importJSON()">貼上 JSON 匯入</button>
@@ -114,40 +124,35 @@
 
   <div class="card">
     <h2>各維度獨立分析</h2>
-    <p class="hint">同一批數據自動拆解，無需重複填寫。</p>
     <div class="breakdown" id="breakdown"></div>
   </div>
 
   <div class="card">
     <h2>歷史紀錄</h2>
     <table>
-      <thead><tr><th>日期</th><th>品種</th><th>左</th><th>右</th><th>ABCD</th><th>等級</th><th>LLM</th><th>PnL</th><th>T/W</th><th></th></tr></thead>
+      <thead><tr><th>日期</th><th>品種</th><th>左</th><th>右</th><th>ABCD</th><th>等級</th><th>LLM</th><th>圖</th><th>PnL</th><th></th></tr></thead>
       <tbody id="tbody"><tr><td colspan="10" class="empty">尚無紀錄</td></tr></tbody>
     </table>
   </div>
 
   <script>
-    const KEY='apex_perf_v4';
+    const KEY='apex_perf_v11';
     const load=()=>{try{return JSON.parse(localStorage.getItem(KEY))||[]}catch{return[]}};
     const save=d=>localStorage.setItem(KEY,JSON.stringify(d));
     const calc=d=>({pnl:d.reduce((s,r)=>s+Number(r.pnl||0),0),trades:d.reduce((s,r)=>s+Number(r.trades||0),0),wins:d.reduce((s,r)=>s+Number(r.wins||0),0),wr:0,qd:d.filter(r=>Number(r.pnl)>=250).length});
     function withWr(c){c.wr=c.trades>0?(c.wins/c.trades*100):0;return c;}
     function abcdOf(r){
       if(r.abcd) return r.abcd;
-      let n=0;
-      if(r.active==='Yes')n++; if(r.passive==='Yes')n++; if(r.engineering==='Yes')n++; if(r.preset==='Yes')n++;
+      let n=0; if(r.active==='Yes')n++; if(r.passive==='Yes')n++; if(r.engineering==='Yes')n++; if(r.preset==='Yes')n++;
       return n>=4?'2+2':n===3?'2+1':n>=1?'1+1':'—';
     }
     function filtered(){
-      let d=load();
-      const get=id=>document.getElementById(id).value;
+      let d=load(); const get=id=>document.getElementById(id).value;
       [['fSymbol','symbol'],['fLeft','leftEnv'],['fRight','rightEnv'],['fGrade','grade'],['fLlm','llm']].forEach(([fid,key])=>{const v=get(fid);if(v)d=d.filter(r=>(r[key]||'')===v)});
-      const fa=get('fAbcd'); if(fa) d=d.filter(r=>abcdOf(r)===fa);
-      return d;
+      const fa=get('fAbcd'); if(fa) d=d.filter(r=>abcdOf(r)===fa); return d;
     }
     function groupBy(data,keyFn){
-      const m={};
-      data.forEach(r=>{const k=keyFn(r)||'—'; if(!m[k])m[k]=[]; m[k].push(r);});
+      const m={}; data.forEach(r=>{const k=keyFn(r)||'—'; if(!m[k])m[k]=[]; m[k].push(r);});
       return Object.entries(m).map(([k,arr])=>({k,...withWr(calc(arr))})).sort((a,b)=>b.pnl-a.pnl);
     }
     function fillSelect(id,values){
@@ -159,24 +164,25 @@
       const all=load(); const data=filtered().sort((a,b)=>b.date.localeCompare(a.date));
       const sAll=withWr(calc(all)), s=withWr(calc(data));
       const setPnl=(id,val)=>{const el=document.getElementById(id); el.textContent=(val>=0?'+':'')+'$'+val.toFixed(2); el.className='value '+(val>=0?'positive':'negative');};
-      setPnl('s-pnl',sAll.pnl);
-      document.getElementById('s-trades').textContent=sAll.trades;
-      document.getElementById('s-wr').textContent=sAll.wr.toFixed(1)+'%';
-      document.getElementById('s-qd').textContent=sAll.qd+'/5';
-      setPnl('f-pnl',s.pnl);
-      document.getElementById('f-trades').textContent=s.trades;
-      document.getElementById('f-wr').textContent=s.wr.toFixed(1)+'%';
-      fillSelect('fSymbol',all.map(r=>r.symbol));
-      fillSelect('fLeft',all.map(r=>r.leftEnv));
-      fillSelect('fRight',all.map(r=>r.rightEnv));
-      const dims=[['品種',r=>r.symbol],['左側環境',r=>r.leftEnv],['右側環境',r=>r.rightEnv],['等級',r=>r.grade],['LLM',r=>r.llm],['ABCD',r=>abcdOf(r)],['主動',r=>r.active],['被動',r=>r.passive],['工程',r=>r.engineering],['預設',r=>r.preset]];
+      setPnl('s-pnl',sAll.pnl); document.getElementById('s-trades').textContent=sAll.trades;
+      document.getElementById('s-wr').textContent=sAll.wr.toFixed(1)+'%'; document.getElementById('s-qd').textContent=sAll.qd+'/5';
+      setPnl('f-pnl',s.pnl); document.getElementById('f-trades').textContent=s.trades; document.getElementById('f-wr').textContent=s.wr.toFixed(1)+'%';
+      fillSelect('fSymbol',all.map(r=>r.symbol)); fillSelect('fLeft',all.map(r=>r.leftEnv)); fillSelect('fRight',all.map(r=>r.rightEnv));
+      const dims=[['品種',r=>r.symbol],['左側',r=>r.leftEnv],['右側',r=>r.rightEnv],['等級',r=>r.grade],['LLM',r=>r.llm],['ABCD',r=>abcdOf(r)],['≥3圖',r=>r.chartsOk]];
       document.getElementById('breakdown').innerHTML=dims.map(([title,fn])=>{
         const g=groupBy(all,fn); if(!g.length) return '';
         return `<div class="bd-item"><div class="k">${title}</div>`+g.map(x=>`<div>${x.k}: <b class="${x.pnl>=0?'positive':'negative'}">$${x.pnl.toFixed(1)}</b> · ${x.trades}筆 · ${x.wr.toFixed(0)}%</div>`).join('')+`</div>`;
       }).join('');
       const tb=document.getElementById('tbody');
       if(!data.length){tb.innerHTML='<tr><td colspan="10" class="empty">尚無紀錄</td></tr>';return;}
-      tb.innerHTML=data.map(r=>`<tr><td>${r.date}</td><td><span class="tag">${r.symbol||'-'}</span></td><td>${r.leftEnv||'-'}</td><td>${r.rightEnv||'-'}</td><td>${abcdOf(r)}</td><td>${r.grade||'-'}</td><td>${r.llm||'-'}</td><td class="${r.pnl>=0?'positive':'negative'}">${r.pnl>=0?'+':''}${Number(r.pnl).toFixed(1)}</td><td>${r.trades}/${r.wins}</td><td><button class="danger" style="padding:2px 6px;font-size:0.7rem" onclick="removeRecord('${r.id}')">刪</button></td></tr>`).join('');
+      tb.innerHTML=data.map(r=>`<tr>
+        <td>${r.date}</td><td><span class="tag">${r.symbol||'-'}</span></td>
+        <td>${r.leftEnv||'-'}</td><td>${r.rightEnv||'-'}</td><td>${abcdOf(r)}</td>
+        <td>${r.grade||'-'}</td><td>${r.llm||'-'}</td>
+        <td>${r.chartsOk||'-'}</td>
+        <td class="${r.pnl>=0?'positive':'negative'}">${r.pnl>=0?'+':''}${Number(r.pnl).toFixed(1)}</td>
+        <td><button class="danger" style="padding:2px 6px;font-size:0.7rem" onclick="removeRecord('${r.id}')">刪</button></td>
+      </tr>`).join('');
     }
     function addRecord(){
       const date=document.getElementById('date').value, pnl=document.getElementById('pnl').value, trades=document.getElementById('trades').value, wins=document.getElementById('wins').value;
@@ -185,26 +191,44 @@
       let n=0; [active,passive,engineering,preset].forEach(v=>{if(v==='Yes')n++});
       const abcd=n>=4?'2+2':n===3?'2+1':n>=1?'1+1':'—';
       const d=load();
-      d.push({id:Date.now().toString(),date,symbol:document.getElementById('symbol').value,leftEnv:document.getElementById('leftEnv').value,rightEnv:document.getElementById('rightEnv').value,active,passive,engineering,preset,abcd,grade:document.getElementById('grade').value,llm:document.getElementById('llm').value,pnl:Number(pnl),trades:Number(trades),wins:Number(wins),rr:document.getElementById('rr').value||''});
-      save(d); render(); ['pnl','trades','wins','rr'].forEach(i=>document.getElementById(i).value='');
+      d.push({
+        id:Date.now().toString(), date,
+        symbol:document.getElementById('symbol').value,
+        leftEnv:document.getElementById('leftEnv').value, rightEnv:document.getElementById('rightEnv').value,
+        active,passive,engineering,preset,abcd,
+        grade:document.getElementById('grade').value, llm:document.getElementById('llm').value,
+        llmRemark:document.getElementById('llmRemark').value,
+        chartHTF:document.getElementById('chartHTF').value, chartH4:document.getElementById('chartH4').value, chartH1:document.getElementById('chartH1').value,
+        chartsOk:document.getElementById('chartsOk').value,
+        pnl:Number(pnl), trades:Number(trades), wins:Number(wins), rr:document.getElementById('rr').value||''
+      });
+      save(d); render();
+      ['pnl','trades','wins','rr','llmRemark'].forEach(i=>document.getElementById(i).value='');
     }
     function removeRecord(id){if(!confirm('刪除？'))return;save(load().filter(r=>r.id!==id));render();}
     function importJSON(){
-      const t=prompt('貼上報告產生器複製的 JSON'); if(!t)return;
+      const t=prompt('貼上報告 JSON'); if(!t)return;
       try{
         const o=JSON.parse(t); let n=0; ['active','passive','engineering','preset'].forEach(k=>{if(o[k]==='Yes')n++});
         const abcd=o.abcd||(n>=4?'2+2':n===3?'2+1':n>=1?'1+1':'—');
         const d=load();
-        d.push({id:Date.now().toString(),date:o.date||new Date().toISOString().slice(0,10),symbol:o.symbol||'其他',leftEnv:o.leftEnv||'',rightEnv:o.rightEnv||'',active:o.active||'No',passive:o.passive||'No',engineering:o.engineering||'No',preset:o.preset||'No',abcd,grade:o.grade||'-',llm:o.llm||'未使用',pnl:Number(o.pnl)||0,trades:Number(o.trades)||0,wins:Number(o.wins)||0,rr:o.rr||''});
+        d.push({
+          id:Date.now().toString(), date:o.date||new Date().toISOString().slice(0,10),
+          symbol:o.symbol||'其他', leftEnv:o.leftEnv||'', rightEnv:o.rightEnv||'',
+          active:o.active||'No', passive:o.passive||'No', engineering:o.engineering||'No', preset:o.preset||'No', abcd,
+          grade:o.grade||'-', llm:o.llm||'未使用', llmRemark:o.llmRemark||'',
+          chartHTF:o.chartHTF||'No', chartH4:o.chartH4||'No', chartH1:o.chartH1||'No', chartsOk:o.chartsOk||'No',
+          pnl:Number(o.pnl)||0, trades:Number(o.trades)||0, wins:Number(o.wins)||0, rr:o.rr||''
+        });
         save(d); render(); alert('已匯入');
       }catch(e){alert('JSON 格式錯誤');}
     }
-    function exportData(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(load(),null,2)],{type:'application/json'}));a.download='apex-v1-performance.json';a.click();}
+    function exportData(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(load(),null,2)],{type:'application/json'}));a.download='apex-v1.1-performance.json';a.click();}
     function exportMarkdown(){
       const data=load().sort((a,b)=>a.date.localeCompare(b.date));
-      let md='# Apex Bootcamp v1.0 績效\n\n| 日期 | 品種 | 左 | 右 | ABCD | 等級 | LLM | PnL | 交易 | 勝 |\n|---|---|---|---|---|---|---|---|---|---|\n';
-      data.forEach(r=>{md+=`| ${r.date} | ${r.symbol} | ${r.leftEnv||'-'} | ${r.rightEnv||'-'} | ${abcdOf(r)} | ${r.grade} | ${r.llm} | ${r.pnl} | ${r.trades} | ${r.wins} |\n`;});
-      const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([md],{type:'text/markdown'}));a.download='daily-log-v1.md';a.click();
+      let md='# Apex Bootcamp v1.1\n\n| 日期 | 品種 | 左 | 右 | ABCD | 等級 | LLM | 圖 | PnL | Remark |\n|---|---|---|---|---|---|---|---|---|---|\n';
+      data.forEach(r=>{md+=`| ${r.date} | ${r.symbol} | ${r.leftEnv||'-'} | ${r.rightEnv||'-'} | ${abcdOf(r)} | ${r.grade} | ${r.llm} | ${r.chartsOk||'-'} | ${r.pnl} | ${(r.llmRemark||'').replace(/\|/g,'/')} |\n`;});
+      const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([md],{type:'text/markdown'}));a.download='daily-log-v1.1.md';a.click();
     }
     function clearData(){if(confirm('清空全部？')){localStorage.removeItem(KEY);render();}}
     document.getElementById('date').valueAsDate=new Date(); render();

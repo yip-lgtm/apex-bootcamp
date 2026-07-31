@@ -7,7 +7,7 @@
   <style>
     :root {
       --bg: #0f1115; --card: #1a1d24; --border: #2a2f3a; --text: #e6e8ec;
-      --muted: #9aa3b2; --accent: #3b82f6; --green: #22c55e; --red: #ef4444; --yellow: #eab308;
+      --muted: #9aa3b2; --accent: #3b82f6;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -58,15 +58,16 @@
       padding: 14px; white-space: pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
       font-size: 0.82rem; line-height: 1.5; min-height: 100px; margin-top: 6px;
     }
+    .hint { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
   </style>
 </head>
 <body>
   <h1>Apex 每日報告產生器</h1>
-  <p class="sub">Yes/No · A/B/C · 左右環境 · 主動/被動/工程/預設 · LLM · 產生後可餵給儀表板分析</p>
+  <p class="sub">左右環境 = 策略｜主動/被動/工程/預設｜A/B/C｜LLM｜一次填寫</p>
 
   <div class="card">
     <h2>基本資訊</h2>
-    <div class="grid3">
+    <div class="grid2">
       <div class="row"><label class="title">日期</label><input type="date" id="date" /></div>
       <div class="row">
         <label class="title">品種</label>
@@ -75,13 +76,6 @@
           <option>MGC</option><option>SIL</option><option>MCL</option>
           <option>MBT</option><option>MET</option><option>M6E</option><option>M6A</option>
           <option>6J</option><option>其他</option>
-        </select>
-      </div>
-      <div class="row">
-        <label class="title">策略</label>
-        <select id="strategy">
-          <option>套杀</option><option>左右環境</option><option>AMD</option><option>突破</option>
-          <option>SMT</option><option>NDOG/NWOG</option><option>三驱动</option><option>其他</option>
         </select>
       </div>
     </div>
@@ -101,7 +95,8 @@
   </div>
 
   <div class="card">
-    <h2>3. Setup 判定（左右 + 主動被動工程預設 + LLM）</h2>
+    <h2>3. Setup（左右 = 策略）</h2>
+    <p class="hint">左側交易範圍環境 + 右側蠟燭形成環境，即為當日策略，無需另填策略欄。</p>
     <div class="row">
       <label class="title">左側環境</label>
       <select id="leftEnv">
@@ -167,17 +162,23 @@
     }
     function id(i) { return document.getElementById(i).value || '—'; }
 
+    function countYes() {
+      let n = 0;
+      ['active','passive','engineering','preset'].forEach(k => { if (val(k) === 'Yes') n++; });
+      return n;
+    }
+
     function buildObj() {
+      const c = countYes();
+      const abcd = c >= 4 ? '2+2' : c === 3 ? '2+1' : c >= 1 ? '1+1' : '—';
       return {
-        date: id('date'),
-        symbol: id('symbol'),
-        strategy: id('strategy'),
+        date: id('date'), symbol: id('symbol'),
         news: val('news'), bias: val('bias'), kz: val('kz'),
         size: val('size'), dailysl: val('dailysl'),
         leftEnv: id('leftEnv'), rightEnv: id('rightEnv'),
         active: val('active'), passive: val('passive'),
         engineering: val('engineering'), preset: val('preset'),
-        grade: val('grade'), llm: val('llm'), traded: val('traded'),
+        abcd, grade: val('grade'), llm: val('llm'), traded: val('traded'),
         pnl: id('pnl'), trades: id('trades'), wins: id('wins'), rr: id('rr'),
         winrate: id('winrate'), qualified: id('qualified'),
         qualifiedDay: val('qualifiedDay'), violate: val('violate'), notes: id('notes')
@@ -186,10 +187,9 @@
 
     function generateReport() {
       const o = buildObj();
-      const report = `【Apex 每日報告】
+      document.getElementById('report').textContent = `【Apex 每日報告】
 日期：${o.date}
 品種：${o.symbol}
-策略：${o.strategy}
 
 一、開盤前準備
 - 高影響新聞檢查：${o.news}
@@ -200,10 +200,11 @@
 - 最多1~2張限制：${o.size}
 - Daily SL $100 未觸及：${o.dailysl}
 
-三、Setup 判定
+三、Setup（左右 = 策略）
 - 左側環境：${o.leftEnv}
 - 右側環境：${o.rightEnv}
 - 主動：${o.active}｜被動：${o.passive}｜工程：${o.engineering}｜預設：${o.preset}
+- ABCD：${o.abcd}
 - 最終等級：${o.grade}
 - LLM 判斷：${o.llm}
 - 是否執行交易：${o.traded}
@@ -224,8 +225,7 @@
 ---
 同步確認：
 [ ] 已更新 Notion
-[ ] 已更新 GitHub / 儀表板`;
-      document.getElementById('report').textContent = report;
+[ ] 已更新儀表板`;
     }
 
     function copyReport() {
@@ -237,14 +237,14 @@
       o.trades = Number(o.trades) || 0;
       o.wins = Number(o.wins) || 0;
       o.rr = o.rr === '—' ? '' : o.rr;
-      navigator.clipboard.writeText(JSON.stringify(o, null, 2)).then(() => alert('JSON 已複製，可匯入儀表板分析'));
+      navigator.clipboard.writeText(JSON.stringify(o, null, 2)).then(() => alert('JSON 已複製'));
     }
     function resetForm() {
       if (!confirm('確定清空？')) return;
       document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
       document.querySelectorAll('input[type="number"], input[type="text"], textarea').forEach(el => el.value = '');
       document.getElementById('date').valueAsDate = new Date();
-      ['symbol','strategy','leftEnv','rightEnv'].forEach(i => document.getElementById(i).selectedIndex = 0);
+      ['symbol','leftEnv','rightEnv'].forEach(i => document.getElementById(i).selectedIndex = 0);
       document.getElementById('report').textContent = '填寫上方選項後點「產生報告」';
     }
   </script>

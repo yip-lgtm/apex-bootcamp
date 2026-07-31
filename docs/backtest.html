@@ -14,22 +14,21 @@
     h1{font-size:1.3rem}
     .ver{display:inline-block;background:#3b1f1f;color:#fca5a5;font-size:0.72rem;padding:2px 8px;border-radius:6px;margin-left:6px}
     .sub{color:var(--muted);font-size:0.82rem;margin:4px 0 14px}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:12px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin-bottom:12px}
     .stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center}
-    .stat .label{color:var(--muted);font-size:0.68rem}
-    .stat .value{font-size:1.05rem;font-weight:700}
+    .stat .label{color:var(--muted);font-size:0.66rem}
+    .stat .value{font-size:1.02rem;font-weight:700}
     .positive{color:var(--green)}.negative{color:var(--red)}
     .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px}
     .card h2{font-size:0.92rem;color:var(--blue);margin-bottom:10px;border-bottom:1px solid var(--border);padding-bottom:5px}
     label{display:block;font-size:0.75rem;color:var(--muted);margin-bottom:3px}
-    input,select,textarea{width:100%;background:#1e2530;border:1px solid var(--border);color:var(--text);padding:7px 9px;border-radius:8px;font-size:0.84rem;margin-bottom:8px}
-    textarea{min-height:52px;resize:vertical}
+    input,select{width:100%;background:#1e2530;border:1px solid var(--border);color:var(--text);padding:7px 9px;border-radius:8px;font-size:0.84rem;margin-bottom:8px}
     .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
     .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
     .row4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}
     button{background:var(--blue);color:#fff;border:none;padding:8px 12px;border-radius:8px;font-weight:600;cursor:pointer;font-size:0.84rem;margin:3px 4px 3px 0}
     button.secondary{background:#334155}button.danger{background:var(--red)}
-    table{width:100%;border-collapse:collapse;font-size:0.7rem}
+    table{width:100%;border-collapse:collapse;font-size:0.68rem}
     th,td{padding:6px 3px;border-bottom:1px solid var(--border);text-align:left}
     th{color:var(--muted)}
     .empty{color:var(--muted);text-align:center;padding:16px}
@@ -37,24 +36,27 @@
     .hint{font-size:0.78rem;color:var(--muted);margin-bottom:8px}
     .live{font-size:0.75rem;color:#fca5a5;margin-bottom:8px}
     .tag{display:inline-block;padding:1px 5px;border-radius:4px;background:#1e293b;font-size:0.68rem}
+    .auto{color:#86efac;font-size:0.72rem}
     @media(max-width:700px){.row2,.row3,.row4{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
   <h1>Apex Backtest 追蹤 <span class="ver">Backtest</span></h1>
-  <p class="sub">主動/被動/工程/預設 · LLM rank · Remark · <a class="chart" href="./index.html">← 實盤</a></p>
+  <p class="sub">自動計算 勝率 / RR / 盈利因子 · <a class="chart" href="./index.html">← 實盤</a></p>
 
   <div class="grid">
     <div class="stat"><div class="label">回測次數</div><div class="value" id="s-n">0</div></div>
     <div class="stat"><div class="label">淨利合計 $</div><div class="value" id="s-pnl">$0</div></div>
     <div class="stat"><div class="label">最大回撤 $</div><div class="value" id="s-dd">$0</div></div>
     <div class="stat"><div class="label">平均勝率 %</div><div class="value" id="s-wr">0%</div></div>
+    <div class="stat"><div class="label">平均 RR</div><div class="value" id="s-rr">—</div></div>
     <div class="stat"><div class="label">平均盈利因子</div><div class="value" id="s-pf">0</div></div>
     <div class="stat"><div class="label">最佳淨利</div><div class="value" id="s-best">$0</div></div>
   </div>
 
   <div class="card">
     <h2>新增 / 匯入</h2>
+    <p class="hint">填「平均單筆盈利 / 平均單筆虧損」後，<span class="auto">RR 與盈利因子自動算出</span>。也可手動覆蓋 PF（例如直接抄 TradingView）。</p>
     <div class="row3">
       <div><label>日期</label><input type="date" id="date"/></div>
       <div><label>品種</label><select id="symbol"><option>MNQ</option><option>MES</option><option>其他</option></select></div>
@@ -71,20 +73,26 @@
       <div><label>預設</label><select id="preset"><option>Yes</option><option>No</option></select></div>
     </div>
     <div class="row4">
-      <div><label>淨利 $</label><input type="number" id="netProfit" step="0.01" oninput="previewBT()"/></div>
-      <div><label>最大回撤 $</label><input type="number" id="maxDD" step="0.01" oninput="previewBT()"/></div>
-      <div><label>交易數</label><input type="number" id="trades" oninput="autoWR()"/></div>
-      <div><label>盈利數</label><input type="number" id="wins" oninput="autoWR()"/></div>
+      <div><label>淨利 $</label><input type="number" id="netProfit" step="0.01" oninput="recalc()"/></div>
+      <div><label>最大回撤 $</label><input type="number" id="maxDD" step="0.01" oninput="recalc()"/></div>
+      <div><label>交易數</label><input type="number" id="trades" oninput="recalc()"/></div>
+      <div><label>盈利數</label><input type="number" id="wins" oninput="recalc()"/></div>
     </div>
     <div class="row4">
-      <div><label>勝率 %（可自動）</label><input type="number" id="winRate" step="0.1"/></div>
-      <div><label>盈利因子</label><input type="number" id="profitFactor" step="0.01"/></div>
+      <div><label>平均單筆盈利 $</label><input type="number" id="avgWin" step="0.01" placeholder="例如 120" oninput="recalc()"/></div>
+      <div><label>平均單筆虧損 $</label><input type="number" id="avgLoss" step="0.01" placeholder="例如 50" oninput="recalc()"/></div>
+      <div><label>RR（自動）</label><input type="number" id="rr" step="0.01" readonly style="opacity:0.9"/></div>
+      <div><label>盈利因子（自動/可改）</label><input type="number" id="profitFactor" step="0.01" oninput="pfManual=true;recalc()"/></div>
+    </div>
+    <div class="row4">
+      <div><label>勝率 %（自動）</label><input type="number" id="winRate" step="0.1" readonly style="opacity:0.9"/></div>
       <div><label>LLM rank</label><select id="llm"><option>A</option><option>B</option><option>C</option><option>未使用</option></select></div>
       <div><label>結果圖連結</label><input type="url" id="linkResult"/></div>
+      <div><label>腳本名</label><input type="text" id="scriptName"/></div>
     </div>
     <div class="row2">
-      <div><label>腳本名</label><input type="text" id="scriptName"/></div>
       <div><label>LLM Remark</label><input type="text" id="llmRemark" placeholder="LLM 結論 / 優化建議"/></div>
+      <div></div>
     </div>
     <p class="live" id="livePreview">預覽：—</p>
     <button onclick="addRecord()">新增</button>
@@ -109,18 +117,18 @@
       <thead>
         <tr>
           <th>日期</th><th>品種</th><th>左</th><th>右</th>
-          <th>主</th><th>被</th><th>工</th><th>預</th>
           <th>ABCD</th><th>LLM</th>
-          <th>淨利</th><th>回撤</th><th>勝率</th><th>PF</th>
+          <th>淨利</th><th>回撤</th><th>勝率</th><th>RR</th><th>PF</th>
           <th>Remark</th><th>圖</th><th></th>
         </tr>
       </thead>
-      <tbody id="tbody"><tr><td colspan="17" class="empty">尚無紀錄</td></tr></tbody>
+      <tbody id="tbody"><tr><td colspan="14" class="empty">尚無紀錄</td></tr></tbody>
     </table>
   </div>
 
   <script>
-    const KEY='apex_bt_v11c';
+    const KEY='apex_bt_v11d';
+    let pfManual=false;
     const load=()=>{try{return JSON.parse(localStorage.getItem(KEY))||[]}catch{return[]}};
     const save=d=>localStorage.setItem(KEY,JSON.stringify(d));
 
@@ -132,20 +140,41 @@
       return n>=4?'2+2':n===3?'2+1':n>=1?'1+1':'—';
     }
 
-    function autoWR(){
-      const t=Number(document.getElementById('trades').value)||0;
-      const w=Number(document.getElementById('wins').value)||0;
-      if(t>0) document.getElementById('winRate').value=(w/t*100).toFixed(1);
-      previewBT();
+    function calcDerived(trades, wins, avgWin, avgLoss){
+      const t=Number(trades)||0, w=Number(wins)||0;
+      const losses=Math.max(0, t-w);
+      const aw=Number(avgWin)||0, al=Math.abs(Number(avgLoss)||0);
+      const wr=t>0?(w/t*100):0;
+      const rr=(aw>0&&al>0)?(aw/al):null;
+      let pf=null;
+      if(aw>0&&al>0&&losses>0){
+        pf=(w*aw)/(losses*al);
+      } else if(aw>0&&al>0&&losses===0&&w>0){
+        pf=999; // 無虧損
+      }
+      return {wr, rr, pf, losses};
     }
-    function previewBT(){
+
+    function recalc(){
+      const trades=document.getElementById('trades').value;
+      const wins=document.getElementById('wins').value;
+      const avgWin=document.getElementById('avgWin').value;
+      const avgLoss=document.getElementById('avgLoss').value;
+      const d=calcDerived(trades, wins, avgWin, avgLoss);
+
+      document.getElementById('winRate').value=d.wr?d.wr.toFixed(1):'';
+      document.getElementById('rr').value=d.rr!=null?d.rr.toFixed(2):'';
+
+      if(!pfManual){
+        document.getElementById('profitFactor').value=d.pf!=null?(d.pf>=999?'999':d.pf.toFixed(2)):'';
+      }
+
       const np=document.getElementById('netProfit').value;
       const dd=document.getElementById('maxDD').value;
-      const wr=document.getElementById('winRate').value;
       const pf=document.getElementById('profitFactor').value;
-      const llm=document.getElementById('llm').value;
+      const rr=document.getElementById('rr').value;
       document.getElementById('livePreview').textContent=
-        `預覽 → 淨利 $${np||0} · 回撤 $${dd||0} · 勝率 ${wr||0}% · PF ${pf||0} · LLM ${llm}`;
+        `自動 → 勝率 ${d.wr?d.wr.toFixed(1):'—'}% · RR ${rr||'—'} · PF ${pf||'—'} · 淨利 $${np||0} · 回撤 $${dd||0}`;
     }
 
     function filtered(){
@@ -169,7 +198,10 @@
       const sumPnl=all.reduce((s,r)=>s+(Number(r.netProfit)||0),0);
       const maxDD=all.reduce((m,r)=>Math.max(m,Number(r.maxDD)||0),0);
       const avgWr=all.length?all.reduce((s,r)=>s+(Number(r.winRate)||0),0)/all.length:0;
-      const avgPf=all.length?all.reduce((s,r)=>s+(Number(r.profitFactor)||0),0)/all.length:0;
+      const rrList=all.map(r=>Number(r.rr)).filter(x=>!isNaN(x)&&x>0);
+      const avgRr=rrList.length?rrList.reduce((a,b)=>a+b,0)/rrList.length:null;
+      const pfList=all.map(r=>Number(r.profitFactor)).filter(x=>!isNaN(x)&&x>0&&x<999);
+      const avgPf=pfList.length?pfList.reduce((a,b)=>a+b,0)/pfList.length:0;
       const best=all.reduce((m,r)=>Math.max(m,Number(r.netProfit)||-Infinity),all.length?0:0);
 
       const pnlEl=document.getElementById('s-pnl');
@@ -177,29 +209,27 @@
       pnlEl.className='value '+(sumPnl>=0?'positive':'negative');
       document.getElementById('s-dd').textContent='$'+maxDD.toFixed(1);
       document.getElementById('s-wr').textContent=avgWr.toFixed(1)+'%';
+      document.getElementById('s-rr').textContent=avgRr!=null?avgRr.toFixed(2):'—';
       document.getElementById('s-pf').textContent=avgPf.toFixed(2);
       const bestEl=document.getElementById('s-best');
       bestEl.textContent=(best>=0?'+':'')+'$'+(isFinite(best)?best.toFixed(1):'0');
       bestEl.className='value '+(best>=0?'positive':'negative');
 
       const tb=document.getElementById('tbody');
-      if(!data.length){tb.innerHTML='<tr><td colspan="17" class="empty">尚無紀錄</td></tr>';return;}
+      if(!data.length){tb.innerHTML='<tr><td colspan="14" class="empty">尚無紀錄</td></tr>';return;}
       tb.innerHTML=data.map(r=>`<tr>
         <td>${r.date}</td>
         <td>${r.symbol}</td>
         <td>${r.leftEnv||'-'}</td>
         <td>${r.rightEnv||'-'}</td>
-        <td>${r.active||'-'}</td>
-        <td>${r.passive||'-'}</td>
-        <td>${r.engineering||'-'}</td>
-        <td>${r.preset||'-'}</td>
         <td><span class="tag">${abcdOf(r)}</span></td>
         <td>${r.llm||'-'}</td>
         <td class="${Number(r.netProfit)>=0?'positive':'negative'}">${Number(r.netProfit).toFixed(1)}</td>
         <td>${Number(r.maxDD||0).toFixed(1)}</td>
         <td>${r.winRate!=null?Number(r.winRate).toFixed(1):'-'}%</td>
+        <td>${r.rr!=null&&r.rr!==''?Number(r.rr).toFixed(2):'-'}</td>
         <td>${r.profitFactor!=null?Number(r.profitFactor).toFixed(2):'-'}</td>
-        <td title="${(r.llmRemark||'').replace(/"/g,'')}">${(r.llmRemark||'-').slice(0,20)}${(r.llmRemark||'').length>20?'…':''}</td>
+        <td title="${(r.llmRemark||'').replace(/"/g,'')}">${(r.llmRemark||'-').slice(0,18)}${(r.llmRemark||'').length>18?'…':''}</td>
         <td>${r.linkResult?`<a class="chart" href="${r.linkResult}" target="_blank">開</a>`:'-'}</td>
         <td><button class="danger" style="padding:2px 6px;font-size:0.7rem" onclick="removeRecord('${r.id}')">刪</button></td>
       </tr>`).join('');
@@ -209,18 +239,22 @@
       const date=document.getElementById('date').value;
       const np=document.getElementById('netProfit').value;
       if(!date||np===''){alert('請填日期與淨利');return;}
+      recalc();
       const trades=Number(document.getElementById('trades').value)||0;
       const wins=Number(document.getElementById('wins').value)||0;
-      let wr=Number(document.getElementById('winRate').value);
-      if((!wr||isNaN(wr))&&trades>0) wr=wins/trades*100;
+      const avgWin=Number(document.getElementById('avgWin').value)||0;
+      const avgLoss=Number(document.getElementById('avgLoss').value)||0;
+      const d0=calcDerived(trades,wins,avgWin,avgLoss);
       const active=document.getElementById('active').value;
       const passive=document.getElementById('passive').value;
       const engineering=document.getElementById('engineering').value;
       const preset=document.getElementById('preset').value;
       let n=0; [active,passive,engineering,preset].forEach(v=>{if(v==='Yes')n++});
       const abcd=n>=4?'2+2':n===3?'2+1':n>=1?'1+1':'—';
-      const d=load();
-      d.push({
+      const pfVal=Number(document.getElementById('profitFactor').value)||0;
+      const rrVal=Number(document.getElementById('rr').value)||null;
+      const data=load();
+      data.push({
         id:Date.now().toString(), date,
         symbol:document.getElementById('symbol').value,
         timeframe:document.getElementById('timeframe').value,
@@ -229,15 +263,18 @@
         active, passive, engineering, preset, abcd,
         netProfit:Number(np),
         maxDD:Number(document.getElementById('maxDD').value)||0,
-        trades, wins, winRate:wr||0,
-        profitFactor:Number(document.getElementById('profitFactor').value)||0,
+        trades, wins, avgWin, avgLoss,
+        winRate:d0.wr||0,
+        rr:rrVal,
+        profitFactor:pfVal,
         llm:document.getElementById('llm').value,
         llmRemark:document.getElementById('llmRemark').value.trim(),
         linkResult:document.getElementById('linkResult').value.trim(),
         scriptName:document.getElementById('scriptName').value
       });
-      save(d); render();
-      ['netProfit','maxDD','winRate','profitFactor','trades','wins','linkResult','scriptName','llmRemark'].forEach(i=>document.getElementById(i).value='');
+      save(data); render();
+      ['netProfit','maxDD','trades','wins','avgWin','avgLoss','winRate','rr','profitFactor','linkResult','scriptName','llmRemark'].forEach(i=>document.getElementById(i).value='');
+      pfManual=false;
       document.getElementById('livePreview').textContent='預覽：—';
     }
 
@@ -248,8 +285,11 @@
       try{
         const o=JSON.parse(t);
         const trades=Number(o.trades)||0, wins=Number(o.wins)||0;
-        let wr=Number(o.winRate);
-        if((!wr||isNaN(wr))&&trades>0) wr=wins/trades*100;
+        const avgWin=Number(o.avgWin)||0, avgLoss=Number(o.avgLoss)||0;
+        const d0=calcDerived(trades,wins,avgWin,avgLoss);
+        let wr=Number(o.winRate); if((!wr||isNaN(wr))&&d0.wr) wr=d0.wr;
+        let rr=Number(o.rr); if((!rr||isNaN(rr))&&d0.rr) rr=d0.rr;
+        let pf=Number(o.profitFactor); if((!pf||isNaN(pf))&&d0.pf) pf=d0.pf;
         const active=o.active||'No', passive=o.passive||'No', engineering=o.engineering||'No', preset=o.preset||'No';
         let n=0; [active,passive,engineering,preset].forEach(v=>{if(v==='Yes')n++});
         const abcd=o.abcd||(n>=4?'2+2':n===3?'2+1':n>=1?'1+1':'—');
@@ -261,8 +301,8 @@
           leftEnv:o.leftEnv||'', rightEnv:o.rightEnv||'',
           active, passive, engineering, preset, abcd,
           netProfit:Number(o.netProfit)||0, maxDD:Number(o.maxDD)||0,
-          trades, wins, winRate:wr||0,
-          profitFactor:Number(o.profitFactor)||0,
+          trades, wins, avgWin, avgLoss,
+          winRate:wr||0, rr:rr||null, profitFactor:pf||0,
           llm:o.llm||'未使用', llmRemark:o.llmRemark||'',
           linkResult:o.linkResult||'', scriptName:o.scriptName||''
         });

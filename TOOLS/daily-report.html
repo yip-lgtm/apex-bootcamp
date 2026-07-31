@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Apex 每日報告產生器</title>
+  <title>Apex 每日報告產生器 v1.0</title>
   <style>
     :root {
       --bg: #0f1115; --card: #1a1d24; --border: #2a2f3a; --text: #e6e8ec;
@@ -16,6 +16,7 @@
       padding: 20px; max-width: 900px; margin: 0 auto;
     }
     h1 { font-size: 1.45rem; margin-bottom: 6px; }
+    .ver{display:inline-block;background:#1e3a5f;color:#93c5fd;font-size:0.75rem;padding:2px 8px;border-radius:6px;margin-left:6px;vertical-align:middle}
     .sub { color: var(--muted); margin-bottom: 20px; font-size: 0.88rem; }
     .card {
       background: var(--card); border: 1px solid var(--border);
@@ -41,9 +42,8 @@
     }
     textarea { max-width: 100%; min-height: 64px; resize: vertical; }
     .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
     @media (max-width: 640px) {
-      .grid2, .grid3 { grid-template-columns: 1fr; }
+      .grid2 { grid-template-columns: 1fr; }
       .row label.title { min-width: 100%; }
     }
     .btns { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0 8px; }
@@ -62,7 +62,7 @@
   </style>
 </head>
 <body>
-  <h1>Apex 每日報告產生器</h1>
+  <h1>Apex 每日報告產生器 <span class="ver">v1.0</span></h1>
   <p class="sub">左右環境 = 策略｜主動/被動/工程/預設｜A/B/C｜LLM｜一次填寫</p>
 
   <div class="card">
@@ -96,7 +96,7 @@
 
   <div class="card">
     <h2>3. Setup（左右 = 策略）</h2>
-    <p class="hint">左側交易範圍環境 + 右側蠟燭形成環境，即為當日策略，無需另填策略欄。</p>
+    <p class="hint">左側 + 右側即為策略，無需另填策略欄。</p>
     <div class="row">
       <label class="title">左側環境</label>
       <select id="leftEnv">
@@ -161,13 +161,11 @@
       return el ? el.value : '—';
     }
     function id(i) { return document.getElementById(i).value || '—'; }
-
     function countYes() {
       let n = 0;
       ['active','passive','engineering','preset'].forEach(k => { if (val(k) === 'Yes') n++; });
       return n;
     }
-
     function buildObj() {
       const c = countYes();
       const abcd = c >= 4 ? '2+2' : c === 3 ? '2+1' : c >= 1 ? '1+1' : '—';
@@ -184,10 +182,9 @@
         qualifiedDay: val('qualifiedDay'), violate: val('violate'), notes: id('notes')
       };
     }
-
     function generateReport() {
       const o = buildObj();
-      document.getElementById('report').textContent = `【Apex 每日報告】
+      document.getElementById('report').textContent = `【Apex Bootcamp v1.0 每日報告】
 日期：${o.date}
 品種：${o.symbol}
 
@@ -220,14 +217,8 @@
 
 五、複盤
 - 是否違反規則：${o.violate}
-- 備註：${o.notes}
-
----
-同步確認：
-[ ] 已更新 Notion
-[ ] 已更新儀表板`;
+- 備註：${o.notes}`;
     }
-
     function copyReport() {
       navigator.clipboard.writeText(document.getElementById('report').textContent).then(() => alert('報告已複製'));
     }

@@ -23,6 +23,7 @@
     .card h2{font-size:0.92rem;color:var(--blue);margin-bottom:10px;border-bottom:1px solid var(--border);padding-bottom:5px}
     label{display:block;font-size:0.75rem;color:var(--muted);margin-bottom:3px}
     input,select{width:100%;background:#1e2530;border:1px solid var(--border);color:var(--text);padding:7px 9px;border-radius:8px;font-size:0.84rem;margin-bottom:8px}
+    input[readonly]{opacity:0.95;border-color:#3b82f6}
     .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
     .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
     .row4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}
@@ -34,15 +35,15 @@
     .empty{color:var(--muted);text-align:center;padding:16px}
     a.chart{color:#93c5fd;text-decoration:none}
     .hint{font-size:0.78rem;color:var(--muted);margin-bottom:8px}
-    .live{font-size:0.75rem;color:#fca5a5;margin-bottom:8px}
+    .live{font-size:0.75rem;color:#86efac;margin-bottom:8px}
     .tag{display:inline-block;padding:1px 5px;border-radius:4px;background:#1e293b;font-size:0.68rem}
-    .auto{color:#86efac;font-size:0.72rem}
+    .auto{color:#86efac}
     @media(max-width:700px){.row2,.row3,.row4{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
   <h1>Apex Backtest 追蹤 <span class="ver">Backtest</span></h1>
-  <p class="sub">自動計算 勝率 / RR / 盈利因子 · <a class="chart" href="./index.html">← 實盤</a></p>
+  <p class="sub">固定風險 <b>$100</b>/筆 → 自動 RR / PF · <a class="chart" href="./index.html">← 實盤</a></p>
 
   <div class="grid">
     <div class="stat"><div class="label">回測次數</div><div class="value" id="s-n">0</div></div>
@@ -56,7 +57,7 @@
 
   <div class="card">
     <h2>新增 / 匯入</h2>
-    <p class="hint">填「平均單筆盈利 / 平均單筆虧損」後，<span class="auto">RR 與盈利因子自動算出</span>。也可手動覆蓋 PF（例如直接抄 TradingView）。</p>
+    <p class="hint">預設每筆風險 <span class="auto">$100</span>。填「淨利 + 交易數 + 盈利數」即可自動算出 RR、PF、均盈。</p>
     <div class="row3">
       <div><label>日期</label><input type="date" id="date"/></div>
       <div><label>品種</label><select id="symbol"><option>MNQ</option><option>MES</option><option>其他</option></select></div>
@@ -79,22 +80,22 @@
       <div><label>盈利數</label><input type="number" id="wins" oninput="recalc()"/></div>
     </div>
     <div class="row4">
-      <div><label>平均單筆盈利 $</label><input type="number" id="avgWin" step="0.01" placeholder="例如 120" oninput="recalc()"/></div>
-      <div><label>平均單筆虧損 $</label><input type="number" id="avgLoss" step="0.01" placeholder="例如 50" oninput="recalc()"/></div>
-      <div><label>RR（自動）</label><input type="number" id="rr" step="0.01" readonly style="opacity:0.9"/></div>
-      <div><label>盈利因子（自動/可改）</label><input type="number" id="profitFactor" step="0.01" oninput="pfManual=true;recalc()"/></div>
+      <div><label>單筆風險 $（預設100）</label><input type="number" id="riskPerTrade" step="1" value="100" oninput="recalc()"/></div>
+      <div><label>勝率 %（自動）</label><input type="number" id="winRate" step="0.1" readonly/></div>
+      <div><label>RR（自動）</label><input type="number" id="rr" step="0.01" readonly/></div>
+      <div><label>盈利因子 PF（自動）</label><input type="number" id="profitFactor" step="0.01" readonly/></div>
     </div>
     <div class="row4">
-      <div><label>勝率 %（自動）</label><input type="number" id="winRate" step="0.1" readonly style="opacity:0.9"/></div>
+      <div><label>推算均盈 $（自動）</label><input type="number" id="avgWin" step="0.01" readonly/></div>
+      <div><label>均虧 $（=風險）</label><input type="number" id="avgLoss" step="0.01" readonly/></div>
       <div><label>LLM rank</label><select id="llm"><option>A</option><option>B</option><option>C</option><option>未使用</option></select></div>
       <div><label>結果圖連結</label><input type="url" id="linkResult"/></div>
-      <div><label>腳本名</label><input type="text" id="scriptName"/></div>
     </div>
     <div class="row2">
+      <div><label>腳本名</label><input type="text" id="scriptName"/></div>
       <div><label>LLM Remark</label><input type="text" id="llmRemark" placeholder="LLM 結論 / 優化建議"/></div>
-      <div></div>
     </div>
-    <p class="live" id="livePreview">預覽：—</p>
+    <p class="live" id="livePreview">填淨利 / 交易數 / 盈利數 → 自動算 RR、PF</p>
     <button onclick="addRecord()">新增</button>
     <button class="secondary" onclick="importJSON()">貼上 JSON 匯入</button>
     <button class="secondary" onclick="exportData()">匯出</button>
@@ -127,8 +128,7 @@
   </div>
 
   <script>
-    const KEY='apex_bt_v11d';
-    let pfManual=false;
+    const KEY='apex_bt_v11e';
     const load=()=>{try{return JSON.parse(localStorage.getItem(KEY))||[]}catch{return[]}};
     const save=d=>localStorage.setItem(KEY,JSON.stringify(d));
 
@@ -140,41 +140,61 @@
       return n>=4?'2+2':n===3?'2+1':n>=1?'1+1':'—';
     }
 
-    function calcDerived(trades, wins, avgWin, avgLoss){
-      const t=Number(trades)||0, w=Number(wins)||0;
+    /**
+     * 固定風險模型（Apex Daily SL 對齊）
+     * avgLoss = riskPerTrade（預設 $100）
+     * netProfit = wins*avgWin - losses*risk
+     * avgWin = (netProfit + losses*risk) / wins
+     * RR = avgWin / risk
+     * PF = (wins*avgWin) / (losses*risk)
+     */
+    function calcFromFixedRisk(netProfit, trades, wins, risk){
+      const t=Number(trades)||0;
+      const w=Number(wins)||0;
+      const np=Number(netProfit);
+      const r=Number(risk)>0?Number(risk):100;
       const losses=Math.max(0, t-w);
-      const aw=Number(avgWin)||0, al=Math.abs(Number(avgLoss)||0);
       const wr=t>0?(w/t*100):0;
-      const rr=(aw>0&&al>0)?(aw/al):null;
-      let pf=null;
-      if(aw>0&&al>0&&losses>0){
-        pf=(w*aw)/(losses*al);
-      } else if(aw>0&&al>0&&losses===0&&w>0){
-        pf=999; // 無虧損
+
+      let avgWin=null, rr=null, pf=null;
+
+      if(w>0 && !isNaN(np)){
+        avgWin=(np + losses*r) / w;
+        if(avgWin>0){
+          rr=avgWin / r;
+          if(losses>0){
+            pf=(w*avgWin) / (losses*r);
+          } else {
+            pf=999; // 無虧損單
+          }
+        }
+      } else if(w===0 && t>0 && !isNaN(np)){
+        // 全虧
+        avgWin=0;
+        rr=0;
+        pf=0;
       }
-      return {wr, rr, pf, losses};
+
+      return {wr, avgWin, avgLoss:r, rr, pf, losses, risk:r};
     }
 
     function recalc(){
+      const np=document.getElementById('netProfit').value;
       const trades=document.getElementById('trades').value;
       const wins=document.getElementById('wins').value;
-      const avgWin=document.getElementById('avgWin').value;
-      const avgLoss=document.getElementById('avgLoss').value;
-      const d=calcDerived(trades, wins, avgWin, avgLoss);
+      const risk=document.getElementById('riskPerTrade').value || 100;
+      const d=calcFromFixedRisk(np, trades, wins, risk);
 
       document.getElementById('winRate').value=d.wr?d.wr.toFixed(1):'';
+      document.getElementById('avgLoss').value=d.avgLoss;
+      document.getElementById('avgWin').value=d.avgWin!=null?d.avgWin.toFixed(2):'';
       document.getElementById('rr').value=d.rr!=null?d.rr.toFixed(2):'';
+      document.getElementById('profitFactor').value=
+        d.pf==null?'':(d.pf>=999?'999':d.pf.toFixed(2));
 
-      if(!pfManual){
-        document.getElementById('profitFactor').value=d.pf!=null?(d.pf>=999?'999':d.pf.toFixed(2)):'';
-      }
-
-      const np=document.getElementById('netProfit').value;
       const dd=document.getElementById('maxDD').value;
-      const pf=document.getElementById('profitFactor').value;
-      const rr=document.getElementById('rr').value;
       document.getElementById('livePreview').textContent=
-        `自動 → 勝率 ${d.wr?d.wr.toFixed(1):'—'}% · RR ${rr||'—'} · PF ${pf||'—'} · 淨利 $${np||0} · 回撤 $${dd||0}`;
+        `自動(風險$${d.risk}/筆) → 勝率 ${d.wr?d.wr.toFixed(1):'—'}% · RR ${d.rr!=null?d.rr.toFixed(2):'—'} · PF ${d.pf!=null?(d.pf>=999?'∞':d.pf.toFixed(2)):'—'} · 均盈 $${d.avgWin!=null?d.avgWin.toFixed(1):'—'} · 淨利 $${np||0} · 回撤 $${dd||0}`;
     }
 
     function filtered(){
@@ -242,17 +262,14 @@
       recalc();
       const trades=Number(document.getElementById('trades').value)||0;
       const wins=Number(document.getElementById('wins').value)||0;
-      const avgWin=Number(document.getElementById('avgWin').value)||0;
-      const avgLoss=Number(document.getElementById('avgLoss').value)||0;
-      const d0=calcDerived(trades,wins,avgWin,avgLoss);
+      const risk=Number(document.getElementById('riskPerTrade').value)||100;
+      const d0=calcFromFixedRisk(np, trades, wins, risk);
       const active=document.getElementById('active').value;
       const passive=document.getElementById('passive').value;
       const engineering=document.getElementById('engineering').value;
       const preset=document.getElementById('preset').value;
       let n=0; [active,passive,engineering,preset].forEach(v=>{if(v==='Yes')n++});
       const abcd=n>=4?'2+2':n===3?'2+1':n>=1?'1+1':'—';
-      const pfVal=Number(document.getElementById('profitFactor').value)||0;
-      const rrVal=Number(document.getElementById('rr').value)||null;
       const data=load();
       data.push({
         id:Date.now().toString(), date,
@@ -263,19 +280,21 @@
         active, passive, engineering, preset, abcd,
         netProfit:Number(np),
         maxDD:Number(document.getElementById('maxDD').value)||0,
-        trades, wins, avgWin, avgLoss,
+        trades, wins,
+        riskPerTrade:risk,
+        avgWin:d0.avgWin, avgLoss:d0.avgLoss,
         winRate:d0.wr||0,
-        rr:rrVal,
-        profitFactor:pfVal,
+        rr:d0.rr,
+        profitFactor:d0.pf!=null?(d0.pf>=999?999:d0.pf):0,
         llm:document.getElementById('llm').value,
         llmRemark:document.getElementById('llmRemark').value.trim(),
         linkResult:document.getElementById('linkResult').value.trim(),
         scriptName:document.getElementById('scriptName').value
       });
       save(data); render();
-      ['netProfit','maxDD','trades','wins','avgWin','avgLoss','winRate','rr','profitFactor','linkResult','scriptName','llmRemark'].forEach(i=>document.getElementById(i).value='');
-      pfManual=false;
-      document.getElementById('livePreview').textContent='預覽：—';
+      ['netProfit','maxDD','trades','wins','winRate','rr','profitFactor','avgWin','avgLoss','linkResult','scriptName','llmRemark'].forEach(i=>document.getElementById(i).value='');
+      document.getElementById('riskPerTrade').value='100';
+      document.getElementById('livePreview').textContent='填淨利 / 交易數 / 盈利數 → 自動算 RR、PF';
     }
 
     function removeRecord(id){if(!confirm('刪？'))return;save(load().filter(r=>r.id!==id));render();}
@@ -285,11 +304,9 @@
       try{
         const o=JSON.parse(t);
         const trades=Number(o.trades)||0, wins=Number(o.wins)||0;
-        const avgWin=Number(o.avgWin)||0, avgLoss=Number(o.avgLoss)||0;
-        const d0=calcDerived(trades,wins,avgWin,avgLoss);
-        let wr=Number(o.winRate); if((!wr||isNaN(wr))&&d0.wr) wr=d0.wr;
-        let rr=Number(o.rr); if((!rr||isNaN(rr))&&d0.rr) rr=d0.rr;
-        let pf=Number(o.profitFactor); if((!pf||isNaN(pf))&&d0.pf) pf=d0.pf;
+        const risk=Number(o.riskPerTrade)||100;
+        const np=Number(o.netProfit)||0;
+        const d0=calcFromFixedRisk(np, trades, wins, risk);
         const active=o.active||'No', passive=o.passive||'No', engineering=o.engineering||'No', preset=o.preset||'No';
         let n=0; [active,passive,engineering,preset].forEach(v=>{if(v==='Yes')n++});
         const abcd=o.abcd||(n>=4?'2+2':n===3?'2+1':n>=1?'1+1':'—');
@@ -300,9 +317,11 @@
           symbol:o.symbol||'MNQ', timeframe:o.timeframe||'',
           leftEnv:o.leftEnv||'', rightEnv:o.rightEnv||'',
           active, passive, engineering, preset, abcd,
-          netProfit:Number(o.netProfit)||0, maxDD:Number(o.maxDD)||0,
-          trades, wins, avgWin, avgLoss,
-          winRate:wr||0, rr:rr||null, profitFactor:pf||0,
+          netProfit:np, maxDD:Number(o.maxDD)||0,
+          trades, wins, riskPerTrade:risk,
+          avgWin:d0.avgWin, avgLoss:d0.avgLoss,
+          winRate:d0.wr||0, rr:d0.rr,
+          profitFactor:d0.pf!=null?(d0.pf>=999?999:d0.pf):0,
           llm:o.llm||'未使用', llmRemark:o.llmRemark||'',
           linkResult:o.linkResult||'', scriptName:o.scriptName||''
         });
@@ -316,7 +335,9 @@
       a.download='apex-backtests.json'; a.click();
     }
     function clearData(){if(confirm('清空？')){localStorage.removeItem(KEY);render();}}
-    document.getElementById('date').valueAsDate=new Date(); render();
+    document.getElementById('date').valueAsDate=new Date();
+    recalc();
+    render();
   </script>
 </body>
 </html>

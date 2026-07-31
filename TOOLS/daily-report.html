@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Apex 每日報告產生器 v1.0</title>
+  <title>Apex 每日報告產生器 v1.1</title>
   <style>
     :root {
       --bg: #0f1115; --card: #1a1d24; --border: #2a2f3a; --text: #e6e8ec;
@@ -73,7 +73,7 @@
   </style>
 </head>
 <body>
-  <h1>Apex 每日報告產生器 <span class="ver">v1.0</span></h1>
+  <h1>Apex 每日報告產生器 <span class="ver">v1.1</span></h1>
   <p class="sub">左右 = 策略｜≥3 張圖日誌｜LLM Remark｜一次填寫</p>
 
   <div class="card">
@@ -278,7 +278,7 @@
     }
     function generateReport() {
       const o = buildObj();
-      document.getElementById('report').textContent = `【Apex Bootcamp v1.0 每日報告】
+      document.getElementById('report').textContent = `【Apex Bootcamp v1.1 每日報告】
 日期：${o.date}
 品種：${o.symbol}
 

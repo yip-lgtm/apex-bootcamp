@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Apex Backtest 報告 v1.1</title>
+  <style>
+    :root {
+      --bg: #0f1115; --card: #1a1d24; --border: #2a2f3a; --text: #e6e8ec;
+      --muted: #9aa3b2; --accent: #3b82f6;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
+      background: var(--bg); color: var(--text); line-height: 1.5;
+      padding: 20px; max-width: 920px; margin: 0 auto;
+    }
+    h1 { font-size: 1.4rem; margin-bottom: 6px; }
+    .ver{display:inline-block;background:#3b1f1f;color:#fca5a5;font-size:0.75rem;padding:2px 8px;border-radius:6px;margin-left:6px;vertical-align:middle}
+    .sub { color: var(--muted); margin-bottom: 18px; font-size: 0.86rem; }
+    .card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 18px; margin-bottom: 14px;
+    }
+    .card h2 {
+      font-size: 0.98rem; margin-bottom: 12px; color: var(--accent);
+      border-bottom: 1px solid var(--border); padding-bottom: 6px;
+    }
+    .row { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; margin-bottom: 10px; }
+    .row label.title { min-width: 160px; font-size: 0.86rem; color: var(--muted); }
+    .options { display: flex; flex-wrap: wrap; gap: 6px; }
+    .options label {
+      display: flex; align-items: center; gap: 4px; background: #252a33;
+      padding: 5px 10px; border-radius: 8px; cursor: pointer; font-size: 0.84rem;
+      border: 1px solid transparent;
+    }
+    .options label:hover { border-color: var(--accent); }
+    .options input { accent-color: var(--accent); }
+    input, textarea, select {
+      background: #252a33; border: 1px solid var(--border); color: var(--text);
+      padding: 7px 10px; border-radius: 8px; font-size: 0.86rem; width: 100%; max-width: 100%;
+    }
+    textarea { min-height: 64px; resize: vertical; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    @media (max-width: 640px) {
+      .grid2, .grid3 { grid-template-columns: 1fr; }
+      .row label.title { min-width: 100%; }
+    }
+    .btns { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0 8px; }
+    button {
+      background: var(--accent); color: white; border: none; padding: 9px 16px;
+      border-radius: 8px; font-size: 0.9rem; cursor: pointer; font-weight: 600;
+    }
+    button.secondary { background: #334155; }
+    #report {
+      background: #111827; border: 1px solid var(--border); border-radius: 12px;
+      padding: 14px; white-space: pre-wrap; font-family: ui-monospace, Menlo, monospace;
+      font-size: 0.8rem; line-height: 1.5; min-height: 100px;
+    }
+    .hint { font-size: 0.78rem; color: var(--muted); margin: 4px 0 10px; }
+    .chk-block {
+      background: #1e2530; border-radius: 8px; padding: 10px 12px; margin-bottom: 10px;
+    }
+    .chk-block .name { font-size: 0.88rem; font-weight: 600; margin-bottom: 6px; color: #93c5fd; }
+  </style>
+</head>
+<body>
+  <h1>Apex Backtest 報告 <span class="ver">Backtest</span></h1>
+  <p class="sub">記錄回測結果｜左右環境｜TradingView 連結｜LLM Remark</p>
+
+  <div class="card">
+    <h2>回測設定</h2>
+    <div class="grid3">
+      <div class="row"><label class="title">回測日期</label><input type="date" id="date" /></div>
+      <div class="row">
+        <label class="title">品種</label>
+        <select id="symbol">
+          <option>MNQ</option><option>MES</option><option>MYM</option><option>M2K</option>
+          <option>MGC</option><option>SIL</option><option>MCL</option>
+          <option>MBT</option><option>MET</option><option>其他</option>
+        </select>
+      </div>
+      <div class="row">
+        <label class="title">週期</label>
+        <select id="timeframe">
+          <option>5m</option><option>15m</option><option>1H</option><option>4H</option><option>D</option><option>混合</option>
+        </select>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="row"><label class="title">回測區間起</label><input type="date" id="rangeStart" /></div>
+      <div class="row"><label class="title">回測區間迄</label><input type="date" id="rangeEnd" /></div>
+    </div>
+    <div class="row">
+      <label class="title">腳本/策略名</label>
+      <input type="text" id="scriptName" placeholder="例如：MNQ 套杀優化版" />
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>環境（左右 = 策略邏輯）</h2>
+    <div class="row">
+      <label class="title">左側環境</label>
+      <select id="leftEnv">
+        <option value="">—</option>
+        <option>普通(打牌逻辑)</option><option>AMD</option><option>SMT</option><option>跳水</option><option>MMXM</option><option>無</option>
+      </select>
+    </div>
+    <div class="row">
+      <label class="title">右側環境</label>
+      <select id="rightEnv">
+        <option value="">—</option>
+        <option>三驱动</option><option>NDOG</option><option>SMT</option><option>NWOG</option><option>普通(打牌逻辑)</option><option>套杀</option><option>無</option>
+      </select>
+    </div>
+    <div class="row"><label class="title">主動</label><div class="options"><label><input type="radio" name="active" value="Yes"> Yes</label><label><input type="radio" name="active" value="No"> No</label></div></div>
+    <div class="row"><label class="title">被動</label><div class="options"><label><input type="radio" name="passive" value="Yes"> Yes</label><label><input type="radio" name="passive" value="No"> No</label></div></div>
+    <div class="row"><label class="title">工程</label><div class="options"><label><input type="radio" name="engineering" value="Yes"> Yes</label><label><input type="radio" name="engineering" value="No"> No</label></div></div>
+    <div class="row"><label class="title">預設</label><div class="options"><label><input type="radio" name="preset" value="Yes"> Yes</label><label><input type="radio" name="preset" value="No"> No</label></div></div>
+    <div class="row"><label class="title">邏輯等級</label><div class="options"><label><input type="radio" name="grade" value="A"> A</label><label><input type="radio" name="grade" value="B"> B</label><label><input type="radio" name="grade" value="C"> C</label></div></div>
+  </div>
+
+  <div class="card">
+    <h2>回測結果（策略測試器）</h2>
+    <div class="grid2">
+      <div class="row"><label class="title">淨利潤 ($)</label><input type="number" id="netProfit" step="0.01" placeholder="0.00" /></div>
+      <div class="row"><label class="title">最大回撤 ($)</label><input type="number" id="maxDD" step="0.01" placeholder="0.00" /></div>
+      <div class="row"><label class="title">勝率 (%)</label><input type="number" id="winRate" step="0.1" placeholder="0.0" /></div>
+      <div class="row"><label class="title">盈利因子</label><input type="number" id="profitFactor" step="0.01" placeholder="0.00" /></div>
+      <div class="row"><label class="title">總交易數</label><input type="number" id="trades" min="0" placeholder="0" /></div>
+      <div class="row"><label class="title">盈利筆數</label><input type="number" id="wins" min="0" placeholder="0" /></div>
+    </div>
+    <div class="grid2">
+      <div class="row"><label class="title">單筆止損點數</label><input type="number" id="slPoints" step="0.1" placeholder="例如 22" /></div>
+      <div class="row"><label class="title">風險報酬比</label><input type="number" id="rr" step="0.1" placeholder="例如 2.2" /></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>TradingView 連結</h2>
+    <p class="hint">貼策略測試器截圖 Snapshot 或圖表分享連結。</p>
+    <div class="chk-block">
+      <div class="name">策略測試器結果圖</div>
+      <input type="url" id="linkResult" placeholder="https://www.tradingview.com/x/..." />
+    </div>
+    <div class="chk-block">
+      <div class="name">圖表 / 訊號範例</div>
+      <input type="url" id="linkChart" placeholder="https://www.tradingview.com/x/..." />
+    </div>
+    <div class="chk-block">
+      <div class="name">額外連結</div>
+      <input type="url" id="linkExtra" placeholder="可留空" />
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>LLM / 結論</h2>
+    <div class="row"><label class="title">LLM 判斷</label><div class="options"><label><input type="radio" name="llm" value="A"> A</label><label><input type="radio" name="llm" value="B"> B</label><label><input type="radio" name="llm" value="C"> C</label><label><input type="radio" name="llm" value="未使用"> 未使用</label></div></div>
+    <div class="row" style="align-items:flex-start">
+      <label class="title">LLM Remark</label>
+      <textarea id="llmRemark" placeholder="優化建議、參數結論、是否值得實盤..."></textarea>
+    </div>
+    <div class="row" style="align-items:flex-start">
+      <label class="title">備註</label>
+      <textarea id="notes" placeholder="掃單深度、Killzone、已知問題..."></textarea>
+    </div>
+  </div>
+
+  <div class="btns">
+    <button onclick="generateReport()">產生報告</button>
+    <button class="secondary" onclick="copyReport()">複製報告</button>
+    <button class="secondary" onclick="copyJSON()">複製 JSON</button>
+    <button class="secondary" onclick="resetForm()">清空</button>
+  </div>
+
+  <div class="card">
+    <h2>產生的報告</h2>
+    <div id="report">填寫後點「產生報告」</div>
+  </div>
+
+  <script>
+    document.getElementById('date').valueAsDate = new Date();
+    function val(name) {
+      const el = document.querySelector(`input[name="${name}"]:checked`);
+      return el ? el.value : '—';
+    }
+    function id(i) { return document.getElementById(i).value || '—'; }
+    function link(i) {
+      const v = document.getElementById(i).value.trim();
+      return v || '—';
+    }
+    function countYes() {
+      let n = 0;
+      ['active','passive','engineering','preset'].forEach(k => { if (val(k) === 'Yes') n++; });
+      return n;
+    }
+    function buildObj() {
+      const c = countYes();
+      return {
+        type: 'backtest',
+        date: id('date'), symbol: id('symbol'), timeframe: id('timeframe'),
+        rangeStart: id('rangeStart'), rangeEnd: id('rangeEnd'),
+        scriptName: id('scriptName'),
+        leftEnv: id('leftEnv'), rightEnv: id('rightEnv'),
+        active: val('active'), passive: val('passive'),
+        engineering: val('engineering'), preset: val('preset'),
+        abcd: c >= 4 ? '2+2' : c === 3 ? '2+1' : c >= 1 ? '1+1' : '—',
+        grade: val('grade'),
+        netProfit: id('netProfit'), maxDD: id('maxDD'),
+        winRate: id('winRate'), profitFactor: id('profitFactor'),
+        trades: id('trades'), wins: id('wins'),
+        slPoints: id('slPoints'), rr: id('rr'),
+        linkResult: link('linkResult'), linkChart: link('linkChart'), linkExtra: link('linkExtra'),
+        llm: val('llm'), llmRemark: id('llmRemark'), notes: id('notes')
+      };
+    }
+    function generateReport() {
+      const o = buildObj();
+      document.getElementById('report').textContent = `【Apex Bootcamp Backtest 報告】
+日期：${o.date}
+品種：${o.symbol}｜週期：${o.timeframe}
+區間：${o.rangeStart} → ${o.rangeEnd}
+腳本：${o.scriptName}
+
+環境（策略邏輯）
+- 左側：${o.leftEnv}
+- 右側：${o.rightEnv}
+- 主動：${o.active}｜被動：${o.passive}｜工程：${o.engineering}｜預設：${o.preset}
+- ABCD：${o.abcd}｜等級：${o.grade}
+
+結果
+- 淨利潤：$${o.netProfit}
+- 最大回撤：$${o.maxDD}
+- 勝率：${o.winRate}%
+- 盈利因子：${o.profitFactor}
+- 交易：${o.trades}｜盈利：${o.wins}
+- 止損點數：${o.slPoints}｜RR：${o.rr}
+
+TradingView
+- 結果圖：${o.linkResult}
+- 圖表：${o.linkChart}
+- 額外：${o.linkExtra}
+
+LLM：${o.llm}
+Remark：${o.llmRemark}
+備註：${o.notes}`;
+    }
+    function copyReport() {
+      navigator.clipboard.writeText(document.getElementById('report').textContent).then(() => alert('已複製'));
+    }
+    function copyJSON() {
+      const o = buildObj();
+      ['netProfit','maxDD','winRate','profitFactor','trades','wins','slPoints','rr'].forEach(k => {
+        if (o[k] !== '—') o[k] = Number(o[k]) || 0;
+      });
+      ['linkResult','linkChart','linkExtra','llmRemark','notes','scriptName'].forEach(k => {
+        if (o[k] === '—') o[k] = '';
+      });
+      navigator.clipboard.writeText(JSON.stringify(o, null, 2)).then(() => alert('JSON 已複製'));
+    }
+    function resetForm() {
+      if (!confirm('清空？')) return;
+      document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+      document.querySelectorAll('input[type="number"], input[type="text"], input[type="url"], input[type="date"], textarea').forEach(el => el.value = '');
+      document.getElementById('date').valueAsDate = new Date();
+      ['symbol','timeframe','leftEnv','rightEnv'].forEach(i => document.getElementById(i).selectedIndex = 0);
+      document.getElementById('report').textContent = '填寫後點「產生報告」';
+    }
+  </script>
+</body>
+</html>

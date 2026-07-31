@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Apex Backtest 追蹤 v1.1</title>
+  <style>
+    :root {
+      --bg:#0b0e13; --card:#151a22; --border:#2a3341; --text:#e8eaed;
+      --muted:#8b95a8; --blue:#3b82f6; --green:#22c55e; --red:#ef4444;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans TC",sans-serif;background:var(--bg);color:var(--text);padding:14px;max-width:1100px;margin:0 auto;line-height:1.45}
+    h1{font-size:1.3rem}
+    .ver{display:inline-block;background:#3b1f1f;color:#fca5a5;font-size:0.72rem;padding:2px 8px;border-radius:6px;margin-left:6px}
+    .sub{color:var(--muted);font-size:0.82rem;margin:4px 0 14px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:12px}
+    .stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center}
+    .stat .label{color:var(--muted);font-size:0.7rem}
+    .stat .value{font-size:1.05rem;font-weight:700}
+    .positive{color:var(--green)}.negative{color:var(--red)}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px}
+    .card h2{font-size:0.92rem;color:var(--blue);margin-bottom:10px;border-bottom:1px solid var(--border);padding-bottom:5px}
+    label{display:block;font-size:0.75rem;color:var(--muted);margin-bottom:3px}
+    input,select{width:100%;background:#1e2530;border:1px solid var(--border);color:var(--text);padding:7px 9px;border-radius:8px;font-size:0.84rem;margin-bottom:8px}
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+    .row4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}
+    button{background:var(--blue);color:#fff;border:none;padding:8px 12px;border-radius:8px;font-weight:600;cursor:pointer;font-size:0.84rem;margin:3px 4px 3px 0}
+    button.secondary{background:#334155}button.danger{background:var(--red)}
+    table{width:100%;border-collapse:collapse;font-size:0.72rem}
+    th,td{padding:6px 4px;border-bottom:1px solid var(--border);text-align:left}
+    th{color:var(--muted)}
+    .empty{color:var(--muted);text-align:center;padding:16px}
+    a.chart{color:#93c5fd;text-decoration:none}
+    .hint{font-size:0.78rem;color:var(--muted);margin-bottom:8px}
+    @media(max-width:700px){.row2,.row3,.row4{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <h1>Apex Backtest 追蹤 <span class="ver">Backtest</span></h1>
+  <p class="sub">匯入 backtest-report JSON · 比較各次回測</p>
+  <p class="hint"><a class="chart" href="./index.html">← 實盤儀表板</a> · <a class="chart" href="https://github.com/yip-lgtm/apex-bootcamp/blob/main/TOOLS/backtest-report.html">報告產生器</a></p>
+
+  <div class="grid">
+    <div class="stat"><div class="label">回測次數</div><div class="value" id="s-n">0</div></div>
+    <div class="stat"><div class="label">最佳淨利</div><div class="value" id="s-best">$0</div></div>
+    <div class="stat"><div class="label">平均 PF</div><div class="value" id="s-pf">0</div></div>
+    <div class="stat"><div class="label">平均勝率</div><div class="value" id="s-wr">0%</div></div>
+  </div>
+
+  <div class="card">
+    <h2>新增 / 匯入</h2>
+    <div class="row3">
+      <div><label>日期</label><input type="date" id="date"/></div>
+      <div><label>品種</label><select id="symbol"><option>MNQ</option><option>MES</option><option>其他</option></select></div>
+      <div><label>週期</label><select id="timeframe"><option>5m</option><option>15m</option><option>1H</option><option>4H</option></select></div>
+    </div>
+    <div class="row2">
+      <div><label>左側</label><select id="leftEnv"><option value="">—</option><option>普通(打牌逻辑)</option><option>AMD</option><option>SMT</option><option>跳水</option><option>MMXM</option></select></div>
+      <div><label>右側</label><select id="rightEnv"><option value="">—</option><option>套杀</option><option>三驱动</option><option>NDOG</option><option>NWOG</option><option>SMT</option><option>普通(打牌逻辑)</option></select></div>
+    </div>
+    <div class="row4">
+      <div><label>淨利 $</label><input type="number" id="netProfit" step="0.01"/></div>
+      <div><label>最大回撤 $</label><input type="number" id="maxDD" step="0.01"/></div>
+      <div><label>勝率 %</label><input type="number" id="winRate" step="0.1"/></div>
+      <div><label>盈利因子</label><input type="number" id="profitFactor" step="0.01"/></div>
+    </div>
+    <div class="row3">
+      <div><label>交易數</label><input type="number" id="trades"/></div>
+      <div><label>結果圖連結</label><input type="url" id="linkResult"/></div>
+      <div><label>腳本名</label><input type="text" id="scriptName"/></div>
+    </div>
+    <button onclick="addRecord()">新增</button>
+    <button class="secondary" onclick="importJSON()">貼上 JSON 匯入</button>
+    <button class="secondary" onclick="exportData()">匯出</button>
+    <button class="danger" onclick="clearData()">清空</button>
+  </div>
+
+  <div class="card">
+    <h2>回測紀錄</h2>
+    <table>
+      <thead><tr><th>日期</th><th>品種</th><th>週期</th><th>左</th><th>右</th><th>淨利</th><th>回撤</th><th>勝率</th><th>PF</th><th>圖</th><th></th></tr></thead>
+      <tbody id="tbody"><tr><td colspan="11" class="empty">尚無紀錄</td></tr></tbody>
+    </table>
+  </div>
+
+  <script>
+    const KEY='apex_bt_v11';
+    const load=()=>{try{return JSON.parse(localStorage.getItem(KEY))||[]}catch{return[]}};
+    const save=d=>localStorage.setItem(KEY,JSON.stringify(d));
+
+    function render(){
+      const data=load().sort((a,b)=>b.date.localeCompare(a.date));
+      document.getElementById('s-n').textContent=data.length;
+      const best=data.reduce((m,r)=>Math.max(m,Number(r.netProfit)||0),0);
+      const el=document.getElementById('s-best');
+      el.textContent=(best>=0?'+':'')+'$'+best.toFixed(1);
+      el.className='value '+(best>=0?'positive':'negative');
+      const avgPf=data.length?data.reduce((s,r)=>s+(Number(r.profitFactor)||0),0)/data.length:0;
+      const avgWr=data.length?data.reduce((s,r)=>s+(Number(r.winRate)||0),0)/data.length:0;
+      document.getElementById('s-pf').textContent=avgPf.toFixed(2);
+      document.getElementById('s-wr').textContent=avgWr.toFixed(1)+'%';
+
+      const tb=document.getElementById('tbody');
+      if(!data.length){tb.innerHTML='<tr><td colspan="11" class="empty">尚無紀錄</td></tr>';return;}
+      tb.innerHTML=data.map(r=>`<tr>
+        <td>${r.date}</td><td>${r.symbol}</td><td>${r.timeframe||'-'}</td>
+        <td>${r.leftEnv||'-'}</td><td>${r.rightEnv||'-'}</td>
+        <td class="${Number(r.netProfit)>=0?'positive':'negative'}">${Number(r.netProfit).toFixed(1)}</td>
+        <td>${Number(r.maxDD||0).toFixed(1)}</td>
+        <td>${r.winRate||'-'}%</td><td>${r.profitFactor||'-'}</td>
+        <td>${r.linkResult?`<a class="chart" href="${r.linkResult}" target="_blank">開</a>`:'-'}</td>
+        <td><button class="danger" style="padding:2px 6px;font-size:0.7rem" onclick="removeRecord('${r.id}')">刪</button></td>
+      </tr>`).join('');
+    }
+
+    function addRecord(){
+      const date=document.getElementById('date').value;
+      const np=document.getElementById('netProfit').value;
+      if(!date||np===''){alert('請填日期與淨利');return;}
+      const d=load();
+      d.push({
+        id:Date.now().toString(), date,
+        symbol:document.getElementById('symbol').value,
+        timeframe:document.getElementById('timeframe').value,
+        leftEnv:document.getElementById('leftEnv').value,
+        rightEnv:document.getElementById('rightEnv').value,
+        netProfit:Number(np),
+        maxDD:Number(document.getElementById('maxDD').value)||0,
+        winRate:Number(document.getElementById('winRate').value)||0,
+        profitFactor:Number(document.getElementById('profitFactor').value)||0,
+        trades:Number(document.getElementById('trades').value)||0,
+        linkResult:document.getElementById('linkResult').value.trim(),
+        scriptName:document.getElementById('scriptName').value
+      });
+      save(d); render();
+      ['netProfit','maxDD','winRate','profitFactor','trades','linkResult','scriptName'].forEach(i=>document.getElementById(i).value='');
+    }
+
+    function removeRecord(id){if(!confirm('刪？'))return;save(load().filter(r=>r.id!==id));render();}
+    function importJSON(){
+      const t=prompt('貼上 Backtest 報告 JSON'); if(!t)return;
+      try{
+        const o=JSON.parse(t);
+        const d=load();
+        d.push({
+          id:Date.now().toString(),
+          date:o.date||new Date().toISOString().slice(0,10),
+          symbol:o.symbol||'MNQ', timeframe:o.timeframe||'',
+          leftEnv:o.leftEnv||'', rightEnv:o.rightEnv||'',
+          netProfit:Number(o.netProfit)||0, maxDD:Number(o.maxDD)||0,
+          winRate:Number(o.winRate)||0, profitFactor:Number(o.profitFactor)||0,
+          trades:Number(o.trades)||0, linkResult:o.linkResult||'', scriptName:o.scriptName||''
+        });
+        save(d); render(); alert('已匯入');
+      }catch(e){alert('格式錯誤');}
+    }
+    function exportData(){
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(new Blob([JSON.stringify(load(),null,2)],{type:'application/json'}));
+      a.download='apex-backtests.json'; a.click();
+    }
+    function clearData(){if(confirm('清空？')){localStorage.removeItem(KEY);render();}}
+    document.getElementById('date').valueAsDate=new Date(); render();
+  </script>
+</body>
+</html>

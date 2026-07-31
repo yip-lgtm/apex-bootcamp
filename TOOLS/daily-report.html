@@ -7,40 +7,40 @@
   <style>
     :root {
       --bg: #0f1115; --card: #1a1d24; --border: #2a2f3a; --text: #e6e8ec;
-      --muted: #9aa3b2; --accent: #3b82f6;
+      --muted: #9aa3b2; --accent: #3b82f6; --green: #22c55e;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
       background: var(--bg); color: var(--text); line-height: 1.5;
-      padding: 20px; max-width: 900px; margin: 0 auto;
+      padding: 20px; max-width: 920px; margin: 0 auto;
     }
-    h1 { font-size: 1.45rem; margin-bottom: 6px; }
+    h1 { font-size: 1.4rem; margin-bottom: 6px; }
     .ver{display:inline-block;background:#1e3a5f;color:#93c5fd;font-size:0.75rem;padding:2px 8px;border-radius:6px;margin-left:6px;vertical-align:middle}
-    .sub { color: var(--muted); margin-bottom: 20px; font-size: 0.88rem; }
+    .sub { color: var(--muted); margin-bottom: 18px; font-size: 0.86rem; }
     .card {
       background: var(--card); border: 1px solid var(--border);
       border-radius: 12px; padding: 16px 18px; margin-bottom: 14px;
     }
     .card h2 {
-      font-size: 1rem; margin-bottom: 12px; color: var(--accent);
+      font-size: 0.98rem; margin-bottom: 12px; color: var(--accent);
       border-bottom: 1px solid var(--border); padding-bottom: 6px;
     }
     .row { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; margin-bottom: 10px; }
-    .row label.title { min-width: 160px; font-size: 0.88rem; color: var(--muted); }
+    .row label.title { min-width: 170px; font-size: 0.86rem; color: var(--muted); }
     .options { display: flex; flex-wrap: wrap; gap: 6px; }
     .options label {
       display: flex; align-items: center; gap: 4px; background: #252a33;
-      padding: 5px 10px; border-radius: 8px; cursor: pointer; font-size: 0.86rem;
+      padding: 5px 10px; border-radius: 8px; cursor: pointer; font-size: 0.84rem;
       border: 1px solid transparent;
     }
     .options label:hover { border-color: var(--accent); }
     .options input { accent-color: var(--accent); }
     input[type="text"], input[type="number"], input[type="date"], textarea, select {
       background: #252a33; border: 1px solid var(--border); color: var(--text);
-      padding: 7px 10px; border-radius: 8px; font-size: 0.88rem; width: 100%; max-width: 260px;
+      padding: 7px 10px; border-radius: 8px; font-size: 0.86rem; width: 100%; max-width: 100%;
     }
-    textarea { max-width: 100%; min-height: 64px; resize: vertical; }
+    textarea { min-height: 70px; resize: vertical; }
     .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     @media (max-width: 640px) {
       .grid2 { grid-template-columns: 1fr; }
@@ -56,14 +56,25 @@
     #report {
       background: #111827; border: 1px solid var(--border); border-radius: 12px;
       padding: 14px; white-space: pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 0.82rem; line-height: 1.5; min-height: 100px; margin-top: 6px;
+      font-size: 0.8rem; line-height: 1.5; min-height: 100px; margin-top: 6px;
     }
-    .hint { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+    .hint { font-size: 0.78rem; color: var(--muted); margin: 4px 0 10px; }
+    .chk-block {
+      background: #1e2530; border-radius: 8px; padding: 10px 12px; margin-bottom: 10px;
+    }
+    .chk-block .name { font-size: 0.88rem; font-weight: 600; margin-bottom: 6px; color: #93c5fd; }
+    .chk-block ul { margin: 0 0 8px 18px; font-size: 0.8rem; color: var(--muted); }
+    .chk-block li { margin-bottom: 2px; }
+    .preview { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .preview img {
+      max-width: 140px; max-height: 100px; border-radius: 6px; border: 1px solid var(--border);
+      object-fit: cover;
+    }
   </style>
 </head>
 <body>
   <h1>Apex 每日報告產生器 <span class="ver">v1.0</span></h1>
-  <p class="sub">左右環境 = 策略｜主動/被動/工程/預設｜A/B/C｜LLM｜一次填寫</p>
+  <p class="sub">左右 = 策略｜≥3 張圖日誌｜LLM Remark｜一次填寫</p>
 
   <div class="card">
     <h2>基本資訊</h2>
@@ -96,7 +107,7 @@
 
   <div class="card">
     <h2>3. Setup（左右 = 策略）</h2>
-    <p class="hint">左側 + 右側即為策略，無需另填策略欄。</p>
+    <p class="hint">左側 + 右側即為策略。</p>
     <div class="row">
       <label class="title">左側環境</label>
       <select id="leftEnv">
@@ -118,10 +129,79 @@
     <div class="row"><label class="title">最終等級</label><div class="options"><label><input type="radio" name="grade" value="A"> A</label><label><input type="radio" name="grade" value="B"> B</label><label><input type="radio" name="grade" value="C"> C</label></div></div>
     <div class="row"><label class="title">LLM 判斷</label><div class="options"><label><input type="radio" name="llm" value="A"> A</label><label><input type="radio" name="llm" value="B"> B</label><label><input type="radio" name="llm" value="C"> C</label><label><input type="radio" name="llm" value="未使用"> 未使用</label></div></div>
     <div class="row"><label class="title">是否執行交易</label><div class="options"><label><input type="radio" name="traded" value="Yes"> Yes</label><label><input type="radio" name="traded" value="No"> No</label></div></div>
+    <div class="row" style="align-items:flex-start">
+      <label class="title">LLM Remark</label>
+      <textarea id="llmRemark" placeholder="貼上 LLM 回覆的理由 / 建議動作 / 風險提示..."></textarea>
+    </div>
   </div>
 
   <div class="card">
-    <h2>4. 績效數據</h2>
+    <h2>4. 圖表日誌（必須 ≥3 張）</h2>
+    <p class="hint">更小周期的畫圖不要出現在更高周期，保持美觀簡潔。時區 UTC-4。</p>
+
+    <div class="chk-block">
+      <div class="name">圖1｜HTF-D</div>
+      <ul>
+        <li>標記周開盤價 (Wo)</li>
+        <li>標記程序起點與終點</li>
+        <li>豎線標記交易日</li>
+      </ul>
+      <div class="options">
+        <label><input type="radio" name="chartHTF" value="Yes"> 已完成</label>
+        <label><input type="radio" name="chartHTF" value="No"> 未完成</label>
+      </div>
+    </div>
+
+    <div class="chk-block">
+      <div class="name">圖2｜LTF-H4</div>
+      <ul>
+        <li>標記日開盤價 (DO)</li>
+        <li>啟動時間視角</li>
+        <li>標記交易的 H4 蠟燭</li>
+        <li>左側環境（沒有就跳過）</li>
+        <li>右側環境（沒有就跳過）</li>
+        <li>極點環境：主動 + 被動 + 工程 + 預設</li>
+      </ul>
+      <div class="options">
+        <label><input type="radio" name="chartH4" value="Yes"> 已完成</label>
+        <label><input type="radio" name="chartH4" value="No"> 未完成</label>
+      </div>
+    </div>
+
+    <div class="chk-block">
+      <div class="name">圖3｜LTF-H1</div>
+      <ul>
+        <li>標記日開盤價 (DO)</li>
+        <li>啟動時間視角</li>
+        <li>標記紅綠燈階段</li>
+        <li>左側 / 右側環境</li>
+        <li>極點環境：主動 + 被動 + 工程 + 預設</li>
+        <li>H1 無特殊補充可省略（H4 已能識別時）</li>
+      </ul>
+      <div class="options">
+        <label><input type="radio" name="chartH1" value="Yes"> 已完成</label>
+        <label><input type="radio" name="chartH1" value="No"> 未完成</label>
+        <label><input type="radio" name="chartH1" value="跳過"> 可跳過</label>
+      </div>
+    </div>
+
+    <div class="row">
+      <label class="title">≥3 張圖已備妥</label>
+      <div class="options">
+        <label><input type="radio" name="chartsOk" value="Yes"> Yes</label>
+        <label><input type="radio" name="chartsOk" value="No"> No</label>
+      </div>
+    </div>
+
+    <div class="row" style="align-items:flex-start;flex-direction:column">
+      <label class="title" style="min-width:auto;margin-bottom:6px">本機預覽截圖（可選，不上傳伺服器）</label>
+      <input type="file" id="chartFiles" accept="image/*" multiple />
+      <div class="preview" id="preview"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>5. 績效數據</h2>
     <div class="grid2">
       <div class="row"><label class="title">當日 PnL ($)</label><input type="number" id="pnl" step="0.01" placeholder="0.00" /></div>
       <div class="row"><label class="title">當日交易數</label><input type="number" id="trades" min="0" placeholder="0" /></div>
@@ -137,7 +217,7 @@
   </div>
 
   <div class="card">
-    <h2>5. 複盤</h2>
+    <h2>6. 複盤</h2>
     <div class="row"><label class="title">是否違反規則</label><div class="options"><label><input type="radio" name="violate" value="Yes"> Yes</label><label><input type="radio" name="violate" value="No"> No</label></div></div>
     <div class="row"><label class="title">備註 / 改進點</label><textarea id="notes" placeholder="今天的觀察、情緒、改進..."></textarea></div>
   </div>
@@ -145,7 +225,7 @@
   <div class="btns">
     <button onclick="generateReport()">產生報告</button>
     <button class="secondary" onclick="copyReport()">複製報告</button>
-    <button class="secondary" onclick="copyJSON()">複製 JSON（給儀表板）</button>
+    <button class="secondary" onclick="copyJSON()">複製 JSON</button>
     <button class="secondary" onclick="resetForm()">清空</button>
   </div>
 
@@ -156,6 +236,17 @@
 
   <script>
     document.getElementById('date').valueAsDate = new Date();
+
+    document.getElementById('chartFiles').addEventListener('change', function(e) {
+      const box = document.getElementById('preview');
+      box.innerHTML = '';
+      [...e.target.files].forEach(f => {
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(f);
+        box.appendChild(img);
+      });
+    });
+
     function val(name) {
       const el = document.querySelector(`input[name="${name}"]:checked`);
       return el ? el.value : '—';
@@ -176,7 +267,10 @@
         leftEnv: id('leftEnv'), rightEnv: id('rightEnv'),
         active: val('active'), passive: val('passive'),
         engineering: val('engineering'), preset: val('preset'),
-        abcd, grade: val('grade'), llm: val('llm'), traded: val('traded'),
+        abcd, grade: val('grade'), llm: val('llm'), llmRemark: id('llmRemark'),
+        traded: val('traded'),
+        chartHTF: val('chartHTF'), chartH4: val('chartH4'), chartH1: val('chartH1'),
+        chartsOk: val('chartsOk'),
         pnl: id('pnl'), trades: id('trades'), wins: id('wins'), rr: id('rr'),
         winrate: id('winrate'), qualified: id('qualified'),
         qualifiedDay: val('qualifiedDay'), violate: val('violate'), notes: id('notes')
@@ -189,34 +283,39 @@
 品種：${o.symbol}
 
 一、開盤前準備
-- 高影響新聞檢查：${o.news}
-- HTF Bias 已確定：${o.bias}
-- Killzone 確認：${o.kz}
+- 高影響新聞：${o.news}
+- HTF Bias：${o.bias}
+- Killzone：${o.kz}
 
 二、風險規則
-- 最多1~2張限制：${o.size}
+- 1~2張限制：${o.size}
 - Daily SL $100 未觸及：${o.dailysl}
 
 三、Setup（左右 = 策略）
-- 左側環境：${o.leftEnv}
-- 右側環境：${o.rightEnv}
+- 左側：${o.leftEnv}
+- 右側：${o.rightEnv}
 - 主動：${o.active}｜被動：${o.passive}｜工程：${o.engineering}｜預設：${o.preset}
 - ABCD：${o.abcd}
 - 最終等級：${o.grade}
 - LLM 判斷：${o.llm}
-- 是否執行交易：${o.traded}
+- LLM Remark：${o.llmRemark}
+- 是否執行：${o.traded}
 
-四、績效數據
-- 當日 PnL：$ ${o.pnl}
-- 當日交易數：${o.trades} 筆
-- 當日盈利數：${o.wins} 筆
-- 當日平均 RR：${o.rr}
+四、圖表日誌（≥3張）
+- HTF-D：${o.chartHTF}
+- LTF-H4：${o.chartH4}
+- LTF-H1：${o.chartH1}
+- ≥3張已備妥：${o.chartsOk}
+
+五、績效
+- PnL：$ ${o.pnl}
+- 交易數：${o.trades}｜盈利數：${o.wins}
+- 平均 RR：${o.rr}
 - 累計勝率：${o.winrate}%
-- 合格日進度：${o.qualified}
-- 是否達成合格日：${o.qualifiedDay}
+- 合格日進度：${o.qualified}｜達成：${o.qualifiedDay}
 
-五、複盤
-- 是否違反規則：${o.violate}
+六、複盤
+- 違反規則：${o.violate}
 - 備註：${o.notes}`;
     }
     function copyReport() {
@@ -228,6 +327,7 @@
       o.trades = Number(o.trades) || 0;
       o.wins = Number(o.wins) || 0;
       o.rr = o.rr === '—' ? '' : o.rr;
+      o.llmRemark = o.llmRemark === '—' ? '' : o.llmRemark;
       navigator.clipboard.writeText(JSON.stringify(o, null, 2)).then(() => alert('JSON 已複製'));
     }
     function resetForm() {
@@ -236,6 +336,8 @@
       document.querySelectorAll('input[type="number"], input[type="text"], textarea').forEach(el => el.value = '');
       document.getElementById('date').valueAsDate = new Date();
       ['symbol','leftEnv','rightEnv'].forEach(i => document.getElementById(i).selectedIndex = 0);
+      document.getElementById('preview').innerHTML = '';
+      document.getElementById('chartFiles').value = '';
       document.getElementById('report').textContent = '填寫上方選項後點「產生報告」';
     }
   </script>

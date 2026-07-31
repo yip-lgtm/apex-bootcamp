@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Apex 50K 績效儀表板</title>
+  <style>
+    :root {
+      --bg: #0b0e13;
+      --card: #151a22;
+      --border: #2a3341;
+      --text: #e8eaed;
+      --muted: #8b95a8;
+      --blue: #3b82f6;
+      --green: #22c55e;
+      --red: #ef4444;
+      --yellow: #eab308;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 16px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    h1 { font-size: 1.4rem; margin-bottom: 4px; }
+    .sub { color: var(--muted); font-size: 0.85rem; margin-bottom: 20px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .stat {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+    }
+    .stat .label { color: var(--muted); font-size: 0.75rem; margin-bottom: 4px; }
+    .stat .value { font-size: 1.25rem; font-weight: 700; }
+    .positive { color: var(--green); }
+    .negative { color: var(--red); }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .card h2 {
+      font-size: 1rem;
+      color: var(--blue);
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 6px;
+    }
+    label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 4px; }
+    input, select, textarea {
+      width: 100%;
+      background: #1e2530;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+    }
+    .row2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    button {
+      background: var(--blue);
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+      margin-right: 8px;
+      margin-top: 4px;
+    }
+    button.secondary { background: #334155; }
+    button.danger { background: var(--red); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+    th, td {
+      padding: 8px 6px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    th { color: var(--muted); font-weight: 500; }
+    .empty { color: var(--muted); text-align: center; padding: 20px; }
+    .actions { margin-top: 12px; }
+    @media (max-width: 500px) {
+      .row2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Apex 50K 績效儀表板</h1>
+  <p class="sub">線上記錄 · 自動計算 PnL / 勝率 / RR · 資料存在瀏覽器本地</p>
+
+  <!-- 總覽 -->
+  <div class="grid" id="stats">
+    <div class="stat">
+      <div class="label">累計 PnL</div>
+      <div class="value" id="s-pnl">$0</div>
+    </div>
+    <div class="stat">
+      <div class="label">總交易</div>
+      <div class="value" id="s-trades">0</div>
+    </div>
+    <div class="stat">
+      <div class="label">勝率</div>
+      <div class="value" id="s-wr">0%</div>
+    </div>
+    <div class="stat">
+      <div class="label">合格日</div>
+      <div class="value" id="s-qd">0 / 5</div>
+    </div>
+  </div>
+
+  <!-- 新增紀錄 -->
+  <div class="card">
+    <h2>新增每日紀錄</h2>
+    <div class="row2">
+      <div>
+        <label>日期</label>
+        <input type="date" id="date" />
+      </div>
+      <div>
+        <label>品種</label>
+        <select id="symbol">
+          <option>MNQ</option>
+          <option>MES</option>
+          <option>MGC</option>
+          <option>其他</option>
+        </select>
+      </div>
+    </div>
+    <div class="row2">
+      <div>
+        <label>當日 PnL ($)</label>
+        <input type="number" id="pnl" step="0.01" placeholder="0.00" />
+      </div>
+      <div>
+        <label>交易數</label>
+        <input type="number" id="trades" min="0" placeholder="0" />
+      </div>
+    </div>
+    <div class="row2">
+      <div>
+        <label>盈利數</label>
+        <input type="number" id="wins" min="0" placeholder="0" />
+      </div>
+      <div>
+        <label>平均 RR</label>
+        <input type="number" id="rr" step="0.1" placeholder="0.0" />
+      </div>
+    </div>
+    <div class="row2">
+      <div>
+        <label>等級</label>
+        <select id="grade">
+          <option value="A">A</option>
+          <option value="B">B</option>
+          <option value="C">C</option>
+          <option value="-">—</option>
+        </select>
+      </div>
+      <div>
+        <label>備註</label>
+        <input type="text" id="note" placeholder="可選" />
+      </div>
+    </div>
+    <div class="actions">
+      <button onclick="addRecord()">新增紀錄</button>
+      <button class="secondary" onclick="exportData()">匯出 JSON</button>
+      <button class="secondary" onclick="exportMarkdown()">匯出 Markdown</button>
+      <button class="danger" onclick="clearData()">清空資料</button>
+    </div>
+  </div>
+
+  <!-- 歷史紀錄 -->
+  <div class="card">
+    <h2>歷史紀錄</h2>
+    <div id="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>日期</th>
+            <th>PnL</th>
+            <th>交易</th>
+            <th>勝</th>
+            <th>RR</th>
+            <th>等級</th>
+            <th>備註</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+          <tr><td colspan="8" class="empty">尚無紀錄</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'apex_performance_v1';
+
+    function load() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    function save(data) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function calc(data) {
+      const totalPnl = data.reduce((s, r) => s + Number(r.pnl || 0), 0);
+      const totalTrades = data.reduce((s, r) => s + Number(r.trades || 0), 0);
+      const totalWins = data.reduce((s, r) => s + Number(r.wins || 0), 0);
+      const winRate = totalTrades > 0 ? (totalWins / totalTrades * 100) : 0;
+      const qualifiedDays = data.filter(r => Number(r.pnl) >= 250).length;
+      return { totalPnl, totalTrades, totalWins, winRate, qualifiedDays };
+    }
+
+    function render() {
+      const data = load().sort((a, b) => b.date.localeCompare(a.date));
+      const s = calc(data);
+
+      const pnlEl = document.getElementById('s-pnl');
+      pnlEl.textContent = (s.totalPnl >= 0 ? '+' : '') + '$' + s.totalPnl.toFixed(2);
+      pnlEl.className = 'value ' + (s.totalPnl >= 0 ? 'positive' : 'negative');
+
+      document.getElementById('s-trades').textContent = s.totalTrades;
+      document.getElementById('s-wr').textContent = s.winRate.toFixed(1) + '%';
+      document.getElementById('s-qd').textContent = s.qualifiedDays + ' / 5';
+
+      const tbody = document.getElementById('tbody');
+      if (data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="empty">尚無紀錄</td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.map((r, i) => `
+        <tr>
+          <td>${r.date}</td>
+          <td class="${r.pnl >= 0 ? 'positive' : 'negative'}">${r.pnl >= 0 ? '+' : ''}${Number(r.pnl).toFixed(2)}</td>
+          <td>${r.trades}</td>
+          <td>${r.wins}</td>
+          <td>${r.rr || '-'}</td>
+          <td>${r.grade || '-'}</td>
+          <td>${r.note || ''}</td>
+          <td><button class="danger" style="padding:4px 8px;font-size:0.75rem" onclick="removeRecord('${r.id}')">刪</button></td>
+        </tr>
+      `).join('');
+    }
+
+    function addRecord() {
+      const date = document.getElementById('date').value;
+      const pnl = document.getElementById('pnl').value;
+      const trades = document.getElementById('trades').value;
+      const wins = document.getElementById('wins').value;
+
+      if (!date || pnl === '' || trades === '' || wins === '') {
+        alert('請填寫日期、PnL、交易數、盈利數');
+        return;
+      }
+
+      const data = load();
+      data.push({
+        id: Date.now().toString(),
+        date,
+        symbol: document.getElementById('symbol').value,
+        pnl: Number(pnl),
+        trades: Number(trades),
+        wins: Number(wins),
+        rr: document.getElementById('rr').value || '',
+        grade: document.getElementById('grade').value,
+        note: document.getElementById('note').value
+      });
+      save(data);
+      render();
+
+      // 清空部分欄位
+      document.getElementById('pnl').value = '';
+      document.getElementById('trades').value = '';
+      document.getElementById('wins').value = '';
+      document.getElementById('rr').value = '';
+      document.getElementById('note').value = '';
+    }
+
+    function removeRecord(id) {
+      if (!confirm('確定刪除？')) return;
+      const data = load().filter(r => r.id !== id);
+      save(data);
+      render();
+    }
+
+    function exportData() {
+      const data = load();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'apex-performance.json';
+      a.click();
+    }
+
+    function exportMarkdown() {
+      const data = load().sort((a, b) => a.date.localeCompare(b.date));
+      let totalPnl = 0, totalTrades = 0, totalWins = 0;
+      let md = `# 每日績效記錄\n\n| 日期 | 當日PnL | 累計PnL | 當日交易數 | 當日盈利數 | 累計勝率 | 當日平均RR | 備註 |\n|------|---------|---------|------------|------------|----------|------------|------|\n`;
+      data.forEach(r => {
+        totalPnl += Number(r.pnl);
+        totalTrades += Number(r.trades);
+        totalWins += Number(r.wins);
+        const wr = totalTrades > 0 ? (totalWins / totalTrades * 100).toFixed(1) + '%' : '0%';
+        const note = [r.symbol, r.grade !== '-' ? r.grade + '級' : '', r.note].filter(Boolean).join(' / ');
+        md += `| ${r.date} | ${r.pnl} | ${totalPnl.toFixed(2)} | ${r.trades} | ${r.wins} | ${wr} | ${r.rr || '-'} | ${note} |\n`;
+      });
+      const blob = new Blob([md], { type: 'text/markdown' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'daily-log.md';
+      a.click();
+    }
+
+    function clearData() {
+      if (!confirm('確定清空所有本地資料？此操作無法復原。')) return;
+      localStorage.removeItem(STORAGE_KEY);
+      render();
+    }
+
+    // 初始化
+    document.getElementById('date').valueAsDate = new Date();
+    render();
+  </script>
+</body>
+</html>

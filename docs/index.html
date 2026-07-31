@@ -3,241 +3,114 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Apex 50K 績效儀表板</title>
+  <title>Apex 50K 分析儀表板</title>
   <style>
     :root {
-      --bg: #0b0e13;
-      --card: #151a22;
-      --border: #2a3341;
-      --text: #e8eaed;
-      --muted: #8b95a8;
-      --blue: #3b82f6;
-      --green: #22c55e;
-      --red: #ef4444;
-      --yellow: #eab308;
+      --bg:#0b0e13; --card:#151a22; --border:#2a3341; --text:#e8eaed;
+      --muted:#8b95a8; --blue:#3b82f6; --green:#22c55e; --red:#ef4444;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.5;
-      padding: 16px;
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-    h1 { font-size: 1.4rem; margin-bottom: 4px; }
-    .sub { color: var(--muted); font-size: 0.85rem; margin-bottom: 16px; }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-    .stat {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px;
-      text-align: center;
-    }
-    .stat .label { color: var(--muted); font-size: 0.72rem; margin-bottom: 4px; }
-    .stat .value { font-size: 1.15rem; font-weight: 700; }
-    .positive { color: var(--green); }
-    .negative { color: var(--red); }
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 14px;
-    }
-    .card h2 {
-      font-size: 0.98rem;
-      color: var(--blue);
-      margin-bottom: 12px;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 6px;
-    }
-    label { display: block; font-size: 0.78rem; color: var(--muted); margin-bottom: 4px; }
-    input, select {
-      width: 100%;
-      background: #1e2530;
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 8px 10px;
-      border-radius: 8px;
-      font-size: 0.88rem;
-      margin-bottom: 10px;
-    }
-    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-    button {
-      background: var(--blue);
-      color: white;
-      border: none;
-      padding: 9px 14px;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      font-size: 0.88rem;
-      margin-right: 6px;
-      margin-top: 4px;
-    }
-    button.secondary { background: #334155; }
-    button.danger { background: var(--red); }
-    table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
-    th, td { padding: 7px 5px; text-align: left; border-bottom: 1px solid var(--border); }
-    th { color: var(--muted); font-weight: 500; }
-    .empty { color: var(--muted); text-align: center; padding: 18px; }
-    .filter-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 12px;
-      align-items: end;
-    }
-    .filter-bar > div { flex: 1; min-width: 120px; }
-    .tag {
-      display: inline-block;
-      padding: 2px 7px;
-      border-radius: 6px;
-      font-size: 0.72rem;
-      background: #1e293b;
-    }
-    @media (max-width: 600px) {
-      .row2, .row3 { grid-template-columns: 1fr; }
-    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans TC",sans-serif;background:var(--bg);color:var(--text);padding:14px;max-width:1100px;margin:0 auto;line-height:1.45}
+    h1{font-size:1.35rem;margin-bottom:4px}
+    .sub{color:var(--muted);font-size:0.82rem;margin-bottom:14px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:12px}
+    .stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center}
+    .stat .label{color:var(--muted);font-size:0.7rem}
+    .stat .value{font-size:1.1rem;font-weight:700}
+    .positive{color:var(--green)}.negative{color:var(--red)}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px}
+    .card h2{font-size:0.95rem;color:var(--blue);margin-bottom:10px;border-bottom:1px solid var(--border);padding-bottom:5px}
+    label{display:block;font-size:0.75rem;color:var(--muted);margin-bottom:3px}
+    input,select{width:100%;background:#1e2530;border:1px solid var(--border);color:var(--text);padding:7px 9px;border-radius:8px;font-size:0.85rem;margin-bottom:8px}
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+    .row4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}
+    button{background:var(--blue);color:#fff;border:none;padding:8px 12px;border-radius:8px;font-weight:600;cursor:pointer;font-size:0.84rem;margin:3px 4px 3px 0}
+    button.secondary{background:#334155}button.danger{background:var(--red)}
+    table{width:100%;border-collapse:collapse;font-size:0.75rem}
+    th,td{padding:6px 4px;text-align:left;border-bottom:1px solid var(--border)}
+    th{color:var(--muted);font-weight:500}
+    .empty{color:var(--muted);text-align:center;padding:16px}
+    .tag{display:inline-block;padding:1px 6px;border-radius:5px;font-size:0.7rem;background:#1e293b}
+    .breakdown{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+    .bd-item{background:#1e2530;border-radius:8px;padding:8px 10px;font-size:0.78rem}
+    .bd-item .k{color:var(--muted)}
+    @media(max-width:700px){.row2,.row3,.row4{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
-  <h1>Apex 50K 績效儀表板</h1>
-  <p class="sub">多品種 · 多策略 · 自動計算 · 可篩選分析</p>
+  <h1>Apex 50K 分析儀表板</h1>
+  <p class="sub">總合分析 · 品種/策略/左右/等級/LLM 各自獨立分析</p>
 
   <div class="grid">
-    <div class="stat"><div class="label">累計 PnL</div><div class="value" id="s-pnl">$0</div></div>
+    <div class="stat"><div class="label">總合 PnL</div><div class="value" id="s-pnl">$0</div></div>
     <div class="stat"><div class="label">總交易</div><div class="value" id="s-trades">0</div></div>
-    <div class="stat"><div class="label">勝率</div><div class="value" id="s-wr">0%</div></div>
-    <div class="stat"><div class="label">合格日</div><div class="value" id="s-qd">0 / 5</div></div>
+    <div class="stat"><div class="label">總勝率</div><div class="value" id="s-wr">0%</div></div>
+    <div class="stat"><div class="label">合格日</div><div class="value" id="s-qd">0/5</div></div>
   </div>
 
   <div class="card">
     <h2>新增紀錄</h2>
-    <div class="row3">
-      <div>
-        <label>日期</label>
-        <input type="date" id="date" />
-      </div>
-      <div>
-        <label>品種</label>
+    <div class="row4">
+      <div><label>日期</label><input type="date" id="date"/></div>
+      <div><label>品種</label>
         <select id="symbol">
-          <option value="MNQ">MNQ (納指微)</option>
-          <option value="MES">MES (標普微)</option>
-          <option value="MYM">MYM (道指微)</option>
-          <option value="M2K">M2K (羅素微)</option>
-          <option value="MGC">MGC (黃金微)</option>
-          <option value="SIL">SIL (白銀微)</option>
-          <option value="MCL">MCL (原油微)</option>
-          <option value="MBT">MBT (比特幣微)</option>
-          <option value="MET">MET (以太坊微)</option>
-          <option value="M6E">M6E (歐元微)</option>
-          <option value="M6A">M6A (澳元微)</option>
-          <option value="6J">6J (日圓)</option>
-          <option value="其他">其他</option>
+          <option>MNQ</option><option>MES</option><option>MYM</option><option>M2K</option>
+          <option>MGC</option><option>SIL</option><option>MCL</option>
+          <option>MBT</option><option>MET</option><option>M6E</option><option>M6A</option><option>6J</option><option>其他</option>
         </select>
       </div>
-      <div>
-        <label>策略</label>
+      <div><label>策略</label>
         <select id="strategy">
-          <option value="套杀">套杀</option>
-          <option value="左右環境">左右環境</option>
-          <option value="AMD">AMD</option>
-          <option value="突破">突破</option>
-          <option value="SMT">SMT</option>
-          <option value="NDOG/NWOG">NDOG/NWOG</option>
-          <option value="三驱动">三驱动</option>
-          <option value="其他">其他</option>
+          <option>套杀</option><option>左右環境</option><option>AMD</option><option>突破</option>
+          <option>SMT</option><option>NDOG/NWOG</option><option>三驱动</option><option>其他</option>
         </select>
       </div>
+      <div><label>等級</label><select id="grade"><option>A</option><option>B</option><option>C</option><option>-</option></select></div>
     </div>
-    <div class="row3">
-      <div>
-        <label>當日 PnL ($)</label>
-        <input type="number" id="pnl" step="0.01" placeholder="0.00" />
+    <div class="row4">
+      <div><label>左側</label>
+        <select id="leftEnv"><option value="">—</option><option>普通(打牌逻辑)</option><option>AMD</option><option>SMT</option><option>跳水</option><option>MMXM</option><option>無</option></select>
       </div>
-      <div>
-        <label>交易數</label>
-        <input type="number" id="trades" min="0" placeholder="0" />
+      <div><label>右側</label>
+        <select id="rightEnv"><option value="">—</option><option>三驱动</option><option>NDOG</option><option>SMT</option><option>NWOG</option><option>普通(打牌逻辑)</option><option>套杀</option><option>無</option></select>
       </div>
-      <div>
-        <label>盈利數</label>
-        <input type="number" id="wins" min="0" placeholder="0" />
-      </div>
-    </div>
-    <div class="row3">
-      <div>
-        <label>平均 RR</label>
-        <input type="number" id="rr" step="0.1" placeholder="0.0" />
-      </div>
-      <div>
-        <label>等級</label>
-        <select id="grade">
-          <option value="A">A</option>
-          <option value="B">B</option>
-          <option value="C">C</option>
+      <div><label>LLM</label><select id="llm"><option>A</option><option>B</option><option>C</option><option>未使用</option></select></div>
+      <div><label>主動/被動/工程/預設</label>
+        <select id="abcd">
+          <option value="2+2">2+2 (A)</option>
+          <option value="2+1">2+1 / 1+2 (B)</option>
+          <option value="1+1">1+1 (C)</option>
           <option value="-">—</option>
         </select>
       </div>
-      <div>
-        <label>備註</label>
-        <input type="text" id="note" placeholder="可選" />
-      </div>
     </div>
-    <div>
-      <button onclick="addRecord()">新增紀錄</button>
-      <button class="secondary" onclick="exportData()">匯出 JSON</button>
-      <button class="secondary" onclick="exportMarkdown()">匯出 Markdown</button>
-      <button class="danger" onclick="clearData()">清空</button>
+    <div class="row4">
+      <div><label>PnL ($)</label><input type="number" id="pnl" step="0.01"/></div>
+      <div><label>交易數</label><input type="number" id="trades" min="0"/></div>
+      <div><label>盈利數</label><input type="number" id="wins" min="0"/></div>
+      <div><label>RR</label><input type="number" id="rr" step="0.1"/></div>
     </div>
+    <button onclick="addRecord()">新增</button>
+    <button class="secondary" onclick="importJSON()">貼上 JSON 匯入</button>
+    <button class="secondary" onclick="exportData()">匯出 JSON</button>
+    <button class="secondary" onclick="exportMarkdown()">匯出 MD</button>
+    <button class="danger" onclick="clearData()">清空</button>
   </div>
 
   <div class="card">
-    <h2>篩選分析</h2>
-    <div class="filter-bar">
-      <div>
-        <label>篩選品種</label>
-        <select id="filterSymbol" onchange="render()">
-          <option value="">全部</option>
-          <option value="MNQ">MNQ</option>
-          <option value="MES">MES</option>
-          <option value="MYM">MYM</option>
-          <option value="M2K">M2K</option>
-          <option value="MGC">MGC</option>
-          <option value="SIL">SIL</option>
-          <option value="MCL">MCL</option>
-          <option value="MBT">MBT</option>
-          <option value="MET">MET</option>
-          <option value="M6E">M6E</option>
-          <option value="M6A">M6A</option>
-          <option value="6J">6J</option>
-        </select>
-      </div>
-      <div>
-        <label>篩選策略</label>
-        <select id="filterStrategy" onchange="render()">
-          <option value="">全部</option>
-          <option value="套杀">套杀</option>
-          <option value="左右環境">左右環境</option>
-          <option value="AMD">AMD</option>
-          <option value="突破">突破</option>
-          <option value="SMT">SMT</option>
-          <option value="NDOG/NWOG">NDOG/NWOG</option>
-          <option value="三驱动">三驱动</option>
-          <option value="其他">其他</option>
-        </select>
-      </div>
+    <h2>篩選（獨立分析）</h2>
+    <div class="row4">
+      <div><label>品種</label><select id="fSymbol" onchange="render()"><option value="">全部</option></select></div>
+      <div><label>策略</label><select id="fStrategy" onchange="render()"><option value="">全部</option></select></div>
+      <div><label>等級</label><select id="fGrade" onchange="render()"><option value="">全部</option><option>A</option><option>B</option><option>C</option></select></div>
+      <div><label>LLM</label><select id="fLlm" onchange="render()"><option value="">全部</option><option>A</option><option>B</option><option>C</option><option>未使用</option></select></div>
     </div>
-    <div class="grid" style="margin-bottom:0">
+    <div class="row2">
+      <div><label>左側環境</label><select id="fLeft" onchange="render()"><option value="">全部</option></select></div>
+      <div><label>右側環境</label><select id="fRight" onchange="render()"><option value="">全部</option></select></div>
+    </div>
+    <div class="grid" style="margin-top:8px;margin-bottom:0">
       <div class="stat"><div class="label">篩選 PnL</div><div class="value" id="f-pnl">$0</div></div>
       <div class="stat"><div class="label">篩選交易</div><div class="value" id="f-trades">0</div></div>
       <div class="stat"><div class="label">篩選勝率</div><div class="value" id="f-wr">0%</div></div>
@@ -245,165 +118,172 @@
   </div>
 
   <div class="card">
+    <h2>維度拆解（Lump Sum 對照）</h2>
+    <div class="breakdown" id="breakdown"></div>
+  </div>
+
+  <div class="card">
     <h2>歷史紀錄</h2>
     <table>
-      <thead>
-        <tr>
-          <th>日期</th>
-          <th>品種</th>
-          <th>策略</th>
-          <th>PnL</th>
-          <th>交易</th>
-          <th>勝</th>
-          <th>RR</th>
-          <th>等級</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody id="tbody">
-        <tr><td colspan="9" class="empty">尚無紀錄</td></tr>
-      </tbody>
+      <thead><tr><th>日期</th><th>品種</th><th>策略</th><th>左</th><th>右</th><th>等級</th><th>LLM</th><th>PnL</th><th>T/W</th><th></th></tr></thead>
+      <tbody id="tbody"><tr><td colspan="10" class="empty">尚無紀錄</td></tr></tbody>
     </table>
   </div>
 
   <script>
-    const STORAGE_KEY = 'apex_performance_v2';
+    const KEY='apex_perf_v3';
+    const load=()=>{try{return JSON.parse(localStorage.getItem(KEY))||[]}catch{return[]}};
+    const save=d=>localStorage.setItem(KEY,JSON.stringify(d));
+    const calc=d=>({
+      pnl:d.reduce((s,r)=>s+Number(r.pnl||0),0),
+      trades:d.reduce((s,r)=>s+Number(r.trades||0),0),
+      wins:d.reduce((s,r)=>s+Number(r.wins||0),0),
+      wr:0, qd:d.filter(r=>Number(r.pnl)>=250).length
+    });
+    function withWr(c){c.wr=c.trades>0?(c.wins/c.trades*100):0;return c;}
 
-    function load() {
-      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
-      catch { return []; }
+    function filtered(){
+      let d=load();
+      const fs=v=>document.getElementById(v).value;
+      const checks=[['fSymbol','symbol'],['fStrategy','strategy'],['fGrade','grade'],['fLlm','llm'],['fLeft','leftEnv'],['fRight','rightEnv']];
+      checks.forEach(([fid,key])=>{const v=fs(fid);if(v)d=d.filter(r=>(r[key]||'')===v)});
+      return d;
     }
-    function save(data) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
 
-    function calc(data) {
-      const totalPnl = data.reduce((s, r) => s + Number(r.pnl || 0), 0);
-      const totalTrades = data.reduce((s, r) => s + Number(r.trades || 0), 0);
-      const totalWins = data.reduce((s, r) => s + Number(r.wins || 0), 0);
-      const winRate = totalTrades > 0 ? (totalWins / totalTrades * 100) : 0;
-      const qualifiedDays = data.filter(r => Number(r.pnl) >= 250).length;
-      return { totalPnl, totalTrades, totalWins, winRate, qualifiedDays };
-    }
-
-    function filtered() {
-      const all = load();
-      const fs = document.getElementById('filterSymbol').value;
-      const fstr = document.getElementById('filterStrategy').value;
-      return all.filter(r => {
-        if (fs && r.symbol !== fs) return false;
-        if (fstr && r.strategy !== fstr) return false;
-        return true;
+    function groupBy(data,key){
+      const m={};
+      data.forEach(r=>{
+        const k=r[key]||'—';
+        if(!m[k])m[k]=[];
+        m[k].push(r);
       });
+      return Object.entries(m).map(([k,arr])=>({k,...withWr(calc(arr))})).sort((a,b)=>b.pnl-a.pnl);
     }
 
-    function render() {
-      const all = load();
-      const data = filtered().sort((a, b) => b.date.localeCompare(a.date));
-      const sAll = calc(all);
-      const s = calc(data);
+    function fillSelect(id,values){
+      const el=document.getElementById(id);
+      const cur=el.value;
+      const base=el.options[0].outerHTML;
+      el.innerHTML=base+values.filter(Boolean).map(v=>`<option>${v}</option>`).join('');
+      el.value=cur;
+    }
 
-      const pnlEl = document.getElementById('s-pnl');
-      pnlEl.textContent = (sAll.totalPnl >= 0 ? '+' : '') + '$' + sAll.totalPnl.toFixed(2);
-      pnlEl.className = 'value ' + (sAll.totalPnl >= 0 ? 'positive' : 'negative');
-      document.getElementById('s-trades').textContent = sAll.totalTrades;
-      document.getElementById('s-wr').textContent = sAll.winRate.toFixed(1) + '%';
-      document.getElementById('s-qd').textContent = sAll.qualifiedDays + ' / 5';
+    function render(){
+      const all=load();
+      const data=filtered().sort((a,b)=>b.date.localeCompare(a.date));
+      const sAll=withWr(calc(all)), s=withWr(calc(data));
 
-      const fp = document.getElementById('f-pnl');
-      fp.textContent = (s.totalPnl >= 0 ? '+' : '') + '$' + s.totalPnl.toFixed(2);
-      fp.className = 'value ' + (s.totalPnl >= 0 ? 'positive' : 'negative');
-      document.getElementById('f-trades').textContent = s.totalTrades;
-      document.getElementById('f-wr').textContent = s.winRate.toFixed(1) + '%';
+      const setStat=(id,val,isPnl)=>{
+        const el=document.getElementById(id);
+        el.textContent=isPnl?((val>=0?'+':'')+'$'+val.toFixed(2)):val;
+        if(isPnl)el.className='value '+(val>=0?'positive':'negative');
+      };
+      setStat('s-pnl',sAll.pnl,true);
+      document.getElementById('s-trades').textContent=sAll.trades;
+      document.getElementById('s-wr').textContent=sAll.wr.toFixed(1)+'%';
+      document.getElementById('s-qd').textContent=sAll.qd+'/5';
+      setStat('f-pnl',s.pnl,true);
+      document.getElementById('f-trades').textContent=s.trades;
+      document.getElementById('f-wr').textContent=s.wr.toFixed(1)+'%';
 
-      const tbody = document.getElementById('tbody');
-      if (data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" class="empty">尚無紀錄</td></tr>';
-        return;
-      }
-      tbody.innerHTML = data.map(r => `
+      // unique values for filters
+      fillSelect('fSymbol',[...new Set(all.map(r=>r.symbol))]);
+      fillSelect('fStrategy',[...new Set(all.map(r=>r.strategy))]);
+      fillSelect('fLeft',[...new Set(all.map(r=>r.leftEnv))]);
+      fillSelect('fRight',[...new Set(all.map(r=>r.rightEnv))]);
+
+      // breakdowns
+      const dims=[
+        ['品種','symbol'],['策略','strategy'],['等級','grade'],['LLM','llm'],['左側','leftEnv'],['右側','rightEnv'],['ABCD','abcd']
+      ];
+      document.getElementById('breakdown').innerHTML=dims.map(([title,key])=>{
+        const g=groupBy(all,key);
+        if(!g.length)return '';
+        return `<div class="bd-item"><div class="k">${title}</div>`+
+          g.map(x=>`<div>${x.k}: <b class="${x.pnl>=0?'positive':'negative'}">$${x.pnl.toFixed(1)}</b> / ${x.trades}筆 / ${x.wr.toFixed(0)}%</div>`).join('')+
+          `</div>`;
+      }).join('');
+
+      const tb=document.getElementById('tbody');
+      if(!data.length){tb.innerHTML='<tr><td colspan="10" class="empty">尚無紀錄</td></tr>';return;}
+      tb.innerHTML=data.map(r=>`
         <tr>
           <td>${r.date}</td>
-          <td><span class="tag">${r.symbol || '-'}</span></td>
-          <td><span class="tag">${r.strategy || '-'}</span></td>
-          <td class="${r.pnl >= 0 ? 'positive' : 'negative'}">${r.pnl >= 0 ? '+' : ''}${Number(r.pnl).toFixed(2)}</td>
-          <td>${r.trades}</td>
-          <td>${r.wins}</td>
-          <td>${r.rr || '-'}</td>
-          <td>${r.grade || '-'}</td>
-          <td><button class="danger" style="padding:3px 7px;font-size:0.72rem" onclick="removeRecord('${r.id}')">刪</button></td>
-        </tr>
-      `).join('');
+          <td><span class="tag">${r.symbol||'-'}</span></td>
+          <td><span class="tag">${r.strategy||'-'}</span></td>
+          <td>${r.leftEnv||'-'}</td>
+          <td>${r.rightEnv||'-'}</td>
+          <td>${r.grade||'-'}</td>
+          <td>${r.llm||'-'}</td>
+          <td class="${r.pnl>=0?'positive':'negative'}">${r.pnl>=0?'+':''}${Number(r.pnl).toFixed(1)}</td>
+          <td>${r.trades}/${r.wins}</td>
+          <td><button class="danger" style="padding:2px 6px;font-size:0.7rem" onclick="removeRecord('${r.id}')">刪</button></td>
+        </tr>`).join('');
     }
 
-    function addRecord() {
-      const date = document.getElementById('date').value;
-      const pnl = document.getElementById('pnl').value;
-      const trades = document.getElementById('trades').value;
-      const wins = document.getElementById('wins').value;
-      if (!date || pnl === '' || trades === '' || wins === '') {
-        alert('請填寫日期、PnL、交易數、盈利數');
-        return;
-      }
-      const data = load();
-      data.push({
-        id: Date.now().toString(),
-        date,
-        symbol: document.getElementById('symbol').value,
-        strategy: document.getElementById('strategy').value,
-        pnl: Number(pnl),
-        trades: Number(trades),
-        wins: Number(wins),
-        rr: document.getElementById('rr').value || '',
-        grade: document.getElementById('grade').value,
-        note: document.getElementById('note').value
+    function addRecord(){
+      const date=document.getElementById('date').value;
+      const pnl=document.getElementById('pnl').value;
+      const trades=document.getElementById('trades').value;
+      const wins=document.getElementById('wins').value;
+      if(!date||pnl===''||trades===''||wins===''){alert('請填日期/PnL/交易數/盈利數');return;}
+      const d=load();
+      d.push({
+        id:Date.now().toString(), date,
+        symbol:document.getElementById('symbol').value,
+        strategy:document.getElementById('strategy').value,
+        leftEnv:document.getElementById('leftEnv').value,
+        rightEnv:document.getElementById('rightEnv').value,
+        grade:document.getElementById('grade').value,
+        llm:document.getElementById('llm').value,
+        abcd:document.getElementById('abcd').value,
+        pnl:Number(pnl), trades:Number(trades), wins:Number(wins),
+        rr:document.getElementById('rr').value||''
       });
-      save(data);
-      render();
-      document.getElementById('pnl').value = '';
-      document.getElementById('trades').value = '';
-      document.getElementById('wins').value = '';
-      document.getElementById('rr').value = '';
-      document.getElementById('note').value = '';
+      save(d); render();
+      ['pnl','trades','wins','rr'].forEach(i=>document.getElementById(i).value='');
     }
 
-    function removeRecord(id) {
-      if (!confirm('確定刪除？')) return;
-      save(load().filter(r => r.id !== id));
-      render();
+    function removeRecord(id){if(!confirm('刪除？'))return;save(load().filter(r=>r.id!==id));render();}
+
+    function importJSON(){
+      const t=prompt('貼上 daily-report 複製的 JSON');
+      if(!t)return;
+      try{
+        const o=JSON.parse(t);
+        const d=load();
+        d.push({
+          id:Date.now().toString(),
+          date:o.date||new Date().toISOString().slice(0,10),
+          symbol:o.symbol||'其他', strategy:o.strategy||'其他',
+          leftEnv:o.leftEnv||'', rightEnv:o.rightEnv||'',
+          grade:o.grade||'-', llm:o.llm||'未使用',
+          abcd: (o.active==='Yes'?1:0)+(o.passive==='Yes'?1:0)+(o.engineering==='Yes'?1:0)+(o.preset==='Yes'?1:0) >=4 ? '2+2' :
+                (o.active==='Yes'?1:0)+(o.passive==='Yes'?1:0)+(o.engineering==='Yes'?1:0)+(o.preset==='Yes'?1:0) ===3 ? '2+1' : '1+1',
+          pnl:Number(o.pnl)||0, trades:Number(o.trades)||0, wins:Number(o.wins)||0, rr:o.rr||''
+        });
+        save(d); render(); alert('已匯入');
+      }catch(e){alert('JSON 格式錯誤');}
     }
 
-    function exportData() {
-      const blob = new Blob([JSON.stringify(load(), null, 2)], { type: 'application/json' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'apex-performance.json';
-      a.click();
+    function exportData(){
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(new Blob([JSON.stringify(load(),null,2)],{type:'application/json'}));
+      a.download='apex-performance.json';a.click();
     }
-
-    function exportMarkdown() {
-      const data = load().sort((a, b) => a.date.localeCompare(b.date));
-      let totalPnl = 0, totalTrades = 0, totalWins = 0;
-      let md = `# 每日績效記錄\n\n| 日期 | 品種 | 策略 | 當日PnL | 累計PnL | 交易數 | 盈利數 | 勝率 | RR | 等級 |\n|------|------|------|---------|---------|--------|--------|------|-----|------|\n`;
-      data.forEach(r => {
-        totalPnl += Number(r.pnl);
-        totalTrades += Number(r.trades);
-        totalWins += Number(r.wins);
-        const wr = totalTrades > 0 ? (totalWins / totalTrades * 100).toFixed(1) + '%' : '0%';
-        md += `| ${r.date} | ${r.symbol} | ${r.strategy} | ${r.pnl} | ${totalPnl.toFixed(2)} | ${r.trades} | ${r.wins} | ${wr} | ${r.rr || '-'} | ${r.grade} |\n`;
-      });
-      const blob = new Blob([md], { type: 'text/markdown' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'daily-log.md';
-      a.click();
+    function exportMarkdown(){
+      const data=load().sort((a,b)=>a.date.localeCompare(b.date));
+      let tp=0,tt=0,tw=0;
+      let md='# 績效\n\n| 日期 | 品種 | 策略 | 左 | 右 | 等級 | LLM | PnL | 交易 | 勝 |\n|---|---|---|---|---|---|---|---|---|---|\n';
+      data.forEach(r=>{tp+=Number(r.pnl);tt+=Number(r.trades);tw+=Number(r.wins);
+        md+=`| ${r.date} | ${r.symbol} | ${r.strategy} | ${r.leftEnv||'-'} | ${r.rightEnv||'-'} | ${r.grade} | ${r.llm} | ${r.pnl} | ${r.trades} | ${r.wins} |\n`;});
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(new Blob([md],{type:'text/markdown'}));
+      a.download='daily-log.md';a.click();
     }
+    function clearData(){if(confirm('清空全部？')){localStorage.removeItem(KEY);render();}}
 
-    function clearData() {
-      if (!confirm('確定清空所有本地資料？')) return;
-      localStorage.removeItem(STORAGE_KEY);
-      render();
-    }
-
-    document.getElementById('date').valueAsDate = new Date();
+    document.getElementById('date').valueAsDate=new Date();
     render();
   </script>
 </body>

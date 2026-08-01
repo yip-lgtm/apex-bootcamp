@@ -59,10 +59,11 @@
   <div class="card">
     <h2>新增 / 匯入</h2>
     <p class="hint">預設每筆風險 <span class="auto">$100</span>。填「淨利 + 交易數 + 盈利數」即可自動算出 RR、PF、均盈。</p>
-    <div class="row3">
+    <div class="row4">
       <div><label>日期</label><input type="date" id="date"/></div>
       <div><label>品種</label><select id="symbol"><option>MNQ</option><option>MES</option><option>其他</option></select></div>
       <div><label>週期</label><select id="timeframe"><option>5m</option><option>15m</option><option>1H</option><option>4H</option></select></div>
+      <div><label>方向</label><select id="direction"><option value="">—</option><option>多</option><option>空</option><option>雙向</option></select></div>
     </div>
     <div class="row2">
       <div><label>左側</label><select id="leftEnv"><option value="">—</option><option>普通(打牌逻辑)</option><option>AMD</option><option>SMT</option><option>跳水</option><option>MMXM</option></select></div>
@@ -125,6 +126,9 @@
     <div class="row3">
       <div><label>主動</label><select id="fActive" onchange="render()"><option value="">全部</option><option>Yes</option><option>No</option></select></div>
       <div><label>被動</label><select id="fPassive" onchange="render()"><option value="">全部</option><option>Yes</option><option>No</option></select></div>
+      <div><label>方向</label><select id="fDirection" onchange="render()"><option value="">全部</option><option>多</option><option>空</option><option>雙向</option></select></div>
+    </div>
+    <div class="row3">
       <div><label>ABCD</label><select id="fAbcd" onchange="render()"><option value="">全部</option><option>2+2</option><option>2+1</option><option>1+1</option></select></div>
     </div>
   </div>
@@ -134,13 +138,13 @@
     <table>
       <thead>
         <tr>
-          <th>日期</th><th>品種</th><th>左</th><th>右</th>
+          <th>日期</th><th>品種</th><th>方向</th><th>左</th><th>右</th>
           <th>ABCD</th><th>LLM</th>
           <th>淨利</th><th>回撤</th><th>勝率</th><th>RR</th><th>PF</th>
           <th>Remark</th><th>圖</th><th></th>
         </tr>
       </thead>
-      <tbody id="tbody"><tr><td colspan="14" class="empty">尚無紀錄</td></tr></tbody>
+      <tbody id="tbody"><tr><td colspan="15" class="empty">尚無紀錄</td></tr></tbody>
     </table>
   </div>
 
@@ -228,6 +232,7 @@
       setVal('date', r.date);
       setVal('symbol', r.symbol);
       setVal('timeframe', r.timeframe);
+      setVal('direction', r.direction);
       setVal('leftEnv', r.leftEnv);
       setVal('rightEnv', r.rightEnv);
       setVal('active', r.active||'Yes');
@@ -282,12 +287,14 @@
       const fa=document.getElementById('fActive').value;
       const fp=document.getElementById('fPassive').value;
       const fab=document.getElementById('fAbcd').value;
+      const fdir=document.getElementById('fDirection').value;
       if(fLeft) d=d.filter(r=>(r.leftEnv||'')===fLeft);
       if(fRight) d=d.filter(r=>(r.rightEnv||'')===fRight);
       if(fl) d=d.filter(r=>(r.llm||'')===fl);
       if(fa) d=d.filter(r=>(r.active||'')===fa);
       if(fp) d=d.filter(r=>(r.passive||'')===fp);
       if(fab) d=d.filter(r=>abcdOf(r)===fab);
+      if(fdir) d=d.filter(r=>(r.direction||'')===fdir);
       return d;
     }
 
@@ -319,10 +326,11 @@
       bestEl.className='value '+(best>=0?'positive':'negative');
 
       const tb=document.getElementById('tbody');
-      if(!data.length){tb.innerHTML='<tr><td colspan="14" class="empty">尚無紀錄</td></tr>';return;}
+      if(!data.length){tb.innerHTML='<tr><td colspan="15" class="empty">尚無紀錄</td></tr>';return;}
       tb.innerHTML=data.map(r=>`<tr style="${r.id===editingId?'background:#3b1f1f':''}">
         <td>${r.date}</td>
         <td>${r.symbol}</td>
+        <td>${r.direction?`<span class="tag" style="${r.direction==='多'?'background:#1e3a2e;color:#86efac':r.direction==='空'?'background:#3b1f1f;color:#fca5a5':''}">${r.direction}</span>`:'-'}</td>
         <td>${r.leftEnv||'-'}</td>
         <td>${r.rightEnv||'-'}</td>
         <td><span class="tag">${abcdOf(r)}</span></td>
@@ -368,6 +376,7 @@
         id: editingId || Date.now().toString(), date,
         symbol:document.getElementById('symbol').value,
         timeframe:document.getElementById('timeframe').value,
+        direction:document.getElementById('direction').value,
         leftEnv:document.getElementById('leftEnv').value,
         rightEnv:document.getElementById('rightEnv').value,
         active, passive, engineering, preset, abcd,
@@ -435,6 +444,7 @@
           id:Date.now().toString(),
           date:o.date||new Date().toISOString().slice(0,10),
           symbol:o.symbol||'MNQ', timeframe:o.timeframe||'',
+          direction:o.direction||'',
           leftEnv:o.leftEnv||'', rightEnv:o.rightEnv||'',
           active, passive, engineering, preset, abcd,
           netProfit:np, maxDD:Number(o.maxDD)||0,

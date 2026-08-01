@@ -78,13 +78,13 @@
       <div><label>淨利 $</label><input type="number" id="netProfit" step="0.01" oninput="recalc()"/></div>
       <div><label>最大回撤 $</label><input type="number" id="maxDD" step="0.01" oninput="recalc()"/></div>
       <div><label>交易數</label><input type="number" id="trades" oninput="recalc()"/></div>
-      <div><label>盈利數</label><input type="number" id="wins" oninput="recalc()"/></div>
+      <div><label>盈利數 <span class="auto" style="cursor:pointer;text-decoration:underline" onclick="computeWins()" title="從 交易數 × 勝率 自動填入">↻ 從勝率</span></label><input type="number" id="wins" oninput="recalc()"/></div>
     </div>
     <div class="row4">
       <div><label>單筆風險 $（預設100）</label><input type="number" id="riskPerTrade" step="1" value="100" oninput="recalc()"/></div>
-      <div><label>勝率 %（自動）</label><input type="number" id="winRate" step="0.1" readonly/></div>
+      <div><label>勝率 % <span class="auto">（自動，可手動覆蓋）</span></label><input type="number" id="winRate" step="0.1" oninput="wrManual=this.value!==''"/></div>
       <div><label>RR（自動）</label><input type="number" id="rr" step="0.01" readonly/></div>
-      <div><label>盈利因子 PF（自動）</label><input type="number" id="profitFactor" step="0.01" readonly/></div>
+      <div><label>盈利因子 PF <span class="auto">（自動，可手動覆蓋）</span></label><input type="number" id="profitFactor" step="0.01" oninput="pfManual=this.value!==''"/></div>
     </div>
     <div class="row4">
       <div><label>推算均盈 $（自動）</label><input type="number" id="avgWin" step="0.01" readonly/></div>
@@ -146,6 +146,8 @@
     const KEY='apex_bt_v11e';
     const load=()=>{try{return JSON.parse(localStorage.getItem(KEY))||[]}catch{return[]}};
     const save=d=>localStorage.setItem(KEY,JSON.stringify(d));
+    let pfManual=false;
+    let wrManual=false;
 
     function abcdOf(r){
       if(r.abcd) return r.abcd;
@@ -181,14 +183,38 @@
       const wins=document.getElementById('wins').value;
       const risk=document.getElementById('riskPerTrade').value || 100;
       const d=calcFromFixedRisk(np, trades, wins, risk);
-      document.getElementById('winRate').value=d.wr?d.wr.toFixed(1):'';
+      // WR: respect user override; auto-fill only when empty
+      if(!wrManual){
+        document.getElementById('winRate').value=d.wr?d.wr.toFixed(1):'';
+      }
       document.getElementById('avgLoss').value=d.avgLoss;
       document.getElementById('avgWin').value=d.avgWin!=null?d.avgWin.toFixed(2):'';
       document.getElementById('rr').value=d.rr!=null?d.rr.toFixed(2):'';
-      document.getElementById('profitFactor').value=d.pf==null?'':(d.pf>=999?'999':d.pf.toFixed(2));
+      // PF: respect user override; auto-fill only when empty
+      if(!pfManual){
+        document.getElementById('profitFactor').value=d.pf==null?'':(d.pf>=999?'999':d.pf.toFixed(2));
+      }
       const dd=document.getElementById('maxDD').value;
+      const pfAuto=d.pf!=null?(d.pf>=999?'∞':d.pf.toFixed(2)):'—';
+      const pfNow=document.getElementById('profitFactor').value;
+      const pfTag=pfManual?` (手動 ${pfNow||'—'})`:'';
+      const wrAuto=d.wr?d.wr.toFixed(1):'—';
+      const wrNow=document.getElementById('winRate').value;
+      const wrTag=wrManual?` (手動 ${wrNow||'—'}%)`:'';
       document.getElementById('livePreview').textContent=
-        `自動(風險$${d.risk}/筆) → 勝率 ${d.wr?d.wr.toFixed(1):'—'}% · RR ${d.rr!=null?d.rr.toFixed(2):'—'} · PF ${d.pf!=null?(d.pf>=999?'∞':d.pf.toFixed(2)):'—'} · 均盈 $${d.avgWin!=null?d.avgWin.toFixed(1):'—'} · 淨利 $${np||0} · 回撤 $${dd||0}`;
+        `自動(風險$${d.risk}/筆) → 勝率 自動 ${wrAuto}%${wrTag} · RR ${d.rr!=null?d.rr.toFixed(2):'—'} · PF 自動 ${pfAuto}${pfTag} · 均盈 $${d.avgWin!=null?d.avgWin.toFixed(1):'—'} · 淨利 $${np||0} · 回撤 $${dd||0}`;
+    }
+
+    function computeWins(){
+      const trades=Number(document.getElementById('trades').value)||0;
+      const wrField=document.getElementById('winRate').value;
+      if(!trades){alert('請先填交易數');return;}
+      if(wrField===''){alert('請先填勝率（或讓它自動計算）');return;}
+      const wr=Number(wrField);
+      if(isNaN(wr)){alert('勝率格式錯誤');return;}
+      const wins=Math.round(trades*wr/100);
+      document.getElementById('wins').value=wins;
+      recalc();
     }
 
     function filtered(){
@@ -270,6 +296,14 @@
       const preset=document.getElementById('preset').value;
       let n=0; [active,passive,engineering,preset].forEach(v=>{if(v==='Yes')n++});
       const abcd=n>=4?'2+2':n===3?'2+1':n>=1?'1+1':'—';
+      // PF: use manual override if set, else auto
+      const pfField=document.getElementById('profitFactor').value;
+      const pfSaved=pfManual && pfField!==''
+        ? Number(pfField)
+        : (d0.pf!=null?(d0.pf>=999?999:d0.pf):0);
+      // WR: use manual override if set, else auto from wins/trades
+      const wrField=document.getElementById('winRate').value;
+      const wrSaved=wrManual && wrField!=='' ? Number(wrField) : (d0.wr||0);
       const data=load();
       data.push({
         id:Date.now().toString(), date,
@@ -283,9 +317,11 @@
         trades, wins,
         riskPerTrade:risk,
         avgWin:d0.avgWin, avgLoss:d0.avgLoss,
-        winRate:d0.wr||0,
+        winRate:wrSaved,
         rr:d0.rr,
-        profitFactor:d0.pf!=null?(d0.pf>=999?999:d0.pf):0,
+        profitFactor:pfSaved,
+        pfManual:pfManual && pfField!=='',
+        wrManual:wrManual && wrField!=='',
         llm:document.getElementById('llm').value,
         llmRemark:document.getElementById('llmRemark').value.trim(),
         linkResult:document.getElementById('linkResult').value.trim(),
@@ -294,6 +330,8 @@
       save(data); render();
       ['netProfit','maxDD','trades','wins','winRate','rr','profitFactor','avgWin','avgLoss','linkResult','scriptName','llmRemark'].forEach(i=>document.getElementById(i).value='');
       document.getElementById('riskPerTrade').value='100';
+      pfManual=false;
+      wrManual=false;
       document.getElementById('livePreview').textContent='填淨利 / 交易數 / 盈利數 → 自動算 RR、PF';
     }
 

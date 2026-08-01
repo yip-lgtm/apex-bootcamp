@@ -59,6 +59,8 @@
       font-size: 0.8rem; line-height: 1.5; min-height: 100px;
     }
     .hint { font-size: 0.78rem; color: var(--muted); margin: 4px 0 10px; }
+    .live { font-size: 0.78rem; color: #86efac; margin: 4px 0 10px; }
+    .auto { color: #86efac; }
     .chk-block {
       background: #1e2530; border-radius: 8px; padding: 10px 12px; margin-bottom: 10px;
     }
@@ -123,18 +125,26 @@
 
   <div class="card">
     <h2>回測結果（策略測試器）</h2>
+    <p class="hint">預設每筆風險 <span class="auto">$100</span>。填「淨利 + 交易數 + 盈利數」即可自動算出 WR、RR、PF、均盈。</p>
     <div class="grid2">
-      <div class="row"><label class="title">淨利潤 ($)</label><input type="number" id="netProfit" step="0.01" placeholder="0.00" /></div>
-      <div class="row"><label class="title">最大回撤 ($)</label><input type="number" id="maxDD" step="0.01" placeholder="0.00" /></div>
-      <div class="row"><label class="title">勝率 (%)</label><input type="number" id="winRate" step="0.1" placeholder="0.0" /></div>
-      <div class="row"><label class="title">盈利因子</label><input type="number" id="profitFactor" step="0.01" placeholder="0.00" /></div>
-      <div class="row"><label class="title">總交易數</label><input type="number" id="trades" min="0" placeholder="0" /></div>
-      <div class="row"><label class="title">盈利筆數</label><input type="number" id="wins" min="0" placeholder="0" /></div>
+      <div class="row"><label class="title">淨利潤 ($)</label><input type="number" id="netProfit" step="0.01" oninput="recalc()" placeholder="0.00" /></div>
+      <div class="row"><label class="title">最大回撤 ($)</label><input type="number" id="maxDD" step="0.01" oninput="recalc()" placeholder="0.00" /></div>
+      <div class="row"><label class="title">總交易數</label><input type="number" id="trades" min="0" oninput="recalc()" placeholder="0" /></div>
+      <div class="row"><label class="title">盈利筆數 <span class="auto" style="cursor:pointer;text-decoration:underline" onclick="computeWins()" title="從 交易數 × 勝率 自動填入">↻ 從勝率</span></label><input type="number" id="wins" min="0" oninput="recalc()" placeholder="0" /></div>
+    </div>
+    <div class="grid2">
+      <div class="row"><label class="title">單筆風險 $（預設100）</label><input type="number" id="riskPerTrade" step="1" value="100" oninput="recalc()" /></div>
+      <div class="row"><label class="title">勝率 % <span class="auto">（自動，可手動覆蓋）</span></label><input type="number" id="winRate" step="0.1" oninput="wrManual=this.value!==''" placeholder="0.0" /></div>
+    </div>
+    <div class="grid2">
+      <div class="row"><label class="title">風險報酬比 RR <span class="auto">（自動，可手動覆蓋）</span></label><input type="number" id="rr" step="0.1" oninput="rrManual=this.value!==''" placeholder="例如 2.2" /></div>
+      <div class="row"><label class="title">盈利因子 PF <span class="auto">（自動，可手動覆蓋）</span></label><input type="number" id="profitFactor" step="0.01" oninput="pfManual=this.value!==''" placeholder="0.00" /></div>
     </div>
     <div class="grid2">
       <div class="row"><label class="title">單筆止損點數</label><input type="number" id="slPoints" step="0.1" placeholder="例如 22" /></div>
-      <div class="row"><label class="title">風險報酬比</label><input type="number" id="rr" step="0.1" placeholder="例如 2.2" /></div>
+      <div class="row"><label class="title">推算均盈 $（自動）</label><input type="number" id="avgWin" step="0.01" readonly placeholder="0.00" /></div>
     </div>
+    <p class="live" id="livePreview">填淨利 / 交易數 / 盈利數 → 自動算 WR、RR、PF</p>
   </div>
 
   <div class="card">
@@ -180,6 +190,7 @@
   </div>
 
   <script>
+    let wrManual=false, pfManual=false, rrManual=false;
     document.getElementById('date').valueAsDate = new Date();
     function val(name) {
       const el = document.querySelector(`input[name="${name}"]:checked`);
@@ -195,8 +206,78 @@
       ['active','passive','engineering','preset'].forEach(k => { if (val(k) === 'Yes') n++; });
       return n;
     }
+    function calcFromFixedRisk(netProfit, trades, wins, risk){
+      const t=Number(trades)||0, w=Number(wins)||0, np=Number(netProfit);
+      const r=Number(risk)>0?Number(risk):100;
+      const losses=Math.max(0, t-w);
+      const wr=t>0?(w/t*100):0;
+      let avgWin=null, rr=null, pf=null;
+      if(w>0 && !isNaN(np)){
+        avgWin=(np + losses*r) / w;
+        if(avgWin>0){
+          rr=avgWin / r;
+          pf=losses>0?(w*avgWin)/(losses*r):999;
+        }
+      } else if(w===0 && t>0 && !isNaN(np)){
+        avgWin=0; rr=0; pf=0;
+      }
+      return {wr, avgWin, avgLoss:r, rr, pf, losses, risk:r};
+    }
+    function recalc(){
+      const np=document.getElementById('netProfit').value;
+      const trades=document.getElementById('trades').value;
+      const wins=document.getElementById('wins').value;
+      const risk=document.getElementById('riskPerTrade').value || 100;
+      const d=calcFromFixedRisk(np, trades, wins, risk);
+      if(!wrManual){
+        document.getElementById('winRate').value=d.wr?d.wr.toFixed(1):'';
+      }
+      if(!rrManual){
+        document.getElementById('rr').value=d.rr!=null?d.rr.toFixed(2):'';
+      }
+      if(!pfManual){
+        document.getElementById('profitFactor').value=d.pf==null?'':(d.pf>=999?'999':d.pf.toFixed(2));
+      }
+      document.getElementById('avgWin').value=d.avgWin!=null?d.avgWin.toFixed(2):'';
+      const dd=document.getElementById('maxDD').value;
+      const pfAuto=d.pf!=null?(d.pf>=999?'∞':d.pf.toFixed(2)):'—';
+      const wrAuto=d.wr?d.wr.toFixed(1):'—';
+      const rrAuto=d.rr!=null?d.rr.toFixed(2):'—';
+      const wrNow=document.getElementById('winRate').value;
+      const rrNow=document.getElementById('rr').value;
+      const pfNow=document.getElementById('profitFactor').value;
+      const wrTag=wrManual?` (手動 ${wrNow||'—'}%)`:'';
+      const rrTag=rrManual?` (手動 ${rrNow||'—'})`:'';
+      const pfTag=pfManual?` (手動 ${pfNow||'—'})`:'';
+      document.getElementById('livePreview').textContent=
+        `自動(風險$${d.risk}/筆) → 勝率 自動 ${wrAuto}%${wrTag} · RR 自動 ${rrAuto}${rrTag} · PF 自動 ${pfAuto}${pfTag} · 均盈 $${d.avgWin!=null?d.avgWin.toFixed(1):'—'} · 淨利 $${np||0} · 回撤 $${dd||0}`;
+    }
+    function computeWins(){
+      const trades=Number(document.getElementById('trades').value)||0;
+      const wrField=document.getElementById('winRate').value;
+      if(!trades){alert('請先填交易數');return;}
+      if(wrField===''){alert('請先填勝率（或讓它自動計算）');return;}
+      const wr=Number(wrField);
+      if(isNaN(wr)){alert('勝率格式錯誤');return;}
+      const wins=Math.round(trades*wr/100);
+      document.getElementById('wins').value=wins;
+      recalc();
+    }
     function buildObj() {
       const c = countYes();
+      // 讀取目前欄位值
+      const npField=document.getElementById('netProfit').value;
+      const tradesField=document.getElementById('trades').value;
+      const winsField=document.getElementById('wins').value;
+      const riskField=document.getElementById('riskPerTrade').value || 100;
+      const wrField=document.getElementById('winRate').value;
+      const rrField=document.getElementById('rr').value;
+      const pfField=document.getElementById('profitFactor').value;
+      const d=calcFromFixedRisk(npField, tradesField, winsField, riskField);
+      // 採用手動值優先
+      const wrFinal=wrManual && wrField!=='' ? Number(wrField) : (d.wr||0);
+      const rrFinal=rrManual && rrField!=='' ? Number(rrField) : (d.rr!=null?d.rr:0);
+      const pfFinal=pfManual && pfField!=='' ? Number(pfField) : (d.pf!=null?(d.pf>=999?999:d.pf):0);
       return {
         type: 'backtest',
         date: id('date'), symbol: id('symbol'), timeframe: id('timeframe'),
@@ -207,13 +288,27 @@
         engineering: val('engineering'), preset: val('preset'),
         abcd: c >= 4 ? '2+2' : c === 3 ? '2+1' : c >= 1 ? '1+1' : '—',
         grade: val('grade'),
-        netProfit: id('netProfit'), maxDD: id('maxDD'),
-        winRate: id('winRate'), profitFactor: id('profitFactor'),
-        trades: id('trades'), wins: id('wins'),
-        slPoints: id('slPoints'), rr: id('rr'),
+        netProfit: npField===''?'—':Number(npField),
+        maxDD: id('maxDD'),
+        winRate: wrFinal,
+        profitFactor: pfFinal,
+        trades: tradesField===''?'—':Number(tradesField),
+        wins: winsField===''?'—':Number(winsField),
+        riskPerTrade: Number(riskField),
+        avgWin: d.avgWin!=null?d.avgWin:0,
+        avgLoss: d.avgLoss,
+        slPoints: id('slPoints'), rr: rrFinal,
+        wrManual: wrManual && wrField!=='',
+        pfManual: pfManual && pfField!=='',
+        rrManual: rrManual && rrField!=='',
         linkResult: link('linkResult'), linkChart: link('linkChart'), linkExtra: link('linkExtra'),
         llm: val('llm'), llmRemark: id('llmRemark'), notes: id('notes')
       };
+    }
+    function fmt(v, suffix=''){
+      if(v==null||v===''||(typeof v==='number' && isNaN(v))) return '—';
+      if(typeof v==='number') return v.toFixed(2)+suffix;
+      return v+suffix;
     }
     function generateReport() {
       const o = buildObj();
@@ -229,13 +324,15 @@
 - 主動：${o.active}｜被動：${o.passive}｜工程：${o.engineering}｜預設：${o.preset}
 - ABCD：${o.abcd}｜等級：${o.grade}
 
-結果
-- 淨利潤：$${o.netProfit}
+結果（固定風險 $${o.riskPerTrade}/筆）
+- 淨利潤：$${typeof o.netProfit==='number'?o.netProfit.toFixed(2):o.netProfit}
 - 最大回撤：$${o.maxDD}
-- 勝率：${o.winRate}%
-- 盈利因子：${o.profitFactor}
 - 交易：${o.trades}｜盈利：${o.wins}
-- 止損點數：${o.slPoints}｜RR：${o.rr}
+- 勝率：${o.wrManual?'(手動) ':''}${fmt(o.winRate,'%')}
+- RR：${o.rrManual?'(手動) ':''}${fmt(o.rr)}
+- 盈利因子：${o.pfManual?'(手動) ':''}${fmt(o.profitFactor)}
+- 推算均盈：$${fmt(o.avgWin)}
+- 止損點數：${o.slPoints}
 
 TradingView
 - 結果圖：${o.linkResult}
@@ -251,8 +348,9 @@ Remark：${o.llmRemark}
     }
     function copyJSON() {
       const o = buildObj();
-      ['netProfit','maxDD','winRate','profitFactor','trades','wins','slPoints','rr'].forEach(k => {
-        if (o[k] !== '—') o[k] = Number(o[k]) || 0;
+      ['netProfit','maxDD','winRate','profitFactor','trades','wins','slPoints','rr','riskPerTrade','avgWin','avgLoss'].forEach(k => {
+        if (typeof o[k] === 'string' && o[k] === '—') o[k] = 0;
+        else if (typeof o[k] === 'string') o[k] = Number(o[k]) || 0;
       });
       ['linkResult','linkChart','linkExtra','llmRemark','notes','scriptName'].forEach(k => {
         if (o[k] === '—') o[k] = '';
@@ -264,9 +362,14 @@ Remark：${o.llmRemark}
       document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
       document.querySelectorAll('input[type="number"], input[type="text"], input[type="url"], input[type="date"], textarea').forEach(el => el.value = '');
       document.getElementById('date').valueAsDate = new Date();
+      document.getElementById('riskPerTrade').value = '100';
       ['symbol','timeframe','leftEnv','rightEnv'].forEach(i => document.getElementById(i).selectedIndex = 0);
+      wrManual=false; pfManual=false; rrManual=false;
       document.getElementById('report').textContent = '填寫後點「產生報告」';
+      recalc();
     }
+    // 初始化
+    recalc();
   </script>
 </body>
 </html>

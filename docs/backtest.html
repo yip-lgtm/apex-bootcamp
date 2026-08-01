@@ -97,7 +97,9 @@
       <div><label>LLM Remark</label><input type="text" id="llmRemark" placeholder="LLM 結論 / 優化建議"/></div>
     </div>
     <p class="live" id="livePreview">填淨利 / 交易數 / 盈利數 → 自動算 RR、PF</p>
-    <button onclick="addRecord()">新增</button>
+    <p class="hint" id="editHint" style="display:none;color:#fca5a5">✎ 編輯模式：改完按「更新」覆蓋此筆，按「取消編輯」放棄</p>
+    <button id="addBtn" onclick="addRecord()">新增</button>
+    <button id="cancelBtn" class="secondary" style="display:none" onclick="cancelEdit()">取消編輯</button>
     <button class="secondary" onclick="importJSON()">貼上 JSON 匯入</button>
     <button class="secondary" onclick="exportData()">匯出</button>
     <button class="danger" onclick="clearData()">清空</button>
@@ -148,6 +150,7 @@
     const save=d=>localStorage.setItem(KEY,JSON.stringify(d));
     let pfManual=false;
     let wrManual=false;
+    let editingId=null;
 
     function abcdOf(r){
       if(r.abcd) return r.abcd;
@@ -217,6 +220,60 @@
       recalc();
     }
 
+    function loadRecord(id){
+      const r=load().find(x=>x.id===id);
+      if(!r){alert('找不到此紀錄');return;}
+      // 回填表單
+      const setVal=(i,v)=>{const el=document.getElementById(i); if(el) el.value=v==null?'':v;};
+      setVal('date', r.date);
+      setVal('symbol', r.symbol);
+      setVal('timeframe', r.timeframe);
+      setVal('leftEnv', r.leftEnv);
+      setVal('rightEnv', r.rightEnv);
+      setVal('active', r.active||'Yes');
+      setVal('passive', r.passive||'Yes');
+      setVal('engineering', r.engineering||'Yes');
+      setVal('preset', r.preset||'Yes');
+      setVal('netProfit', r.netProfit);
+      setVal('maxDD', r.maxDD);
+      setVal('trades', r.trades);
+      setVal('wins', r.wins);
+      setVal('riskPerTrade', r.riskPerTrade||100);
+      setVal('winRate', r.winRate);
+      setVal('rr', r.rr);
+      setVal('profitFactor', r.profitFactor);
+      setVal('avgWin', r.avgWin);
+      setVal('avgLoss', r.avgLoss);
+      setVal('llm', r.llm||'A');
+      setVal('linkResult', r.linkResult);
+      setVal('scriptName', r.scriptName);
+      setVal('llmRemark', r.llmRemark);
+      // 還原 manual 旗標
+      wrManual = !!(r.wrManual && r.winRate!=null && r.winRate!=='');
+      pfManual = !!(r.pfManual && r.profitFactor!=null && r.profitFactor!=='');
+      // 進入編輯模式
+      editingId = id;
+      document.getElementById('addBtn').textContent = '更新';
+      document.getElementById('cancelBtn').style.display = '';
+      document.getElementById('editHint').style.display = '';
+      // 滾動到表單
+      window.scrollTo({top:0, behavior:'smooth'});
+      recalc();
+    }
+
+    function cancelEdit(){
+      editingId = null;
+      wrManual = false; pfManual = false;
+      document.getElementById('addBtn').textContent = '新增';
+      document.getElementById('cancelBtn').style.display = 'none';
+      document.getElementById('editHint').style.display = 'none';
+      // 清空表單
+      ['netProfit','maxDD','trades','wins','winRate','rr','profitFactor','avgWin','avgLoss','linkResult','scriptName','llmRemark'].forEach(i=>document.getElementById(i).value='');
+      document.getElementById('riskPerTrade').value='100';
+      document.getElementById('date').valueAsDate = new Date();
+      recalc();
+    }
+
     function filtered(){
       let d=load();
       const fLeft=document.getElementById('fLeft').value;
@@ -263,7 +320,7 @@
 
       const tb=document.getElementById('tbody');
       if(!data.length){tb.innerHTML='<tr><td colspan="14" class="empty">尚無紀錄</td></tr>';return;}
-      tb.innerHTML=data.map(r=>`<tr>
+      tb.innerHTML=data.map(r=>`<tr style="${r.id===editingId?'background:#3b1f1f':''}">
         <td>${r.date}</td>
         <td>${r.symbol}</td>
         <td>${r.leftEnv||'-'}</td>
@@ -277,7 +334,10 @@
         <td>${r.profitFactor!=null?Number(r.profitFactor).toFixed(2):'-'}</td>
         <td title="${(r.llmRemark||'').replace(/"/g,'')}">${(r.llmRemark||'-').slice(0,18)}${(r.llmRemark||'').length>18?'…':''}</td>
         <td>${r.linkResult?`<a class="chart" href="${r.linkResult}" target="_blank">開</a>`:'-'}</td>
-        <td><button class="danger" style="padding:2px 6px;font-size:0.7rem" onclick="removeRecord('${r.id}')">刪</button></td>
+        <td>
+          <button style="padding:2px 6px;font-size:0.7rem" onclick="loadRecord('${r.id}')" title="編輯">改</button>
+          <button class="danger" style="padding:2px 6px;font-size:0.7rem" onclick="removeRecord('${r.id}')" title="刪除">刪</button>
+        </td>
       </tr>`).join('');
     }
 
@@ -304,9 +364,8 @@
       // WR: use manual override if set, else auto from wins/trades
       const wrField=document.getElementById('winRate').value;
       const wrSaved=wrManual && wrField!=='' ? Number(wrField) : (d0.wr||0);
-      const data=load();
-      data.push({
-        id:Date.now().toString(), date,
+      const record={
+        id: editingId || Date.now().toString(), date,
         symbol:document.getElementById('symbol').value,
         timeframe:document.getElementById('timeframe').value,
         leftEnv:document.getElementById('leftEnv').value,
@@ -326,16 +385,39 @@
         llmRemark:document.getElementById('llmRemark').value.trim(),
         linkResult:document.getElementById('linkResult').value.trim(),
         scriptName:document.getElementById('scriptName').value
-      });
+      };
+      const data=load();
+      if(editingId){
+        const idx=data.findIndex(x=>x.id===editingId);
+        if(idx>=0) data[idx]=record; else data.push(record);
+      } else {
+        data.push(record);
+      }
       save(data); render();
+      const wasEditing=!!editingId;
+      editingId=null;
       ['netProfit','maxDD','trades','wins','winRate','rr','profitFactor','avgWin','avgLoss','linkResult','scriptName','llmRemark'].forEach(i=>document.getElementById(i).value='');
       document.getElementById('riskPerTrade').value='100';
+      document.getElementById('date').valueAsDate=new Date();
       pfManual=false;
       wrManual=false;
-      document.getElementById('livePreview').textContent='填淨利 / 交易數 / 盈利數 → 自動算 RR、PF';
+      document.getElementById('addBtn').textContent='新增';
+      document.getElementById('cancelBtn').style.display='none';
+      document.getElementById('editHint').style.display='none';
+      document.getElementById('livePreview').textContent=wasEditing?'已更新 ✓':'已新增 ✓';
+      setTimeout(()=>{document.getElementById('livePreview').textContent='填淨利 / 交易數 / 盈利數 → 自動算 RR、PF';}, 1500);
     }
 
-    function removeRecord(id){if(!confirm('刪？'))return;save(load().filter(r=>r.id!==id));render();}
+    function removeRecord(id){
+      if(!confirm('刪？'))return;
+      const data=load().filter(r=>r.id!==id);
+      save(data);
+      // 若刪除的是當前編輯的紀錄 → 退出編輯模式
+      if(id===editingId){
+        cancelEdit();
+      }
+      render();
+    }
 
     function importJSON(){
       const t=prompt('貼上 Backtest 報告 JSON'); if(!t)return;

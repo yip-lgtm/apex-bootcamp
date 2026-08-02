@@ -1,4 +1,4 @@
-# Apex Bootcamp **v1.1**
+# A 皮盤房 **v1.1**
 
 Apex Trader Funding **50K** 帳戶機械化交易系統。
 
@@ -73,4 +73,4 @@ python src/apex_backtest.py    # 60 日回測
 
 ---
 
-*Apex Bootcamp v1.1 + v2.6 automation*
+*A 皮盤房 v1.1 + v2.6 automation*

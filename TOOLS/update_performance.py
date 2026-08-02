@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Apex Bootcamp - 每日績效數據處理腳本（支援 HTML 報告解析）
+A 皮盤房 - 每日績效數據處理腳本（支援 HTML 報告解析）
 
 用法一：直接帶參數
   python update_performance.py --pnl -23 --trades 3 --wins 1 --rr 1.5

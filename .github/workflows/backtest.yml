@@ -1,0 +1,114 @@
+name: Apex 50K Backtest CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'AUTOMATION/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'AUTOMATION/**'
+  workflow_dispatch:
+    inputs:
+      start_date:
+        description: 'Backtest start date (YYYY-MM-DD)'
+        required: false
+        default: ''
+      end_date:
+        description: 'Backtest end date (YYYY-MM-DD)'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  backtest:
+    name: Run v2.6 backtest
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: AUTOMATION
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: AUTOMATION/requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Compute backtest window
+        id: window
+        run: |
+          if [ -n "${{ inputs.start_date }}" ] && [ -n "${{ inputs.end_date }}" ]; then
+            echo "start=${{ inputs.start_date }}" >> $GITHUB_OUTPUT
+            echo "end=${{ inputs.end_date }}" >> $GITHUB_OUTPUT
+          else
+            # Default: 60-day rolling window ending at yesterday (UTC)
+            END=$(date -u -d 'yesterday' +%Y-%m-%d)
+            # yfinance 5m caps at 60d, so start = end - 60d
+            START=$(date -u -d "$END - 60 days" +%Y-%m-%d)
+            echo "start=$START" >> $GITHUB_OUTPUT
+            echo "end=$END" >> $GITHUB_OUTPUT
+          fi
+          echo "Window: $START → $END" >&2
+
+      - name: Run backtest
+        env:
+          # Optional: only needed if you want to verify LLM-prompted paths
+          MINIMAX_API_KEY: ${{ secrets.MINIMAX_API_KEY }}
+        run: |
+          mkdir -p ../reports
+          .venv/bin/python src/apex_backtest.py ${{ steps.window.outputs.start }} ${{ steps.window.outputs.end }} 2>&1 | tee backtest-ci.log || true
+          # The above uses pre-installed venv if present; fall back to system python
+          if [ ! -f reports/apex-backtest.md ]; then
+            python src/apex_backtest.py ${{ steps.window.outputs.start }} ${{ steps.window.outputs.end }} 2>&1 | tee backtest-ci.log
+          fi
+
+      - name: Upload backtest report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: apex-backtest-report
+          path: |
+            AUTOMATION/reports/apex-backtest.md
+            AUTOMATION/reports/apex-backtest.json
+            AUTOMATION/backtest-ci.log
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Comment on PR with summary
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = 'AUTOMATION/reports/apex-backtest.md';
+            if (!fs.existsSync(path)) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: '⚠️ Backtest did not produce a report.'
+              });
+              return;
+            }
+            const report = fs.readFileSync(path, 'utf8');
+            // Truncate to first ~30 lines for the comment
+            const summary = report.split('\n').slice(0, 40).join('\n');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `### Apex 50K v2.6 Backtest\n\n\`\`\`\n${summary}\n\`\`\`\n\n_Full report attached as workflow artifact._`
+            });

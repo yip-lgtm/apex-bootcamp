@@ -19,6 +19,7 @@ from apex_strategy import (
     RISK_USD, TP_MIN, TP_MAX, RR_MIN, RR_MAX,
     KILLZONE_START_HOUR, KILLZONE_END_HOUR, SESSION_TZ,
 )
+from notify import notify_forward_pnl
 
 load_dotenv()
 
@@ -399,3 +400,21 @@ if __name__ == "__main__":
     if log_entries:
         append_log(log_entries)
         print(f"\n# Logged {len(log_entries)} trades → {LOG_PATH}")
+
+        # Webhook notification with day's P&L
+        try:
+            cum = day_pnl
+            try:
+                with open(LOG_PATH) as f:
+                    for line in f:
+                        try:
+                            e = json.loads(line)
+                            cum += float(e.get("pnl_usd", 0))
+                        except Exception:
+                            continue
+            except FileNotFoundError:
+                pass
+            results_wh = notify_forward_pnl(day_pnl, cum, n_trades, date_str)
+            print(f"# Notified channels: {results_wh}")
+        except Exception as e:
+            print(f"# Notify failed: {e}")

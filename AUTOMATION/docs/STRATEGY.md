@@ -94,12 +94,16 @@ AUTOMATION/
 ├── requirements.txt    # Python deps (pandas, yfinance, openai, etc.)
 ├── src/
 │   ├── apex_strategy.py  # Shared logic: TICKERS, fetch, detect_trigger, grade_setup
-│   ├── apex_scan.py      # Daily scanner (LLM + det pre-screen)
+│   ├── apex_scan.py      # Daily scanner (LLM + det pre-screen) + Discord/Telegram push
 │   ├── apex_backtest.py  # 60-day backtest engine
-│   ├── apex_forward.py   # Forward-test paper simulator
-│   └── apex_analyze.py   # Single-ticker ad-hoc analyzer
+│   ├── apex_forward.py   # Forward-test paper simulator + cumulative P&L push
+│   ├── apex_analyze.py   # Single-ticker ad-hoc analyzer
+│   └── notify.py         # Discord + Telegram webhook helpers
 ├── reports/            # Generated daily reports (gitignored by default)
 └── docs/               # This file + additional strategy notes
+
+.github/workflows/
+└── backtest.yml        # GitHub Actions: auto-run backtest on push
 ```
 
 ---
@@ -111,7 +115,7 @@ cd AUTOMATION
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env  # then fill in your LLM API key
+cp .env.example .env  # then fill in LLM API key + optional webhooks
 
 # 1. Run scanner for most recent session
 python src/apex_scan.py
@@ -122,6 +126,23 @@ python src/apex_backtest.py 2026-06-02 2026-08-01
 # 3. Forward-test (paper trade) a single day
 python src/apex_forward.py 2026-07-31 --mode=combined
 ```
+
+### Notifications
+
+Set either or both in `.env`:
+
+- **Discord**: `DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/...`
+- **Telegram**: `TELEGRAM_BOT_TOKEN=...` + `TELEGRAM_CHAT_ID=...`
+
+The scanner pushes A/B actionable setups; the forward-test push sends
+day P&L + cumulative. Both are silent no-ops if no channel is configured.
+
+### CI
+
+`.github/workflows/backtest.yml` runs the backtest on every push to `main`
+that touches `AUTOMATION/**`. The full report is uploaded as a workflow
+artifact; on PRs a summary is posted as a comment. Trigger manually via
+the Actions tab with optional `start_date` / `end_date` inputs.
 
 ---
 

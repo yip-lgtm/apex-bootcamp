@@ -19,6 +19,7 @@ from apex_strategy import (
     RISK_USD, TP_MIN, TP_MAX, RR_MIN, RR_MAX,
     KILLZONE_START_HOUR, KILLZONE_END_HOUR, SESSION_TZ,
 )
+from notify import notify_actionable_setups
 
 load_dotenv()
 
@@ -314,3 +315,26 @@ if __name__ == "__main__":
     with open(out_path, "w") as f:
         f.write(report)
     print(f"\n# Saved → {out_path}")
+
+    # Webhook notification for actionable setups
+    actionable_data = []
+    for r in results:
+        if r["ok"] and r["parsed"]["grade"] in ("A", "B") and r["parsed"]["validation"]["passes"]:
+            p = r["parsed"]
+            actionable_data.append({
+                "ticker": r["ticker"],
+                "grade": p["grade"],
+                "bias": p["bias"],
+                "entry": p["entry"],
+                "sl": p["sl"],
+                "tp": p["tp"],
+                "rr": p["rr"],
+                "contracts": p.get("contracts", "1"),
+                "pattern": (r.get("det_setup") or {}).get("pattern", "llm"),
+            })
+    if actionable_data:
+        try:
+            results_wh = notify_actionable_setups(actionable_data, date_str)
+            print(f"# Notified channels: {results_wh}")
+        except Exception as e:
+            print(f"# Notify failed: {e}")

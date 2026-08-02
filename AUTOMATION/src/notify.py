@@ -48,13 +48,32 @@ def send_telegram(content: str, parse_mode: str = "Markdown") -> bool:
 
 def notify(content: str, **kwargs) -> dict:
     """Send to all configured channels. Returns {channel: ok}."""
+    # Telegram Markdown is strict — strip stray asterisks to avoid parse errors.
+    # We use plain text by default and add emoji-style emphasis.
+    telegram_content = content.replace("*", "")
     results = {}
     if os.environ.get("DISCORD_WEBHOOK_URL"):
         results["discord"] = send_discord(content, **kwargs)
     if os.environ.get("TELEGRAM_BOT_TOKEN") and os.environ.get("TELEGRAM_CHAT_ID"):
-        results["telegram"] = send_telegram(content, **kwargs)
+        # Try Markdown first, fallback to plain text on parse error
+        try:
+            token = os.environ["TELEGRAM_BOT_TOKEN"]
+            chat_id = os.environ["TELEGRAM_CHAT_ID"]
+            url = f"https://api.telegram.org/bot{token}/sendMessage"
+            payload = {"chat_id": chat_id, "text": content, "parse_mode": "Markdown",
+                       "disable_web_page_preview": True}
+            r = requests.post(url, json=payload, timeout=10)
+            if r.status_code == 200:
+                results["telegram"] = True
+            else:
+                # Markdown failed — retry as plain text
+                payload.pop("parse_mode", None)
+                payload["text"] = telegram_content
+                results["telegram"] = _post_json(url, payload)
+        except Exception as e:
+            print(f"[notify] telegram -> error: {e}")
+            results["telegram"] = False
     if not results:
-        # No webhooks configured — silent no-op (or print in dev)
         if os.environ.get("APEX_NOTIFY_VERBOSE"):
             print(f"[notify] (no channels) {content[:200]}")
     return results
@@ -68,15 +87,16 @@ def notify_actionable_setups(setups: list, date_str: str) -> dict:
     """
     if not setups:
         return {}
-    lines = [f"**A 皮盤房 v2.6 — {date_str} actionable setups**"]
+    lines = [f"🟢 A 皮盤房 v2.6 — {date_str} actionable setups"]
     for s in setups:
         lines.append(
-            f"• **{s['ticker']}** ({s['grade']}/{s['bias']}) "
-            f"Entry `{s['entry']}` SL `{s['sl']}` TP `{s['tp']}` "
-            f"RR `{s['rr']}` ×{s.get('contracts',1)} micro  "
-            f"_{s.get('pattern','')}_"
+            f"• {s['ticker']} ({s['grade']}/{s['bias']}) "
+            f"Entry {s['entry']} | SL {s['sl']} | TP {s['tp']} "
+            f"RR {s['rr']} ×{s.get('contracts',1)} micro  "
+            f"[{s.get('pattern','')}]"
         )
-    lines.append("\n⚠️ KILLZONE 09:00-11:00 EST · same-day exit · daily SL -$100 停手")
+    lines.append("")
+    lines.append("⚠️ KILLZONE 09:00-11:00 EST · same-day exit · daily SL -$100 停手")
     return notify("\n".join(lines))
 
 
@@ -85,9 +105,11 @@ def notify_forward_pnl(day_pnl: float, cumulative_pnl: float,
     """Format forward-test P&L update and push."""
     emoji = "🟢" if day_pnl >= 0 else "🔴"
     cum_emoji = "🟢" if cumulative_pnl >= 0 else "🔴"
+    sign = "+" if day_pnl >= 0 else ""
+    cum_sign = "+" if cumulative_pnl >= 0 else ""
     content = (
-        f"{emoji} **{date_str}** forward test: ${day_pnl:+.0f} "
+        f"{emoji} {date_str} forward test: {sign}{day_pnl:.0f} "
         f"({n_trades_today} trades)\n"
-        f"{cum_emoji} Cumulative: ${cumulative_pnl:+.0f}"
+        f"{cum_emoji} Cumulative: {cum_sign}{cumulative_pnl:.0f}"
     )
     return notify(content)

@@ -9,9 +9,9 @@ from datetime import datetime, timezone
 import numpy as np
 import pandas as pd
 import yfinance as yf
-from dotenv import load_dotenv
+from env_loader import load_env
 
-load_dotenv()
+load_env()
 
 # --- Apex 50K hard rules (from apex-bootcamp/CHECKLIST.md) ---
 RISK_USD = 100            # daily SL kill-switch

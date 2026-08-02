@@ -11,7 +11,7 @@ from datetime import datetime, timedelta, timezone
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import pandas as pd
 import yfinance as yf
-from dotenv import load_dotenv
+from env_loader import load_env
 from openai import OpenAI
 
 from apex_strategy import (
@@ -21,7 +21,7 @@ from apex_strategy import (
 )
 from notify import notify_forward_pnl
 
-load_dotenv()
+load_env()
 
 API_KEY = os.environ.get("MINIMAX_API_KEY")
 if not API_KEY:

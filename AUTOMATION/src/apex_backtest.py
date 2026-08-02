@@ -16,10 +16,10 @@ from datetime import datetime, timedelta, timezone
 import numpy as np
 import pandas as pd
 import yfinance as yf
-from dotenv import load_dotenv
+from env_loader import load_env
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-load_dotenv()
+load_env()
 
 # --- Apex 50K hard rules ---
 RISK_USD, TP_MIN, TP_MAX, RR_MIN, RR_MAX = 100, 200, 500, 2.0, 5.0

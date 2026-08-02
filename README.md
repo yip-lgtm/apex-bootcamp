@@ -38,6 +38,7 @@ Apex Trader Funding **50K** 帳戶機械化交易系統。
 | **[REFERENCE/point-values.md](./REFERENCE/point-values.md)** | Point Value |
 | **[TOOLS/](./TOOLS/)** | 報告產生器、腳本 |
 | **[docs/](./docs/)** | GitHub Pages 儀表板 |
+| **[AUTOMATION/](./AUTOMATION/)** | Python 自動化 (v2.6 scanner / backtest / forward test) |
 
 ---
 
@@ -52,4 +53,24 @@ Apex Trader Funding **50K** 帳戶機械化交易系統。
 
 ---
 
-*Apex Bootcamp v1.1*
+## 自動化 (AUTOMATION/) — v2.6 策略
+
+每日 08:00 ET 自動跑嘅 Python pipeline：
+
+- **Scanner** — LLM (MiniMax-M3) + 機械化 pre-screen，輸出 A/B/C 評級
+- **Backtest** — 60 日歷史回測，v2.6 命中率 **52%**，平均 +$135/trade
+- **Forward test** — Paper-trade scanner output，每日累積 P&L log
+
+詳細見 [AUTOMATION/docs/STRATEGY.md](./AUTOMATION/docs/STRATEGY.md)
+
+```bash
+cd AUTOMATION
+pip install -r requirements.txt
+cp .env.example .env  # 填入 LLM API key
+python src/apex_scan.py        # 今日 setup
+python src/apex_backtest.py    # 60 日回測
+```
+
+---
+
+*Apex Bootcamp v1.1 + v2.6 automation*

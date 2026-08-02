@@ -1,0 +1,29 @@
+# --- Secrets & local config ---
+.env
+.env.local
+*.key
+*.pem
+
+# --- Python virtualenv + caches ---
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- Generated reports (sensitive trade data, do not commit live results) ---
+# Keep this commented to commit sample backtest reports; uncomment to fully ignore:
+# reports/apex-forward-log.jsonl
+# reports/apex-scan-*.md
+# reports/apex-backtest.md
+# reports/apex-backtest.json
+
+# --- IDE / OS ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

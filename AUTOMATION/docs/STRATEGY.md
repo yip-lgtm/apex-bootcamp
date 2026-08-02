@@ -1,6 +1,6 @@
 # Apex 50K v2.6 機械化策略
 
-> 自動化版嘅 v2.6 strategy — Python implementation of the [Apex 50K mechanical system](../CHECKLIST.md).
+> 自動化版嘅 v2.6 strategy — Python implementation of the [Apex 50K mechanical system](https://github.com/yip-lgtm/apex-bootcamp/blob/main/CHECKLIST.md).
 
 ---
 
@@ -20,7 +20,7 @@
 
 ## 2. A/B/C 評級系統
 
-依 [CHECKLIST 4.2](../CHECKLIST.md) 同 [4.3](../CHECKLIST.md) 規則：
+依 [CHECKLIST 4.2](https://github.com/yip-lgtm/apex-bootcamp/blob/main/CHECKLIST.md) 同 [4.3](https://github.com/yip-lgtm/apex-bootcamp/blob/main/CHECKLIST.md) 規則：
 
 ### v2.6 評分矩陣
 
@@ -169,8 +169,11 @@ Det-only sub-sample 顯示 det engine 較 LLM 保守（0 trades 喺 quiet days�
 
 ## 10. Related
 
-- [CHECKLIST.md](../CHECKLIST.md) — daily mechanical workflow
-- [RULES/apex-50k-rules.md](../RULES/apex-50k-rules.md) — hard Apex rules
-- [SETUP/llm-workflow.md](../SETUP/llm-workflow.md) — LLM-augmented setup grading
-- [PERFORMANCE/](../PERFORMANCE/) — manual trade tracking spreadsheet
-- [JOURNAL/template.md](../JOURNAL/template.md) — daily trade journal
+Links use GitHub web URLs (not relative paths) so they work whether STRATEGY.md
+is viewed on github.com, the GitHub Pages site, or a local clone.
+
+- [CHECKLIST.md](https://github.com/yip-lgtm/apex-bootcamp/blob/main/CHECKLIST.md) — daily mechanical workflow
+- [RULES/apex-50k-rules.md](https://github.com/yip-lgtm/apex-bootcamp/blob/main/RULES/apex-50k-rules.md) — hard Apex rules
+- [SETUP/llm-workflow.md](https://github.com/yip-lgtm/apex-bootcamp/blob/main/SETUP/llm-workflow.md) — LLM-augmented setup grading
+- [PERFORMANCE/](https://github.com/yip-lgtm/apex-bootcamp/tree/main/PERFORMANCE) — manual trade tracking spreadsheet
+- [JOURNAL/template.md](https://github.com/yip-lgtm/apex-bootcamp/blob/main/JOURNAL/template.md) — daily trade journal

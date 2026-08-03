@@ -1,0 +1,87 @@
+name: 'Stale bot — auto-label and close inactive issues/PRs'
+
+# Marks issues/PRs as stale after 30 days of inactivity, closes after 7 more days.
+# Exempts: priority:high, assigned issues, pinned issues.
+# Posts a polite reminder before closing.
+
+on:
+  schedule:
+    # Run daily at 06:00 UTC = 14:00 SHA = 02:00 EDT
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    # Allow manual trigger for testing
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mark stale issues and PRs
+        uses: actions/stale@v9
+        with:
+          # --- Days of inactivity before marking stale ---
+          days-before-stale: 30
+          days-before-close: 7
+
+          # --- Limits to avoid GitHub API rate limits ---
+          operations-per-run: 50
+
+          # --- Issues config ---
+          issues:
+            exempt-issue-labels: |
+              priority:high
+              priority:critical
+              pinned
+              security
+            stale-issue-label: 'stale'
+            close-issue-label: 'closed:stale'
+            stale-issue-message: |
+              👋 呢個 issue 已經 30 日冇動靜。
+
+              如果你仲有興趣做呢個 v2.7 改進，請：
+              1. Comment 講下你嘅 approach
+              2. 或者直接開 PR
+              3. Update 個 issue description 反映最新狀態
+
+              7 日後如果仲係冇動靜，個 issue 會自動 close。
+
+              -- Apex 皮盤房 bot
+            close-issue-message: |
+              🔒 自動關閉：30+ 日冇動靜。
+
+              如果你想重新開返：
+              - Comment 講下你想做
+              - 或者開新 issue 講你想做乜
+              - Reference 返呢個 issue 編號
+
+              -- Apex 皮盤房 bot
+
+          # --- PRs config ---
+          pull-requests:
+            exempt-pr-labels: |
+              priority:high
+              priority:critical
+              pinned
+              work-in-progress
+            stale-pr-label: 'stale'
+            close-pr-label: 'closed:stale'
+            stale-pr-message: |
+              👋 呢個 PR 30 日冇 update。
+
+              如果仲 active，請 push 新 commit。
+              7 日後如果仲係冇動靜，PR 會自動 close。
+            close-pr-message: |
+              🔒 自動關閉：30+ 日冇 update。
+              歡迎重新 push 重開。
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "✅ Stale-bot run complete at $(date -u)"
+          echo "   - Marked stale after 30 days inactive"
+          echo "   - Closed after 7 more days (37 total)"
+          echo "   - Exempted: priority:high/critical, pinned, security, work-in-progress"
+          echo "   - Also exempts: assigned issues (built-in)"

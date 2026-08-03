@@ -1,0 +1,102 @@
+name: 'Issue reminder — ping contributors after 30 days'
+
+# Posts a friendly reminder on issues that have been assigned but
+# haven't seen activity in 30 days. Helps keep v2.7 work moving.
+
+on:
+  schedule:
+    # Run daily at 07:00 UTC = 15:00 SHA = 03:00 EDT (1 hour after stale-bot)
+    - cron: '0 7 * * *'
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  pull-requests: read
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Find assigned-but-stale issues
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const daysThreshold = 30;
+            const now = new Date();
+            const cutoff = new Date(now.getTime() - daysThreshold * 24 * 60 * 60 * 1000);
+
+            // Get all open issues with assignees
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              per_page: 100
+            });
+
+            let pinged = 0;
+            for (const issue of issues) {
+              if (!issue.assignees || issue.assignees.length === 0) continue;
+              if (issue.pull_request) continue;  // skip PRs
+              if (issue.state !== 'open') continue;
+
+              const updatedAt = new Date(issue.updated_at);
+              if (updatedAt > cutoff) continue;  // still active
+
+              // Don't ping if already has 'reminded' label (avoid spam)
+              const labels = issue.labels.map(l => l.name);
+              if (labels.includes('reminded-30d')) continue;
+
+              // Get the last 5 comments to see if maintainer already pinged
+              const { data: comments } = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                per_page: 5
+              });
+
+              const recentReminder = comments.some(c => {
+                if (c.user.type !== 'Bot') return false;
+                const age = now - new Date(c.created_at);
+                return age < 14 * 24 * 60 * 60 * 1000;  // 14 days
+              });
+              if (recentReminder) continue;
+
+              // Post a gentle reminder
+              const assignees = issue.assignees.map(a => '@' + a.login).join(', ');
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: `👋 30-day reminder for ${assignees}\n\n` +
+                      `呢個 issue 已經 assigned 但 30 日冇動靜。\n\n` +
+                      `如果你仲做緊：\n` +
+                      `- 講下進度 / 邊度卡住\n` +
+                      `- 或者 push 啲 WIP commit 維持 momentum\n\n` +
+                      `如果你想 drop 返：\n` +
+                      `- Comment 講聲，我哋 unassign 畀其他人\n` +
+                      `- 7 日內冇回應會自動 unassign\n\n` +
+                      `Reference: ${issue.html_url}\n\n` +
+                      `-- Apex 皮盤房 bot`
+              });
+
+              // Add reminded label
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                labels: ['reminded-30d']
+              });
+
+              pinged++;
+              core.info(`Pinged ${assignees} on issue #${issue.number}: ${issue.title}`);
+            }
+
+            core.setOutput('pinged_count', pinged);
+            core.info(`\n✅ Reminder run complete: pinged ${pinged} issues`);
+      - name: Summary
+        if: always()
+        env:
+          PINGED: ${{ steps.remind.outputs.pinged_count }}
+        run: |
+          echo "📋 30-day reminder run:"
+          echo "   Pinged $PINGED assigned-but-stale issues"

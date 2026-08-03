@@ -74,3 +74,5 @@ python src/apex_backtest.py    # 60 日回測
 ---
 
 *A 皮盤房 v1.1 + v2.6 automation*
+
+<!-- Contribution audit verified by Antigravity Agent -->

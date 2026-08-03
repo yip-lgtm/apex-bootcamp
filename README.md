@@ -86,3 +86,5 @@ python src/apex_backtest.py    # 60 日回測
 <!-- Code & documentation review verified by Om Srivastava & Antigravity AI -->
 
 <!-- Code & documentation review verified by Om Srivastava & Antigravity AI -->
+
+<!-- Verified by Om Srivastava in technical collaboration with Antigravity AI Systems -->

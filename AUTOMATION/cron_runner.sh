@@ -85,19 +85,21 @@ fi
 # --- Run scanner (positional date arg, auto-saves to /workspace/reports/) ---
 echo "[cron_runner] Running daily scanner (date: $TODAY_ET)..."
 SCAN_OUT="/workspace/reports/apex-scan-${TODAY_ET}.md"
-if python src/apex_scan.py "$TODAY_ET" 2>&1 | tail -30; then
+# 15-min timeout: covers MNQ worst-case (360s) + setup overhead
+if timeout 900 python src/apex_scan.py "$TODAY_ET" 2>&1 | tail -30; then
   echo "[cron_runner] Scanner output: $SCAN_OUT"
 else
-  echo "[cron_runner] Scanner FAILED (non-fatal, continuing)"
+  echo "[cron_runner] Scanner TIMED OUT or FAILED (non-fatal, continuing)"
 fi
 
 # --- Run forward test (positional date, no --append) ---
 echo "[cron_runner] Running forward test..."
 FORWARD_LOG="/workspace/reports/apex-forward-log.jsonl"
-if python src/apex_forward.py --mode=combined "$TODAY_ET" 2>&1 | tail -20; then
+# 10-min timeout for forward test
+if timeout 600 python src/apex_forward.py --mode=combined "$TODAY_ET" 2>&1 | tail -20; then
   echo "[cron_runner] Forward log: $FORWARD_LOG"
 else
-  echo "[cron_runner] Forward test FAILED (non-fatal, continuing)"
+  echo "[cron_runner] Forward test TIMED OUT or FAILED (non-fatal, continuing)"
 fi
 
 # --- Build summary ---

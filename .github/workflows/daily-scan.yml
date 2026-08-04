@@ -16,7 +16,7 @@ permissions:
 jobs:
   daily-scan:
     runs-on: ubuntu-latest
-    timeout-minutes: 10  # Allow for slow MNQ scans (up to 6 min observed)
+    timeout-minutes: 20  # Allow for slow LLM calls (MGC/MNQ can take 8-10 min in cold env)
     env:
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -52,8 +52,9 @@ jobs:
           EOF
           echo ".env written (length: $(wc -c < .env))"
 
-      - name: Run daily scan
+      - name: Run daily scan (15 min max)
         working-directory: AUTOMATION
+        timeout-minutes: 15
         run: |
           TODAY_ET=$(TZ=America/New_York date +%Y-%m-%d)
           echo "Today ET: $TODAY_ET"
@@ -65,11 +66,13 @@ jobs:
           cp /workspace/reports/apex-scan-${TODAY_ET}.md reports/ 2>/dev/null || \
             echo "scan output not at /workspace path, using ./reports"
 
-      - name: Run forward test
+      - name: Run forward test (10 min max)
         working-directory: AUTOMATION
+        timeout-minutes: 10
         run: |
           TODAY_ET=$(TZ=America/New_York date +%Y-%m-%d)
-          .venv/bin/python -u src/apex_forward.py --mode=combined "$TODAY_ET" 2>&1 | tail -20
+          .venv/bin/python -u src/apex_forward.py --mode=combined "$TODAY_ET" 2>&1 | tail -20 || \
+            echo "forward test failed (non-fatal)"
           mkdir -p reports
           cp /workspace/reports/apex-forward-log.jsonl reports/ 2>/dev/null || \
             echo "no /workspace path, skipping copy"

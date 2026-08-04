@@ -1,0 +1,102 @@
+name: 'Daily Scan — Apex 50K v2.6 (GitHub Actions cron, no Mavis agent)'
+
+# Fallback for when Mavis cron fails (e.g. quota issues).
+# Runs at 13:00 UTC = 21:00 Asia/Shanghai = 09:00 EDT (summer) / 08:00 EST (winter).
+# This duplicates what cron_runner.sh does, but on GitHub's infra.
+
+on:
+  schedule:
+    # 13:00 UTC = 21:00 SHA
+    - cron: '0 13 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  daily-scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10  # Allow for slow MNQ scans (up to 6 min observed)
+    env:
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      MINIMAX_API_KEY: ${{ secrets.MINIMAX_API_KEY }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: AUTOMATION/requirements.txt
+
+      - name: Install deps
+        working-directory: AUTOMATION
+        run: |
+          python -m venv .venv
+          .venv/bin/pip install -q -r requirements.txt
+
+      - name: Write .env (literal values)
+        working-directory: AUTOMATION
+        run: |
+          cat > .env << EOF
+          MINIMAX_API_KEY=${MINIMAX_API_KEY}
+          TRADINGAGENTS_LLM_PROVIDER=minimax
+          TRADINGAGENTS_DEEP_THINK_LLM=MiniMax-M3
+          TRADINGAGENTS_QUICK_THINK_LLM=MiniMax-M2.7-highspeed
+          TRADINGAGENTS_OUTPUT_LANGUAGE=繁體中文
+          TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+          TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+          EOF
+          echo ".env written (length: $(wc -c < .env))"
+
+      - name: Run daily scan
+        working-directory: AUTOMATION
+        run: |
+          TODAY_ET=$(TZ=America/New_York date +%Y-%m-%d)
+          echo "Today ET: $TODAY_ET"
+          .venv/bin/python -u src/apex_scan.py "$TODAY_ET" 2>&1 | tee /tmp/scan.log
+          # Scanner auto-saves to /workspace/reports/apex-scan-DATE.md
+          # but on GHA, the file goes to the runner's workspace instead.
+          # So we save explicitly to ./reports/apex-scan-DATE.md for upload
+          mkdir -p reports
+          cp /workspace/reports/apex-scan-${TODAY_ET}.md reports/ 2>/dev/null || \
+            echo "scan output not at /workspace path, using ./reports"
+
+      - name: Run forward test
+        working-directory: AUTOMATION
+        run: |
+          TODAY_ET=$(TZ=America/New_York date +%Y-%m-%d)
+          .venv/bin/python -u src/apex_forward.py --mode=combined "$TODAY_ET" 2>&1 | tail -20
+          mkdir -p reports
+          cp /workspace/reports/apex-forward-log.jsonl reports/ 2>/dev/null || \
+            echo "no /workspace path, skipping copy"
+
+      - name: Send Telegram summary
+        if: always()
+        run: |
+          TODAY_ET=$(TZ=America/New_York date +%Y-%m-%d)
+          NOW_UTC=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          if [ -f "reports/apex-scan-${TODAY_ET}.md" ]; then
+            ACTIONABLES=$(grep -cE '^\| [A-Z]+=F \| \*\*[AB]\*\*' reports/apex-scan-${TODAY_ET}.md 2>/dev/null || echo 0)
+          else
+            ACTIONABLES="?"
+          fi
+          SUMMARY="A 皮盤房 v2.6 daily scan (GHA)
+          📅 ${TODAY_ET} ET ⏰ ${NOW_UTC}
+          Actionables: ${ACTIONABLES}
+          🔗 https://github.com/${{ github.repository }}"
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d "$(python3 -c 'import json,sys; print(json.dumps({"chat_id": sys.argv[1], "text": sys.argv[2]}))' "$TELEGRAM_CHAT_ID" "$SUMMARY")"
+          echo "Telegram push complete"
+
+      - name: Upload scan report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: apex-scan-${{ env.TODAY_ET }}
+          path: AUTOMATION/reports/
+          retention-days: 30

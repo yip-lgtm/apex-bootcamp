@@ -29,7 +29,10 @@ if not API_KEY:
 client = OpenAI(api_key=API_KEY, base_url="https://api.minimax.io/v1")
 MODEL  = "MiniMax-M3"
 
-LOG_PATH = "/workspace/reports/apex-forward-log.jsonl"
+LOG_PATH = os.environ.get("APEX_FORWARD_OUT", os.path.join(
+    os.environ.get("APEX_SCAN_OUT_DIR", "/workspace/reports"),
+    "apex-forward-log.jsonl"
+))
 os.makedirs(os.path.dirname(LOG_PATH), exist_ok=True)
 
 

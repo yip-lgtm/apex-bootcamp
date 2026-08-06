@@ -70,13 +70,14 @@ jobs:
       - name: Run forward test (10 min max)
         working-directory: AUTOMATION
         timeout-minutes: 10
+        env:
+          APEX_SCAN_OUT_DIR: ${{ github.workspace }}/AUTOMATION/reports
         run: |
           TODAY_ET=$(TZ=America/New_York date +%Y-%m-%d)
           .venv/bin/python -u src/apex_forward.py --mode=combined "$TODAY_ET" 2>&1 | tail -20 || \
             echo "forward test failed (non-fatal)"
-          mkdir -p reports
-          cp /workspace/reports/apex-forward-log.jsonl reports/ 2>/dev/null || \
-            echo "no /workspace path, skipping copy"
+          # Forward log is written to $APEX_SCAN_OUT_DIR via env var
+          ls -la "${APEX_SCAN_OUT_DIR}/apex-forward-log.jsonl" 2>&1 | head -2
 
       - name: Send Telegram summary
         if: always()

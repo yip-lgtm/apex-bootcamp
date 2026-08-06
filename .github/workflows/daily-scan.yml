@@ -6,8 +6,10 @@ name: 'Daily Scan — Apex 50K v2.6 (GitHub Actions cron, no Mavis agent)'
 
 on:
   schedule:
-    # 13:00 UTC = 21:00 SHA
-    - cron: '0 13 * * *'
+    # Two daily fires to reduce GHA schedule-trigger delay impact:
+    # - 09:00 UTC = 17:00 SHA = 05:00 EDT (early)
+    # - 13:00 UTC = 21:00 SHA = 09:00 EDT (target apex killzone 9-11 EST)
+    - cron: '0 9,13 * * *'
   workflow_dispatch:
 
 permissions:
@@ -21,6 +23,7 @@ jobs:
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
       MINIMAX_API_KEY: ${{ secrets.MINIMAX_API_KEY }}
+      APEX_SCAN_OUT_DIR: ${{ github.workspace }}/AUTOMATION/reports
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -55,16 +58,14 @@ jobs:
       - name: Run daily scan (15 min max)
         working-directory: AUTOMATION
         timeout-minutes: 15
+        env:
+          APEX_SCAN_OUT_DIR: ${{ github.workspace }}/AUTOMATION/reports
         run: |
           TODAY_ET=$(TZ=America/New_York date +%Y-%m-%d)
           echo "Today ET: $TODAY_ET"
           .venv/bin/python -u src/apex_scan.py "$TODAY_ET" 2>&1 | tee /tmp/scan.log
-          # Scanner auto-saves to /workspace/reports/apex-scan-DATE.md
-          # but on GHA, the file goes to the runner's workspace instead.
-          # So we save explicitly to ./reports/apex-scan-DATE.md for upload
-          mkdir -p reports
-          cp /workspace/reports/apex-scan-${TODAY_ET}.md reports/ 2>/dev/null || \
-            echo "scan output not at /workspace path, using ./reports"
+          # Scanner now saves to $APEX_SCAN_OUT_DIR (set above to AUTOMATION/reports)
+          ls -la reports/ 2>&1 | head -5
 
       - name: Run forward test (10 min max)
         working-directory: AUTOMATION
@@ -82,18 +83,27 @@ jobs:
         run: |
           TODAY_ET=$(TZ=America/New_York date +%Y-%m-%d)
           NOW_UTC=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-          if [ -f "reports/apex-scan-${TODAY_ET}.md" ]; then
-            ACTIONABLES=$(grep -cE '^\| [A-Z]+=F \| \*\*[AB]\*\*' reports/apex-scan-${TODAY_ET}.md 2>/dev/null || echo 0)
+          if [ -f "AUTOMATION/reports/apex-scan-${TODAY_ET}.md" ]; then
+            # Count A/B grade actionables from the report
+            ACTIONABLES=$(grep -cE '^\| [A-Z]+=F \| \*\*[AB]\*\*' "AUTOMATION/reports/apex-scan-${TODAY_ET}.md" 2>/dev/null || echo 0)
+            # Extract ticker + grade pairs
+            TICKERS=$(grep -oE '^\| [A-Z]+=F \| \*\*[AB]\*\*' "AUTOMATION/reports/apex-scan-${TODAY_ET}.md" | awk '{print $2, $4}' | tr '\n' ',' | sed 's/,$//')
           else
             ACTIONABLES="?"
+            TICKERS=""
           fi
-          SUMMARY="A 皮盤房 v2.6 daily scan (GHA)
-          📅 ${TODAY_ET} ET ⏰ ${NOW_UTC}
-          Actionables: ${ACTIONABLES}
-          🔗 https://github.com/${{ github.repository }}"
+          # Read forward log if present
+          if [ -f "AUTOMATION/reports/apex-forward-log.jsonl" ]; then
+            CUM=$(python3 AUTOMATION/src/summarize_log.py "AUTOMATION/reports/apex-forward-log.jsonl" 2>/dev/null || echo "?")
+          else
+            CUM="?"
+          fi
+          SUMMARY="A 皮盤房 v2.6 daily scan (GHA) | ${TODAY_ET} ET | ${NOW_UTC} | A:${ACTIONABLES}${TICKERS:+ (${TICKERS})} | Cum:${CUM} | ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}"
+          # Build JSON payload safely
+          python3 -c 'import json,sys; print(json.dumps({"chat_id": sys.argv[1], "text": sys.argv[2]}))' "$TELEGRAM_CHAT_ID" "$SUMMARY" > /tmp/tg_payload.json
           curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
             -H "Content-Type: application/json" \
-            -d "$(python3 -c 'import json,sys; print(json.dumps({"chat_id": sys.argv[1], "text": sys.argv[2]}))' "$TELEGRAM_CHAT_ID" "$SUMMARY")"
+            -d @/tmp/tg_payload.json
           echo "Telegram push complete"
 
       - name: Upload scan report

@@ -192,3 +192,35 @@ if [[ -n "${GITHUB_PAT:-}" ]]; then
 fi
 
 echo "[cron_runner] Done."
+
+# --- Self-restart: re-spawn for next day's fire ---
+# This is the "sandbox persistent cron" pattern: when cron_runner.sh finishes,
+# it respawns itself in the background with sleep = (next 21:00 SHA - now).
+# Survives /root wipes since the script + /workspace are persistent.
+# Disable with: APEX_CRON_LOOP=0 ./cron_runner.sh
+if [[ "${APEX_CRON_LOOP:-1}" == "1" ]] && [[ $TEST_TG -eq 0 ]]; then
+  # Compute next 21:00 SHA = next 13:00 UTC
+  NEXT_FIRE_EPOCH=$(python3 -c "
+from datetime import datetime, timezone, timedelta
+now = datetime.now(timezone.utc)
+target = now.replace(hour=13, minute=0, second=0, microsecond=0)
+if now >= target:
+    target += timedelta(days=1)
+print(int(target.timestamp()))
+")
+  SLEEP_SEC=$((NEXT_FIRE_EPOCH - $(date +%s)))
+  NEXT_FIRE_SHA=$(python3 -c "
+from datetime import datetime, timezone, timedelta
+now = datetime.now(timezone.utc)
+target = now.replace(hour=13, minute=0, second=0, microsecond=0)
+if now >= target:
+    target += timedelta(days=1)
+print(target.astimezone(timezone(timedelta(hours=8))).strftime('%Y-%m-%d %H:%M:%S SHA'))
+")
+  echo "[cron_runner] Next fire: ${NEXT_FIRE_SHA}"
+  echo "[cron_runner] Sleeping ${SLEEP_SEC}s ($(echo "scale=1; $SLEEP_SEC/3600" | bc)h)..."
+  echo "[cron_runner] To cancel: kill $$, or APEX_CRON_LOOP=0 ./cron_runner.sh"
+  sleep "$SLEEP_SEC"
+  echo "[cron_runner] Re-spawning for next fire..."
+  exec "$0" "$@"
+fi

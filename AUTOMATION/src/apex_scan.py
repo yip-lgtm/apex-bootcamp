@@ -309,7 +309,9 @@ if __name__ == "__main__":
     print("\n" + "="*78 + "\n")
     print(report)
 
-    out_dir = "/workspace/reports"
+    # v2.6.2: configurable output dir via env APEX_SCAN_OUT_DIR
+    # Default to /workspace/reports for sandbox; can be overridden for GHA / Docker
+    out_dir = os.environ.get("APEX_SCAN_OUT_DIR", "/workspace/reports")
     os.makedirs(out_dir, exist_ok=True)
     out_path = os.path.join(out_dir, f"apex-scan-{date_str}.md")
     with open(out_path, "w") as f:

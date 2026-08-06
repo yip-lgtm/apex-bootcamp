@@ -190,6 +190,8 @@ def llm_call(prompt: str) -> str:
 def scan_one(ticker: str, point_value: float, label: str, max_contracts: int,
              date_str: str) -> dict:
     t0 = time.time()
+    det_grade = "C"
+    trig = None
     try:
         data = fetch(ticker,
                      (pd.Timestamp(date_str) - pd.Timedelta(days=10)).strftime("%Y-%m-%d"),
@@ -200,7 +202,6 @@ def scan_one(ticker: str, point_value: float, label: str, max_contracts: int,
 
         # Pre-screen via deterministic engine — get a baseline grade
         trig = detect_trigger(data["fivem"], pd.Timestamp(date_str))
-        det_grade = "C"
         if trig is not None:
             setup = grade_setup(trig, data["daily"], pd.Timestamp(date_str),
                                 point_value, max_contracts)
@@ -220,8 +221,10 @@ def scan_one(ticker: str, point_value: float, label: str, max_contracts: int,
             "det_grade": det_grade, "trig_detected": trig is not None,
         }
     except Exception as e:
+        # v2.6.3: still preserve det_grade when LLM fails (e.g. rate limit)
         return {"ticker": ticker, "label": label, "ok": False,
-                "error": f"{type(e).__name__}: {e}", "elapsed_s": time.time()-t0}
+                "error": f"{type(e).__name__}: {e}", "elapsed_s": time.time()-t0,
+                "det_grade": det_grade, "trig_detected": trig is not None}
 
 
 def render_report(date_str: str, results: list) -> str:
@@ -236,7 +239,9 @@ def render_report(date_str: str, results: list) -> str:
     lines.append("|--------|-----------|-----------|------|-------|----|----|------|--------|----|----|-----------|")
     for r in results:
         if not r["ok"]:
-            lines.append(f"| {r['ticker']} | ERR | — | — | — | — | — | — | — | — | ❌ {r.get('error','')} | {r['elapsed_s']:.0f}s |")
+            # v2.6.3: still show det_grade when LLM fails (rate limit etc)
+            dg = r.get('det_grade', '—')
+            lines.append(f"| {r['ticker']} | ERR | {dg} | — | — | — | — | — | — | — | ❌ {r.get('error','')} | {r['elapsed_s']:.0f}s |")
             continue
         p = r["parsed"]
         v = "✅" if p["validation"]["passes"] else f"❌ {', '.join(p['validation']['violations'])}"

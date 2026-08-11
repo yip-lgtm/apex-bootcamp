@@ -272,6 +272,69 @@ def send_telegram_photos(photo_paths: list[Path], caption: str = "") -> int:
 
 # Need json for media group
 import json
+import subprocess
+import shutil
+
+# --- Save artifacts to repo + git push ---
+REPO_DIR = Path("/workspace/apex-bootcamp")
+ARTIFACTS_DIR = REPO_DIR / "AUTOMATION" / "reports" / "daily"
+
+# Identity for the auto-push commit (overridable via env)
+GIT_USER_NAME = os.environ.get("GIT_USER_NAME", "Apex 皮盤房 bot")
+GIT_USER_EMAIL = os.environ.get("GIT_USER_EMAIL", "bot@apex.local")
+
+
+def git_push_artifacts(repo_dir: Path, paths: list[Path], commit_msg: str) -> int:
+    """Stage, commit, push paths in repo_dir. Returns push exit code (0 OK)."""
+    # Use HTTPS+PAT if GITHUB_PAT env var present, else SSH
+    # Use HTTPS+PAT if GITHUB_PAT env var present, else GITHUB_TOKEN (GHA), else SSH
+    pat = os.environ.get("GITHUB_PAT", "") or os.environ.get("GITHUB_TOKEN", "")
+    if pat:
+        subprocess.run(
+            ["git", "-C", str(repo_dir), "remote", "set-url", "origin",
+             f"https://x-access-token:{pat}@github.com/yip-lgtm/apex-bootcamp.git"],
+            check=False, capture_output=True
+        )
+    try:
+        # git add
+        rel_paths = [str(p.relative_to(repo_dir)) for p in paths if p.exists()]
+        if not rel_paths:
+            print("[git_push] No paths to add")
+            return 0
+        subprocess.run(
+            ["git", "-C", str(repo_dir), "add"] + rel_paths,
+            check=True, capture_output=True
+        )
+        # Check if anything to commit
+        r = subprocess.run(
+            ["git", "-C", str(repo_dir), "diff", "--cached", "--name-only"],
+            capture_output=True, text=True, check=True
+        )
+        if not r.stdout.strip():
+            print("[git_push] Nothing to commit (artifacts unchanged)")
+            return 0
+        # Commit
+        subprocess.run(
+            ["git", "-C", str(repo_dir), "-c", f"user.name={GIT_USER_NAME}",
+             "-c", f"user.email={GIT_USER_EMAIL}",
+             "commit", "-m", commit_msg],
+            check=True, capture_output=True
+        )
+        # Push
+        r = subprocess.run(
+            ["git", "-C", str(repo_dir), "push", "origin", "main"],
+            capture_output=True, text=True
+        )
+        if r.returncode == 0:
+            print(f"[git_push] ✅ Pushed: {commit_msg[:60]}")
+            return 0
+        else:
+            print(f"[git_push] ❌ Push failed: {r.stderr[:200]}")
+            return r.returncode
+    except subprocess.CalledProcessError as e:
+        print(f"[git_push] ❌ Error: {e.stderr[:200] if e.stderr else str(e)[:200]}")
+        return 1
+
 
 # --- Main ---
 def main() -> int:
@@ -294,16 +357,30 @@ def main() -> int:
     snapshot = pull_snapshot()
 
     # Step 2: Generate charts for top 4
+    # Save to BOTH /tmp (for TG) and tracked reports dir (for git push)
     print("[daily_reminder] Generating 3-panel charts for top 4 tickers...")
     from chart_gen import generate_for_ticker
-    chart_dir = Path(os.environ.get("APEX_CHART_OUT", "/tmp/apex-charts"))
-    chart_dir.mkdir(parents=True, exist_ok=True)
-    chart_paths = []
+
+    tg_chart_dir = Path("/tmp/apex-charts")
+    tg_chart_dir.mkdir(parents=True, exist_ok=True)
+    tracked_chart_dir = ARTIFACTS_DIR / today_str
+    tracked_chart_dir.mkdir(parents=True, exist_ok=True)
+
+    chart_paths = []   # paths to send via TG (from /tmp)
+    tracked_charts = []  # paths to commit to git
     for tk, name in CHART_TICKERS:
-        p, _ = generate_for_ticker(tk, name, chart_dir)
-        if p:
-            chart_paths.append(p)
-            print(f"  ✓ {tk} → {p.name}")
+        # Generate into /tmp first
+        p_tmp, _ = generate_for_ticker(tk, name, tg_chart_dir)
+        if p_tmp:
+            # Copy to tracked dir for git commit
+            p_track = tracked_chart_dir / p_tmp.name
+            try:
+                shutil.copy2(p_tmp, p_track)
+                tracked_charts.append(p_track)
+            except Exception as e:
+                print(f"  ! copy failed: {e}")
+            chart_paths.append(p_tmp)
+            print(f"  ✓ {tk} → {p_tmp.name}")
 
     # Step 3: LLM A/B/C grading
     print("[daily_reminder] Running LLM A/B/C grading...")
@@ -315,6 +392,25 @@ def main() -> int:
     # Step 4: Build message
     msg = build_reminder(snapshot, today_str, weekday, grades)
 
+    # Step 4.5: Save text reminder + grades JSON to tracked dir
+    print("[daily_reminder] Saving artifacts to AUTOMATION/reports/daily/...")
+    txt_path = ARTIFACTS_DIR / today_str / f"reminder-{today_str}.md"
+    json_path = ARTIFACTS_DIR / today_str / f"grades-{today_str}.json"
+    txt_path.parent.mkdir(parents=True, exist_ok=True)
+    txt_path.write_text(msg, encoding="utf-8")
+    json_path.write_text(json.dumps({
+        "date": today_str,
+        "weekday": weekday,
+        "generated_hkt": now_hkt.isoformat(),
+        "grades": [
+            {k: v for k, v in g.items() if k != "summary"}
+            for g in grades
+        ],
+        "snapshot": [{k: v for k, v in s.items() if k != "summary"} for s in snapshot],
+    }, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"  ✓ {txt_path.relative_to(REPO_DIR)}")
+    print(f"  ✓ {json_path.relative_to(REPO_DIR)}")
+
     # Step 5: Send text message
     print("[daily_reminder] Sending text message to Telegram...")
     code1 = send_telegram_text(msg)
@@ -325,6 +421,16 @@ def main() -> int:
         print(f"[daily_reminder] Sending {len(chart_paths)} charts as media group...")
         code2 = send_telegram_photos(chart_paths, caption="📊 3-Chart Standard (HTF-D / H4 / H1)")
         print(f"[daily_reminder] Charts HTTP {code2}")
+
+    # Step 7: Git push artifacts
+    print("[daily_reminder] Committing + pushing artifacts to GitHub...")
+    artifacts_to_push = [txt_path, json_path] + tracked_charts
+    push_code = git_push_artifacts(
+        REPO_DIR,
+        artifacts_to_push,
+        f"auto(reminder): daily analysis {today_str} ({weekday})"
+    )
+    print(f"[daily_reminder] Git push exit {push_code}")
 
     return 0 if code1 == 200 else 1
 

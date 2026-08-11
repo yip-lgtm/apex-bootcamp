@@ -11,16 +11,18 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   daily-reminder:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     env:
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
       MINIMAX_API_KEY: ${{ secrets.MINIMAX_API_KEY }}
+      GIT_USER_NAME: 'Apex 皮盤房 bot'
+      GIT_USER_EMAIL: 'bot@apex.local'
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -38,8 +40,18 @@ jobs:
           python -m venv .venv
           .venv/bin/pip install -q -r requirements.txt
 
-      - name: Send daily reminder
+      - name: Configure git for auto-push
+        run: |
+          git config --global user.name 'Apex 皮盤房 bot'
+          git config --global user.email 'bot@apex.local'
+          # Use GHA's auto-issued token for HTTPS push
+          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/yip-lgtm/apex-bootcamp.git"
+          echo "✓ git remote configured"
+
+      - name: Send daily reminder + auto git push
         working-directory: AUTOMATION
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_APEX_PAT }}
         run: |
           .venv/bin/python src/daily_reminder.py
-          echo "✅ daily reminder sent"
+          echo "✅ daily reminder sent + artifacts pushed"

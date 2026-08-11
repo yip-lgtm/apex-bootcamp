@@ -28,15 +28,21 @@ TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
 HKT = timezone(timedelta(hours=8))
 
-# Top tickers for chart + grading (most important Apex 50K instruments)
+# Top tickers for chart + grading (priority order, 10 charts max for TG media group)
 CHART_TICKERS = [
-    ("MGC=F", "Micro Gold"),
-    ("MNQ=F", "Micro Nasdaq"),
-    ("MCL=F", "Micro Crude"),
-    ("MBT=F", "Micro Bitcoin"),
+    ("MGC=F", "Micro Gold"),         # v2.6 best PF (8.85)
+    ("MNQ=F", "Micro Nasdaq"),       # most active
+    ("MCL=F", "Micro Crude Oil"),    # energy diversification
+    ("MBT=F", "Micro Bitcoin"),      # crypto (high vol)
+    ("MES=F", "Micro S&P 500"),      # US index
+    ("M2K=F", "Micro Russell 2000"), # small cap
+    ("MYM=F", "Micro Dow"),          # US index
+    ("M6A=F", "Micro AUD/USD"),      # FX
+    ("M6B=F", "Micro GBP/USD"),      # FX
+    ("6J=F",  "Micro JPY"),          # FX (CME JPY futures)
 ]
 
-# Full snapshot list
+# Full snapshot list (all 11 micro futures incl. SIL/M6E/MET)
 WATCHLIST = [
     ("MES=F", "Micro S&P 500"),
     ("MNQ=F", "Micro Nasdaq"),
@@ -44,6 +50,8 @@ WATCHLIST = [
     ("MYM=F", "Micro Dow"),
     ("M6E=F", "Micro EUR/USD"),
     ("M6A=F", "Micro AUD/USD"),
+    ("M6B=F", "Micro GBP/USD"),
+    ("6J=F",  "Micro JPY"),
     ("MCL=F", "Micro Crude Oil"),
     ("MBT=F", "Micro Bitcoin"),
     ("MET=F", "Micro Ether"),
@@ -315,6 +323,11 @@ def git_push_artifacts(repo_dir: Path, paths: list[Path], commit_msg: str) -> in
             check=False, capture_output=True
         )
     try:
+        # Pull --rebase first to handle any new remote commits
+        subprocess.run(
+            ["git", "-C", str(repo_dir), "pull", "--rebase", "origin", "main"],
+            check=False, capture_output=True
+        )
         # git add
         rel_paths = [str(p.relative_to(repo_dir)) for p in paths if p.exists()]
         if not rel_paths:
@@ -375,38 +388,59 @@ def main() -> int:
     print("[daily_reminder] Pulling 11-ticker snapshot...")
     snapshot = pull_snapshot()
 
-    # Step 2: Generate charts for top 4
+    # Step 2: Generate charts for top 10 tickers (in parallel for speed)
     # Save to BOTH /tmp (for TG) and tracked reports dir (for git push)
-    print("[daily_reminder] Generating 3-panel charts for top 4 tickers...")
+    print(f"[daily_reminder] Generating 3-panel charts for {len(CHART_TICKERS)} tickers...")
     from chart_gen import generate_for_ticker
+    from concurrent.futures import ThreadPoolExecutor, as_completed
 
     tg_chart_dir = Path("/tmp/apex-charts")
     tg_chart_dir.mkdir(parents=True, exist_ok=True)
     tracked_chart_dir = ARTIFACTS_DIR / today_str
     tracked_chart_dir.mkdir(parents=True, exist_ok=True)
 
-    chart_paths = []   # paths to send via TG (from /tmp)
-    tracked_charts = []  # paths to commit to git
-    for tk, name in CHART_TICKERS:
-        # Generate into /tmp first
+    def _gen_and_copy(tk_name):
+        tk, name = tk_name
         p_tmp, _ = generate_for_ticker(tk, name, tg_chart_dir)
         if p_tmp:
-            # Copy to tracked dir for git commit
             p_track = tracked_chart_dir / p_tmp.name
             try:
                 shutil.copy2(p_tmp, p_track)
-                tracked_charts.append(p_track)
+                return p_tmp, p_track
             except Exception as e:
-                print(f"  ! copy failed: {e}")
-            chart_paths.append(p_tmp)
-            print(f"  ✓ {tk} → {p_tmp.name}")
+                return p_tmp, None
+        return None, None
 
-    # Step 3: LLM A/B/C grading
-    print("[daily_reminder] Running LLM A/B/C grading...")
+    chart_paths = []   # paths to send via TG (from /tmp)
+    tracked_charts = []  # paths to commit to git
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        futs = {pool.submit(_gen_and_copy, (tk, name)): tk for tk, name in CHART_TICKERS}
+        for fut in as_completed(futs):
+            tk = futs[fut]
+            p_tmp, p_track = fut.result()
+            if p_tmp:
+                chart_paths.append(p_tmp)
+                if p_track:
+                    tracked_charts.append(p_track)
+                print(f"  ✓ {tk:7s} → {p_tmp.name}")
+
+    # Step 3: LLM A/B/C grading (parallel for speed)
+    print("[daily_reminder] Running LLM A/B/C grading on all 10 tickers...")
     from llm_grader import grade_ticker
-    grades = [grade_ticker(tk) for tk, _ in CHART_TICKERS]
+
+    def _grade(tk):
+        return grade_ticker(tk)
+
+    grades_dict = {}
+    with ThreadPoolExecutor(max_workers=5) as pool:
+        futs = {pool.submit(_grade, tk): tk for tk, _ in CHART_TICKERS}
+        for fut in as_completed(futs):
+            g = fut.result()
+            grades_dict[g["ticker"]] = g
+    # Maintain priority order
+    grades = [grades_dict[tk] for tk, _ in CHART_TICKERS]
     for g in grades:
-        print(f"  {g['ticker']:6s} → {g['grade']}  {g['reason'][:60]}")
+        print(f"  {g['ticker']:7s} → {g['grade']}  {g['reason'][:60]}")
 
     # Step 4: Build message
     msg = build_reminder(snapshot, today_str, weekday, grades)

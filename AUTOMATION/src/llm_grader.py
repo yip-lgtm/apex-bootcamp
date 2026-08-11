@@ -149,6 +149,72 @@ def grade_batch(tickers: list[str]) -> list[dict]:
     return [grade_ticker(t) for t in tickers]
 
 
+# --- Priority Ranking ---
+# v2.6 backtest 60-day stats (per_ticker)
+BACKTEST_PF = {
+    "MGC=F": 8.85,  # Gold - best edge
+    "MBT=F": 10.0,  # Bitcoin - 1 trade sample, capped at 10
+    "MNQ=F": 2.57,  # Nasdaq
+    "MCL=F": 0.0,   # Crude - 0 trades
+    "MES=F": 1.0, "M2K=F": 1.0, "MYM=F": 1.0,
+    "M6A=F": 1.0, "M6B=F": 1.0, "6J=F":  1.0,
+}
+
+BACKTEST_AVG = {
+    "MGC=F": 224.29,  # $/trade
+    "MBT=F": 466.0,
+    "MNQ=F": 90.0,
+    "MCL=F": 0.0,
+    "MES=F": 0.0, "M2K=F": 0.0, "MYM=F": 0.0,
+    "M6A=F": 0.0, "M6B=F": 0.0, "6J=F":  0.0,
+}
+
+GRADE_WEIGHT = {"A": 30, "B": 20, "C": 5, "?": 0}
+# Position sizing based on grade
+POSITION_SIZE = {
+    "A": 1.0,   # full 1 micro
+    "B": 0.5,   # half
+    "C": 0.0,   # skip
+    "?": 0.0,
+}
+
+
+def priority_score(grade: str, ticker: str) -> float:
+    """Composite priority score for trade selection.
+
+    Components:
+    - Grade weight:  A=30, B=20, C=5
+    - Backtest PF:   scaled to 0-10
+    """
+    gw = GRADE_WEIGHT.get(grade, 0)
+    pf = BACKTEST_PF.get(ticker, 0.0)
+    return gw + pf
+
+
+def rank_trade_candidates(grades: list[dict]) -> list[dict]:
+    """Rank grades by priority, attach sizing, return actionable candidates (A/B only).
+
+    Returns sorted list (highest priority first).
+    """
+    candidates = []
+    for g in grades:
+        score = priority_score(g["grade"], g["ticker"])
+        size = POSITION_SIZE.get(g["grade"], 0.0)
+        avg = BACKTEST_AVG.get(g["ticker"], 0.0)
+        ev = size * avg  # expected value
+        candidates.append({
+            **g,
+            "priority_score": round(score, 2),
+            "size_micro": size,
+            "backtest_avg": avg,
+            "expected_value_usd": round(ev, 0),
+            "actionable": size > 0,
+        })
+    candidates.sort(key=lambda x: (x["priority_score"], x["grade"] != "A"),
+                    reverse=True)
+    return candidates
+
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: python llm_grader.py MGC=F MNQ=F ...")

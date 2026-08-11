@@ -127,18 +127,19 @@ def daily_news_block(date_str: str) -> str:
 def build_reminder(
     snapshot: list[dict], today_hkt: str, weekday: str,
     grades: list[dict],
+    candidates: list[dict] | None = None,
 ) -> str:
-    snap_lines = ["📊 **當前快照** (Last close, change vs prior day)", "```"]
-    snap_lines.append(f"{'Ticker':<8} {'Name':<20} {'Last':>10}  {'%Chg':>8}  Bias")
-    snap_lines.append("-" * 64)
+    snap_lines = ["📊 **當前快照**", "```"]
+    snap_lines.append(f"{'Ticker':<8} {'Last':>10}  {'%Chg':>7}  Bias")
+    snap_lines.append("-" * 50)
     for s in snapshot:
         if "err" in s:
-            snap_lines.append(f"{s['tk']:<8} {s['name']:<20} {'n/a':>10}  {'-':>8}  ?")
+            snap_lines.append(f"{s['tk']:<8} {'n/a':>10}  {'-':>7}  ?")
             continue
         arrow = fmt_chg_arrow(s["pct"])
         bias = bias_from_pct(s["pct"])
         snap_lines.append(
-            f"{s['tk']:<8} {s['name']:<20} {fmt_price(s['last']):>10}  "
+            f"{s['tk']:<8} {fmt_price(s['last']):>10}  "
             f"{arrow}{s['pct']:>+5.2f}  {bias}"
         )
     snap_lines.append("```")
@@ -154,84 +155,78 @@ def build_reminder(
 
     news = daily_news_block(today_hkt)
 
-    # LLM A/B/C grades
-    grade_lines = ["🎯 **LLM A/B/C 等級 (chart + levels 評估)**", "```"]
+    # LLM A/B/C grades (trim reason to 30 chars to fit TG 4096 limit)
+    grade_lines = ["🎯 **LLM A/B/C 等級**", "```"]
     grade_lines.append(f"{'Ticker':<8} {'Grade':<6} Reason")
     grade_lines.append("-" * 60)
     for g in grades:
         if g["grade"] == "?":
-            grade_lines.append(f"{g['ticker']:<8} {'?':<6} {g['reason'][:50]}")
+            grade_lines.append(f"{g['ticker']:<8} {'?':<6} {g['reason'][:30]}")
         else:
             emoji = {"A": "🟢 A", "B": "🟡 B", "C": "🔴 C"}.get(g["grade"], g["grade"])
-            grade_lines.append(f"{g['ticker']:<8} {emoji:<6} {g['reason'][:50]}")
+            grade_lines.append(f"{g['ticker']:<8} {emoji:<6} {g['reason'][:30]}")
     grade_lines.append("```")
     grade_text = "\n".join(grade_lines)
 
+    # Trade Candidates (priority-ranked, trim reason to 25 chars)
+    candidate_lines = []
+    candidate_lines.append("📋 **今日交易候選 (按優先級排序)**")
+    candidate_lines.append("```")
+    candidate_lines.append(f"{'#':<3} {'Ticker':<8} {'Gr':<4} {'Size':<6} {'Score':<5} {'EV':<6} Reason")
+    candidate_lines.append("-" * 70)
+    if candidates:
+        for i, c in enumerate(candidates, 1):
+            emoji = {"A": "🟢A", "B": "🟡B", "C": "🔴C"}.get(c["grade"], "❓")
+            size = f"{c['size_micro']:.1f}µ" if c["actionable"] else "skip"
+            ev = f"+${c['expected_value_usd']:.0f}" if c['expected_value_usd'] > 0 else "—"
+            candidate_lines.append(
+                f"#{i:<3} {c['ticker']:<8} {emoji:<4} {size:<6} "
+                f"{c['priority_score']:<5} {ev:<6} {c['reason'][:25]}"
+            )
+        total_ev = sum(c["expected_value_usd"] for c in candidates if c["actionable"])
+        total_risk = sum(100 * c["size_micro"] for c in candidates if c["actionable"])
+        actionable = [c for c in candidates if c["actionable"]]
+        candidate_lines.append("-" * 70)
+        candidate_lines.append(
+            f"{'':3s} {'總計':<8} {'':<4} {'':<6} {'':<5} +${total_ev:.0f}  (Risk ${total_risk:.0f})"
+        )
+        if not actionable:
+            candidate_lines.append("")
+            candidate_lines.append("⚠️ 今日 0 actionable — 全部 C 級或更低")
+            candidate_lines.append("   嚴守紀律：空手觀望")
+    candidate_lines.append("```")
+    candidate_text = "\n".join(candidate_lines)
+
     msg = f"""🚨 **A 皮盤房 v2.6 — 每日執行提醒** 🚨
 📅 {today_hkt} ({weekday})  ⏰ 20:30 HKT / 12:30 UTC / 08:30 ET (T-30min)
-🔥 **核心重點：A 級優先執行 → B 級減倉 → C 級直接跳過**
+🔥 **核心：A 級優先 → B 級減倉 → C 級直接跳過**
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ## 1️⃣ 開盤前準備
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-### 📰 當日經濟數據
 {news}
-
-### 📈 自動拉圖分析（11 個 micro futures）
-{snap_text}
-
-### 🎯 Weekly Profile / HTF Bias
 {bias_summary}
-
-### 📅 Daily Bias & DOL (Day-of-Level)
-- 確認今日 Higher TF Bias (above ↑ / below ↓)
-- 標註 **DOL (PDH / PDC / PDL / ONH / ONL / PMH / PML)**
-- 對齊昨日 / 上週結構
-
-### ⏰ Session Killzone 時間
-- **NY AM Killzone**：09:00-11:00 ET (核心進場窗口)
-- **NY PM Killzone**：13:30-15:00 ET (減倉或觀察)
+**Killzone**: NY AM 09-11 ET (進場) | NY PM 13:30-15 ET (減倉)
+DOL: PDH/PDL/PDC、ONH/ONL、PMH/PML
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-## 2️⃣ 風險規則檢查
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-- ✅ **1 張 Micro 合約** 嚴格限制
-- ✅ **Daily SL Kill-switch**: -$100 → 即停
-- ✅ **Intraday Trail DD**: -$2,000 → 觸發即停
-- ✅ **合格獲利日進度**: ≥$250 (half of $500 target)
-- ✅ **TP/Trade**: $200-500, RR 2-5
-- ✅ **Same-day exit**: EOD 強制平倉
+## 2️⃣ 風險規則
+- 1 micro 限制 | Daily SL -$100 | Max DD -$2,000
+- TP $200-500, RR 2-5 | Same-day exit (EOD 平倉)
+- 合格日 ≥ $250 (half of $500 target)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-## 3️⃣ LLM A/B/C 判定 (3-chart standard)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+## 3️⃣ 交易候選 (按優先級排序)
+{candidate_text}
+**評分**: Grade (A=30/B=20/C=5) + Backtest PF (MGC 8.85/MBT 10/MNQ 2.57)
+**Size**: A=1.0µ, B=0.5µ, C=skip | **EV** = Size × Backtest avg P&L
 
+📊 LLM A/B/C 等級：
 {grade_text}
 
-**執行守則**：
-- 🟢 **A 級**：滿倉 1 micro，嚴守 SL
-- 🟡 **B 級**：減倉 0.5 micro (or 觀察)
-- 🔴 **C 級**：直接跳過，唔 chase
-
-**注意**：3 張 chart 附喺 message 後 (HTF-D / H4 / H1 各 ticker)
-
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-## 4️⃣ 圖表標準
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-每張 chart 包含：
-- 📊 **HTF-D** (1D, 90d) — 週 / 月結構
-- 📊 **H4** (4-hour, 30d) — 中繼結構
-- 📊 **H1** (1-hour, 5d) — 進場 TF
-
-標記：PDH/PDL/PDC、ONH/ONL、Volume、Killzone 窗口
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-💪 **今日口號**：
-> 「A 級才動手，C 級直接過。保護本金 > 一切。」
-
+**執行守則**: 🟢 A 級 1.0µ 滿倉 | 🟡 B 級 0.5µ 減倉 | 🔴 C 級 skip
+**3-Chart 標準**: HTF-D (1D/90d) + H4 (4h/30d) + H1 (1h/5d) — 附喺 message 後
+**Slogan**: 「A 級才動手，C 級直接過。保護本金 > 一切。」
 🔗 https://github.com/yip-lgtm/apex-bootcamp
 """
     return msg
@@ -323,9 +318,25 @@ def git_push_artifacts(repo_dir: Path, paths: list[Path], commit_msg: str) -> in
             check=False, capture_output=True
         )
     try:
-        # Pull --rebase first to handle any new remote commits
+        # Fetch + reset to handle any new remote commits (safe: we only push artifacts)
         subprocess.run(
-            ["git", "-C", str(repo_dir), "pull", "--rebase", "origin", "main"],
+            ["git", "-C", str(repo_dir), "fetch", "origin", "main"],
+            check=False, capture_output=True
+        )
+        # Stash any unstaged changes (none expected, but safe)
+        subprocess.run(
+            ["git", "-C", str(repo_dir), "stash", "--include-untracked"],
+            check=False, capture_output=True
+        )
+        # Hard reset to remote to get past any GHA auto-commits
+        subprocess.run(
+            ["git", "-C", str(repo_dir), "reset", "--hard", "origin/main"],
+            check=False, capture_output=True
+        )
+        # Re-stage our local file edits (we only edited src files, not the daily/ artifacts)
+        # Pop the stash to re-apply src changes
+        subprocess.run(
+            ["git", "-C", str(repo_dir), "stash", "pop"],
             check=False, capture_output=True
         )
         # git add
@@ -426,7 +437,7 @@ def main() -> int:
 
     # Step 3: LLM A/B/C grading (parallel for speed)
     print("[daily_reminder] Running LLM A/B/C grading on all 10 tickers...")
-    from llm_grader import grade_ticker
+    from llm_grader import grade_ticker, rank_trade_candidates
 
     def _grade(tk):
         return grade_ticker(tk)
@@ -437,13 +448,21 @@ def main() -> int:
         for fut in as_completed(futs):
             g = fut.result()
             grades_dict[g["ticker"]] = g
-    # Maintain priority order
     grades = [grades_dict[tk] for tk, _ in CHART_TICKERS]
     for g in grades:
         print(f"  {g['ticker']:7s} → {g['grade']}  {g['reason'][:60]}")
 
+    # Step 3.5: Rank trade candidates by priority
+    print("[daily_reminder] Ranking trade candidates by priority...")
+    candidates = rank_trade_candidates(grades)
+    for i, c in enumerate(candidates, 1):
+        if c["actionable"]:
+            print(f"  #{i} {c['ticker']:7s} [{c['grade']}] {c['size_micro']}µ  EV=+${c['expected_value_usd']:.0f}  score={c['priority_score']}")
+        else:
+            print(f"  #{i} {c['ticker']:7s} [{c['grade']}] skip")
+
     # Step 4: Build message
-    msg = build_reminder(snapshot, today_str, weekday, grades)
+    msg = build_reminder(snapshot, today_str, weekday, grades, candidates)
 
     # Step 4.5: Save text reminder + grades JSON to tracked dir
     print("[daily_reminder] Saving artifacts to AUTOMATION/reports/daily/...")
@@ -458,6 +477,10 @@ def main() -> int:
         "grades": [
             {k: v for k, v in g.items() if k != "summary"}
             for g in grades
+        ],
+        "candidates": [
+            {k: v for k, v in c.items() if k != "summary"}
+            for c in candidates
         ],
         "snapshot": [{k: v for k, v in s.items() if k != "summary"} for s in snapshot],
     }, ensure_ascii=False, indent=2), encoding="utf-8")

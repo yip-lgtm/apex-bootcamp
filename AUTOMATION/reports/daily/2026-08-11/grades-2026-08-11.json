@@ -1,6 +1,7 @@
 {
   "date": "2026-08-11",
   "weekday": "Tue",
+<<<<<<< Updated upstream
   "generated_hkt": "2026-08-11T20:46:50.814807+08:00",
   "grades": [
     {
@@ -12,10 +13,24 @@
       "ticker": "MNQ=F",
       "grade": "C",
       "reason": "價格處83%當日範圍，屬追價區，雖HTF偏多但結構不利進場"
+=======
+  "generated_hkt": "2026-08-11T20:57:11.313766+08:00",
+  "grades": [
+    {
+      "ticker": "MGC=F",
+      "grade": "?",
+      "reason": "http 429"
+    },
+    {
+      "ticker": "MNQ=F",
+      "grade": "?",
+      "reason": "http 429"
+>>>>>>> Stashed changes
     },
     {
       "ticker": "MCL=F",
       "grade": "?",
+<<<<<<< Updated upstream
       "reason": "2</think>"
     },
     {
@@ -52,33 +67,191 @@
       "ticker": "6J=F",
       "grade": "C",
       "reason": "數據異常無HTF確認無法評估結構"
+=======
+      "reason": "http 429"
+    },
+    {
+      "ticker": "MBT=F",
+      "grade": "?",
+      "reason": "http 429"
+    },
+    {
+      "ticker": "MES=F",
+      "grade": "?",
+      "reason": "http 429"
+    },
+    {
+      "ticker": "M2K=F",
+      "grade": "?",
+      "reason": "http 429"
+    },
+    {
+      "ticker": "MYM=F",
+      "grade": "?",
+      "reason": "http 429"
+    },
+    {
+      "ticker": "M6A=F",
+      "grade": "?",
+      "reason": "http 429"
+    },
+    {
+      "ticker": "M6B=F",
+      "grade": "?",
+      "reason": "http 429"
+    },
+    {
+      "ticker": "6J=F",
+      "grade": "?",
+      "reason": "http 429"
+    }
+  ],
+  "candidates": [
+    {
+      "ticker": "MBT=F",
+      "grade": "?",
+      "reason": "http 429",
+      "priority_score": 10.0,
+      "size_micro": 0.0,
+      "backtest_avg": 466.0,
+      "expected_value_usd": 0.0,
+      "actionable": false
+    },
+    {
+      "ticker": "MGC=F",
+      "grade": "?",
+      "reason": "http 429",
+      "priority_score": 8.85,
+      "size_micro": 0.0,
+      "backtest_avg": 224.29,
+      "expected_value_usd": 0.0,
+      "actionable": false
+    },
+    {
+      "ticker": "MNQ=F",
+      "grade": "?",
+      "reason": "http 429",
+      "priority_score": 2.57,
+      "size_micro": 0.0,
+      "backtest_avg": 90.0,
+      "expected_value_usd": 0.0,
+      "actionable": false
+    },
+    {
+      "ticker": "MES=F",
+      "grade": "?",
+      "reason": "http 429",
+      "priority_score": 1.0,
+      "size_micro": 0.0,
+      "backtest_avg": 0.0,
+      "expected_value_usd": 0.0,
+      "actionable": false
+    },
+    {
+      "ticker": "M2K=F",
+      "grade": "?",
+      "reason": "http 429",
+      "priority_score": 1.0,
+      "size_micro": 0.0,
+      "backtest_avg": 0.0,
+      "expected_value_usd": 0.0,
+      "actionable": false
+    },
+    {
+      "ticker": "MYM=F",
+      "grade": "?",
+      "reason": "http 429",
+      "priority_score": 1.0,
+      "size_micro": 0.0,
+      "backtest_avg": 0.0,
+      "expected_value_usd": 0.0,
+      "actionable": false
+    },
+    {
+      "ticker": "M6A=F",
+      "grade": "?",
+      "reason": "http 429",
+      "priority_score": 1.0,
+      "size_micro": 0.0,
+      "backtest_avg": 0.0,
+      "expected_value_usd": 0.0,
+      "actionable": false
+    },
+    {
+      "ticker": "M6B=F",
+      "grade": "?",
+      "reason": "http 429",
+      "priority_score": 1.0,
+      "size_micro": 0.0,
+      "backtest_avg": 0.0,
+      "expected_value_usd": 0.0,
+      "actionable": false
+    },
+    {
+      "ticker": "6J=F",
+      "grade": "?",
+      "reason": "http 429",
+      "priority_score": 1.0,
+      "size_micro": 0.0,
+      "backtest_avg": 0.0,
+      "expected_value_usd": 0.0,
+      "actionable": false
+    },
+    {
+      "ticker": "MCL=F",
+      "grade": "?",
+      "reason": "http 429",
+      "priority_score": 0.0,
+      "size_micro": 0.0,
+      "backtest_avg": 0.0,
+      "expected_value_usd": 0.0,
+      "actionable": false
+>>>>>>> Stashed changes
     }
   ],
   "snapshot": [
     {
       "tk": "MES=F",
       "name": "Micro S&P 500",
+<<<<<<< Updated upstream
       "last": 7790.25,
       "chg": 13.5,
       "pct": 0.17359436782717716,
+=======
+      "last": 7789.0,
+      "chg": 12.25,
+      "pct": 0.1575208152505867,
+>>>>>>> Stashed changes
       "high": 7796.0,
       "low": 7766.75
     },
     {
       "tk": "MNQ=F",
       "name": "Micro Nasdaq",
+<<<<<<< Updated upstream
       "last": 29847.5,
       "chg": 110.5,
       "pct": 0.3715909473047046,
+=======
+      "last": 29848.5,
+      "chg": 111.5,
+      "pct": 0.3749537613074621,
+>>>>>>> Stashed changes
       "high": 29887.0,
       "low": 29666.0
     },
     {
       "tk": "M2K=F",
       "name": "Micro Russell 2000",
+<<<<<<< Updated upstream
       "last": 3029.0,
       "chg": 4.0,
       "pct": 0.1322314049586777,
+=======
+      "last": 3028.800048828125,
+      "chg": 3.800048828125,
+      "pct": 0.12562144886363635,
+>>>>>>> Stashed changes
       "high": 3037.0,
       "low": 3019.699951171875
     },
@@ -130,7 +303,11 @@
     {
       "tk": "MCL=F",
       "name": "Micro Crude Oil",
+<<<<<<< Updated upstream
       "last": 82.37000274658203,
+=======
+      "last": 82.5,
+>>>>>>> Stashed changes
       "chg": 0.0,
       "pct": 0.0,
       "high": 84.63999938964844,
@@ -139,7 +316,7 @@
     {
       "tk": "MBT=F",
       "name": "Micro Bitcoin",
-      "last": 64445.0,
+      "last": 64425.0,
       "chg": 0.0,
       "pct": 0.0,
       "high": 64610.0,
@@ -148,7 +325,11 @@
     {
       "tk": "MET=F",
       "name": "Micro Ether",
+<<<<<<< Updated upstream
       "last": 1894.0,
+=======
+      "last": 1891.0,
+>>>>>>> Stashed changes
       "chg": 0.0,
       "pct": 0.0,
       "high": 1900.5,
@@ -157,18 +338,30 @@
     {
       "tk": "MGC=F",
       "name": "Micro Gold",
+<<<<<<< Updated upstream
       "last": 4450.39990234375,
       "chg": 88.60009765625,
       "pct": 2.031273823274375,
+=======
+      "last": 4454.39990234375,
+      "chg": 92.60009765625,
+      "pct": 2.12297908667737,
+>>>>>>> Stashed changes
       "high": 4495.10009765625,
       "low": 4415.7998046875
     },
     {
       "tk": "SI=F",
       "name": "Micro Silver",
+<<<<<<< Updated upstream
       "last": 65.12000274658203,
       "chg": 0.01399993896484375,
       "pct": 0.021503299789748118,
+=======
+      "last": 65.19499969482422,
+      "chg": 0.08899688720703125,
+      "pct": 0.13669536351357592,
+>>>>>>> Stashed changes
       "high": 66.68499755859375,
       "low": 64.47000122070312
     }

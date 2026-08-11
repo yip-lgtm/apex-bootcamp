@@ -1,65 +1,69 @@
 {
   "date": "2026-08-11",
   "weekday": "Tue",
+<<<<<<< Updated upstream
   "generated_hkt": "2026-08-11T21:50:46.297678+08:00",
+=======
+  "generated_hkt": "2026-08-11T23:26:31.063066+08:00",
+>>>>>>> Stashed changes
   "grades": [
     {
       "ticker": "MGC=F",
-      "grade": "?",
-      "reason": "http 429"
+      "grade": "C",
+      "reason": "急升日後追高 結構混亂 非乾淨進場"
     },
     {
       "ticker": "MNQ=F",
-      "grade": "?",
-      "reason": "http 429"
+      "grade": "C",
+      "reason": "無HTF明確方向，位於區間低端為追價區"
     },
     {
       "ticker": "MCL=F",
-      "grade": "?",
-      "reason": "http 429"
+      "grade": "C",
+      "reason": "無明確HTF方向且高低點皆掃，結構混亂"
     },
     {
       "ticker": "MBT=F",
-      "grade": "?",
-      "reason": "http 429"
+      "grade": "C",
+      "reason": "缺HTF LONG確認，價格於PDL低點無清晰結構"
     },
     {
       "ticker": "MES=F",
-      "grade": "?",
-      "reason": "http 429"
+      "grade": "C",
+      "reason": "無HTF確認且位於15%低點追價區"
     },
     {
       "ticker": "M2K=F",
-      "grade": "?",
-      "reason": "http 429"
+      "grade": "C",
+      "reason": "HTF未確認且價格處上檔追價區"
     },
     {
       "ticker": "MYM=F",
-      "grade": "?",
-      "reason": "http 429"
+      "grade": "C",
+      "reason": "23%位置接近低點，追價區且HTF結構不清"
     },
     {
       "ticker": "M6A=F",
-      "grade": "?",
-      "reason": "http 429"
+      "grade": "C",
+      "reason": "價格持平無HTF趨勢，無結構可交易"
     },
     {
       "ticker": "M6B=F",
-      "grade": "?",
-      "reason": "http 429"
+      "grade": "C",
+      "reason": "完全無波動無結構，HTF無方向，跳過"
     },
     {
       "ticker": "6J=F",
-      "grade": "?",
-      "reason": "http 429"
+      "grade": "C",
+      "reason": "無HTF結構無範圍數據異常無法進場"
     }
   ],
   "candidates": [
     {
       "ticker": "MBT=F",
-      "grade": "?",
-      "reason": "http 429",
-      "priority_score": 10.0,
+      "grade": "C",
+      "reason": "缺HTF LONG確認，價格於PDL低點無清晰結構",
+      "priority_score": 15.0,
       "size_micro": 0.0,
       "backtest_avg": 466.0,
       "expected_value_usd": 0.0,
@@ -67,9 +71,9 @@
     },
     {
       "ticker": "MGC=F",
-      "grade": "?",
-      "reason": "http 429",
-      "priority_score": 8.85,
+      "grade": "C",
+      "reason": "急升日後追高 結構混亂 非乾淨進場",
+      "priority_score": 13.85,
       "size_micro": 0.0,
       "backtest_avg": 224.29,
       "expected_value_usd": 0.0,
@@ -77,9 +81,9 @@
     },
     {
       "ticker": "MNQ=F",
-      "grade": "?",
-      "reason": "http 429",
-      "priority_score": 2.57,
+      "grade": "C",
+      "reason": "無HTF明確方向，位於區間低端為追價區",
+      "priority_score": 7.57,
       "size_micro": 0.0,
       "backtest_avg": 90.0,
       "expected_value_usd": 0.0,
@@ -87,9 +91,9 @@
     },
     {
       "ticker": "MES=F",
-      "grade": "?",
-      "reason": "http 429",
-      "priority_score": 1.0,
+      "grade": "C",
+      "reason": "無HTF確認且位於15%低點追價區",
+      "priority_score": 6.0,
       "size_micro": 0.0,
       "backtest_avg": 0.0,
       "expected_value_usd": 0.0,
@@ -97,9 +101,9 @@
     },
     {
       "ticker": "M2K=F",
-      "grade": "?",
-      "reason": "http 429",
-      "priority_score": 1.0,
+      "grade": "C",
+      "reason": "HTF未確認且價格處上檔追價區",
+      "priority_score": 6.0,
       "size_micro": 0.0,
       "backtest_avg": 0.0,
       "expected_value_usd": 0.0,
@@ -107,9 +111,9 @@
     },
     {
       "ticker": "MYM=F",
-      "grade": "?",
-      "reason": "http 429",
-      "priority_score": 1.0,
+      "grade": "C",
+      "reason": "23%位置接近低點，追價區且HTF結構不清",
+      "priority_score": 6.0,
       "size_micro": 0.0,
       "backtest_avg": 0.0,
       "expected_value_usd": 0.0,
@@ -117,9 +121,9 @@
     },
     {
       "ticker": "M6A=F",
-      "grade": "?",
-      "reason": "http 429",
-      "priority_score": 1.0,
+      "grade": "C",
+      "reason": "價格持平無HTF趨勢，無結構可交易",
+      "priority_score": 6.0,
       "size_micro": 0.0,
       "backtest_avg": 0.0,
       "expected_value_usd": 0.0,
@@ -127,9 +131,9 @@
     },
     {
       "ticker": "M6B=F",
-      "grade": "?",
-      "reason": "http 429",
-      "priority_score": 1.0,
+      "grade": "C",
+      "reason": "完全無波動無結構，HTF無方向，跳過",
+      "priority_score": 6.0,
       "size_micro": 0.0,
       "backtest_avg": 0.0,
       "expected_value_usd": 0.0,
@@ -137,9 +141,9 @@
     },
     {
       "ticker": "6J=F",
-      "grade": "?",
-      "reason": "http 429",
-      "priority_score": 1.0,
+      "grade": "C",
+      "reason": "無HTF結構無範圍數據異常無法進場",
+      "priority_score": 6.0,
       "size_micro": 0.0,
       "backtest_avg": 0.0,
       "expected_value_usd": 0.0,
@@ -147,9 +151,9 @@
     },
     {
       "ticker": "MCL=F",
-      "grade": "?",
-      "reason": "http 429",
-      "priority_score": 0.0,
+      "grade": "C",
+      "reason": "無明確HTF方向且高低點皆掃，結構混亂",
+      "priority_score": 5.0,
       "size_micro": 0.0,
       "backtest_avg": 0.0,
       "expected_value_usd": 0.0,
@@ -160,63 +164,108 @@
     {
       "tk": "MES=F",
       "name": "Micro S&P 500",
+<<<<<<< Updated upstream
       "last": 7778.75,
       "chg": 2.0,
       "pct": 0.025717684122544767,
+=======
+      "last": 7771.5,
+      "chg": -5.25,
+      "pct": -0.06750892082168,
+>>>>>>> Stashed changes
       "high": 7796.0,
       "low": 7766.75
     },
     {
       "tk": "MNQ=F",
       "name": "Micro Nasdaq",
+<<<<<<< Updated upstream
       "last": 29724.0,
       "chg": -13.0,
       "pct": -0.0437165820358476,
+=======
+      "last": 29713.5,
+      "chg": -23.5,
+      "pct": -0.07902612906480143,
+>>>>>>> Stashed changes
       "high": 29887.0,
-      "low": 29666.0
+      "low": 29636.0
     },
     {
       "tk": "M2K=F",
       "name": "Micro Russell 2000",
+<<<<<<< Updated upstream
       "last": 3037.199951171875,
       "chg": 12.199951171875,
       "pct": 0.40330417097107435,
       "high": 3041.10009765625,
+=======
+      "last": 3036.800048828125,
+      "chg": 11.800048828125,
+      "pct": 0.39008425878099173,
+      "high": 3047.300048828125,
+>>>>>>> Stashed changes
       "low": 3019.699951171875
     },
     {
       "tk": "MYM=F",
       "name": "Micro Dow",
+<<<<<<< Updated upstream
       "last": 54207.0,
       "chg": 144.0,
       "pct": 0.2663559180955552,
       "high": 54260.0,
+=======
+      "last": 54045.0,
+      "chg": -18.0,
+      "pct": -0.0332944897619444,
+      "high": 54336.0,
+>>>>>>> Stashed changes
       "low": 53951.0
     },
     {
       "tk": "M6E=F",
       "name": "Micro EUR/USD",
+<<<<<<< Updated upstream
       "last": 1.155900001525879,
       "chg": 0.0,
       "pct": 0.0,
+=======
+      "last": 1.1553000211715698,
+      "chg": -0.000599980354309082,
+      "pct": -0.05190590479427811,
+>>>>>>> Stashed changes
       "high": 1.156599998474121,
       "low": 1.1547000408172607
     },
     {
       "tk": "M6A=F",
       "name": "Micro AUD/USD",
+<<<<<<< Updated upstream
       "last": 0.7062000036239624,
       "chg": 0.0009000301361083984,
       "pct": 0.12760955195525722,
       "high": 0.7063999772071838,
+=======
+      "last": 0.7053999900817871,
+      "chg": 0.00010001659393310547,
+      "pct": 0.014180717098074279,
+      "high": 0.7064999938011169,
+>>>>>>> Stashed changes
       "low": 0.7032999992370605
     },
     {
       "tk": "M6B=F",
       "name": "Micro GBP/USD",
+<<<<<<< Updated upstream
       "last": 1.3502999544143677,
       "chg": -0.0006000995635986328,
       "pct": -0.04442220294769643,
+=======
+      "last": 1.3502000570297241,
+      "chg": -0.0006999969482421875,
+      "pct": -0.05181707900454379,
+>>>>>>> Stashed changes
       "high": 1.3515000343322754,
       "low": 1.3493000268936157
     },
@@ -232,25 +281,41 @@
     {
       "tk": "MCL=F",
       "name": "Micro Crude Oil",
+<<<<<<< Updated upstream
       "last": 81.66000366210938,
       "chg": 0.0,
       "pct": 0.0,
       "high": 84.63999938964844,
       "low": 81.37999725341797
+=======
+      "last": 82.48999786376953,
+      "chg": 0.0,
+      "pct": 0.0,
+      "high": 84.63999938964844,
+      "low": 81.2699966430664
+>>>>>>> Stashed changes
     },
     {
       "tk": "MBT=F",
       "name": "Micro Bitcoin",
+<<<<<<< Updated upstream
       "last": 64260.0,
+=======
+      "last": 63835.0,
+>>>>>>> Stashed changes
       "chg": 0.0,
       "pct": 0.0,
       "high": 64610.0,
-      "low": 63895.0
+      "low": 63775.0
     },
     {
       "tk": "MET=F",
       "name": "Micro Ether",
+<<<<<<< Updated upstream
       "last": 1893.5,
+=======
+      "last": 1872.5,
+>>>>>>> Stashed changes
       "chg": 0.0,
       "pct": 0.0,
       "high": 1900.5,
@@ -259,18 +324,30 @@
     {
       "tk": "MGC=F",
       "name": "Micro Gold",
+<<<<<<< Updated upstream
       "last": 4459.2001953125,
       "chg": 97.400390625,
       "pct": 2.233032119455061,
+=======
+      "last": 4449.2998046875,
+      "chg": 87.5,
+      "pct": 2.006052636940519,
+>>>>>>> Stashed changes
       "high": 4495.10009765625,
       "low": 4415.7998046875
     },
     {
       "tk": "SI=F",
       "name": "Micro Silver",
+<<<<<<< Updated upstream
       "last": 65.20999908447266,
       "chg": 0.10399627685546875,
       "pct": 0.15973377625834148,
+=======
+      "last": 65.13500213623047,
+      "chg": 0.02899932861328125,
+      "pct": 0.044541712534513674,
+>>>>>>> Stashed changes
       "high": 66.68499755859375,
       "low": 64.47000122070312
     }

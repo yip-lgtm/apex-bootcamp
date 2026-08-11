@@ -225,7 +225,7 @@ DOL: PDH/PDL/PDC、ONH/ONL、PMH/PML
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 **執行守則**: 🟢 A 級 1.0µ 滿倉 | 🟡 B 級 0.5µ 減倉 | 🔴 C 級 skip
-**3-Chart 標準**: HTF-D (1D/90d) + H4 (4h/30d) + H1 (1h/5d) — 附喺 message 後
+**3-Chart 標準**: HTF-D (1D/90d) + H4 (4h/30d) + H1 (1h/5d) + M5 (5m/2d) — 附喺 message 後
 **Slogan**: 「A 級才動手，C 級直接過。保護本金 > 一切。」
 🔗 https://github.com/yip-lgtm/apex-bootcamp
 """
@@ -401,7 +401,7 @@ def main() -> int:
 
     # Step 2: Generate charts for top 10 tickers (in parallel for speed)
     # Save to BOTH /tmp (for TG) and tracked reports dir (for git push)
-    print(f"[daily_reminder] Generating 3-panel charts for {len(CHART_TICKERS)} tickers...")
+    print(f"[daily_reminder] Generating 4-panel charts (HTF-D/H4/H1/M5) for {len(CHART_TICKERS)} tickers...")
     from chart_gen import generate_for_ticker
     from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -424,7 +424,8 @@ def main() -> int:
 
     chart_paths = []   # paths to send via TG (from /tmp)
     tracked_charts = []  # paths to commit to git
-    with ThreadPoolExecutor(max_workers=4) as pool:
+    # v2.6.8: 4 panels per chart, more data fetch. Use 6 workers to fit GHA timeout.
+    with ThreadPoolExecutor(max_workers=6) as pool:
         futs = {pool.submit(_gen_and_copy, (tk, name)): tk for tk, name in CHART_TICKERS}
         for fut in as_completed(futs):
             tk = futs[fut]

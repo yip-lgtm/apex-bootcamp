@@ -2,10 +2,17 @@
 
 Generates the mechanical-trader checklist with:
 - 11 micro futures snapshot
-- 3-panel charts (HTF-D / H4 / H1) for top 4 tickers
-- LLM A/B/C grading for those 4 tickers
+- 4-Chart Standard (D / H4 / H1 / 5m) for top 10 tickers
+- LLM A/B/C grading for those 10 tickers
+- Trade candidate ranking (priority_score)
 
 Pushes to Telegram at 20:30 HKT weekdays.
+
+4-Chart Standard (v2.6.8+):
+  D  = HTF-D  (1D, 90d) — higher timeframe structure / HTF bias
+  H4 =        (4h, 30d) — mid structure / swing levels
+  H1 =        (1h, 5d)  — entry TF / killzone (09:00-11:00 ET)
+  5m = M5     (5m, 2d)  — intraday execution precision / trigger
 """
 from __future__ import annotations
 import os
@@ -225,7 +232,7 @@ DOL: PDH/PDL/PDC、ONH/ONL、PMH/PML
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 **執行守則**: 🟢 A 級 1.0µ 滿倉 | 🟡 B 級 0.5µ 減倉 | 🔴 C 級 skip
-**3-Chart 標準**: HTF-D (1D/90d) + H4 (4h/30d) + H1 (1h/5d) + M5 (5m/2d) — 附喺 message 後
+**4-Chart Standard (D / H4 / H1 / 5m)**: HTF-D (1D/90d) + H4 (4h/30d) + H1 (1h/5d) + M5 (5m/2d) — 附喺 message 後
 **Slogan**: 「A 級才動手，C 級直接過。保護本金 > 一切。」
 🔗 https://github.com/yip-lgtm/apex-bootcamp
 """
@@ -496,7 +503,7 @@ def main() -> int:
     # Step 6: Send charts as media group
     if chart_paths:
         print(f"[daily_reminder] Sending {len(chart_paths)} charts as media group...")
-        code2 = send_telegram_photos(chart_paths, caption="📊 3-Chart Standard (HTF-D / H4 / H1)")
+        code2 = send_telegram_photos(chart_paths, caption="📊 4-Chart Standard (D / H4 / H1 / 5m)")
         print(f"[daily_reminder] Charts HTTP {code2}")
 
     # Step 7: Git push artifacts

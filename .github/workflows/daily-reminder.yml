@@ -1,0 +1,44 @@
+name: 'Daily Reminder — Apex 50K v2.6 (20:30 HKT / 12:30 UTC)'
+
+# Weekdays only, 30 min before US market open
+# HKT 20:30 = 12:30 UTC = 08:30 ET (summer) / 07:30 ET (winter)
+
+on:
+  schedule:
+    # 12:30 UTC = 20:30 HKT = 08:30 EDT (summer) / 07:30 EST (winter)
+    # Run only weekdays (Mon-Fri)
+    - cron: '30 12 * * 1-5'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  daily-reminder:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: AUTOMATION/requirements.txt
+
+      - name: Install deps
+        working-directory: AUTOMATION
+        run: |
+          python -m venv .venv
+          .venv/bin/pip install -q -r requirements.txt
+
+      - name: Send daily reminder
+        working-directory: AUTOMATION
+        run: |
+          .venv/bin/python src/daily_reminder.py
+          echo "✅ daily reminder sent"

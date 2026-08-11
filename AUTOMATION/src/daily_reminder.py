@@ -276,7 +276,26 @@ import subprocess
 import shutil
 
 # --- Save artifacts to repo + git push ---
-REPO_DIR = Path("/workspace/apex-bootcamp")
+def detect_repo_dir() -> Path:
+    """Find the apex-bootcamp repo dir (works in sandbox + GHA)."""
+    candidates = [
+        Path("/workspace/apex-bootcamp"),  # local sandbox
+        Path("/home/runner/work/apex-bootcamp/apex-bootcamp"),  # GHA default
+    ]
+    for c in candidates:
+        if (c / ".git").exists():
+            return c
+    # Fallback: use git to find toplevel from cwd
+    try:
+        r = subprocess.run(
+            ["git", "rev-parse", "--show-toplevel"],
+            capture_output=True, text=True, check=True
+        )
+        return Path(r.stdout.strip())
+    except Exception:
+        return Path.cwd()
+
+REPO_DIR = detect_repo_dir()
 ARTIFACTS_DIR = REPO_DIR / "AUTOMATION" / "reports" / "daily"
 
 # Identity for the auto-push commit (overridable via env)

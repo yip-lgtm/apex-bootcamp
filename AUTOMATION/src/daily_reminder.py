@@ -1,8 +1,11 @@
 """Apex 50K v2.6 — Daily Pre-Market Reminder
-Generates the mechanical-trader checklist and pushes to Telegram at 20:30 HKT.
 
-Schedule: weekdays only (Mon-Fri)
-Target: HKT 20:30 = 12:30 UTC = 30 min before US market open
+Generates the mechanical-trader checklist with:
+- 11 micro futures snapshot
+- 3-panel charts (HTF-D / H4 / H1) for top 4 tickers
+- LLM A/B/C grading for those 4 tickers
+
+Pushes to Telegram at 20:30 HKT weekdays.
 """
 from __future__ import annotations
 import os
@@ -10,19 +13,30 @@ import sys
 import warnings
 import logging
 import requests
-import yfinance as yf
-import pandas as pd
 from datetime import datetime, timezone, timedelta
+from pathlib import Path
 
 warnings.filterwarnings("ignore")
 logging.disable(logging.CRITICAL)
 
-# --- Constants ---
+# Local imports (add src to path)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import yfinance as yf
+import pandas as pd
+
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
 HKT = timezone(timedelta(hours=8))
-ET = timezone(timedelta(hours=-4))
 
+# Top tickers for chart + grading (most important Apex 50K instruments)
+CHART_TICKERS = [
+    ("MGC=F", "Micro Gold"),
+    ("MNQ=F", "Micro Nasdaq"),
+    ("MCL=F", "Micro Crude"),
+    ("MBT=F", "Micro Bitcoin"),
+]
+
+# Full snapshot list
 WATCHLIST = [
     ("MES=F", "Micro S&P 500"),
     ("MNQ=F", "Micro Nasdaq"),
@@ -37,9 +51,9 @@ WATCHLIST = [
     ("SI=F",  "Micro Silver"),
 ]
 
+
 # --- 11-futures snapshot ---
 def pull_snapshot() -> list[dict]:
-    """Pull daily close + change for the watchlist."""
     rows = []
     for tk, name in WATCHLIST:
         try:
@@ -54,15 +68,12 @@ def pull_snapshot() -> list[dict]:
             prev = d.iloc[-2] if len(d) > 1 else last
             chg = float(last["Close"] - prev["Close"])
             pct = float(chg / prev["Close"] * 100) if prev["Close"] else 0.0
-            high14 = float(d["High"].tail(14).max()) if len(d) >= 14 else float(last["High"])
-            low14 = float(d["Low"].tail(14).min()) if len(d) >= 14 else float(last["Low"])
             rows.append({
                 "tk": tk, "name": name,
                 "last": float(last["Close"]),
                 "chg": chg, "pct": pct,
                 "high": float(last["High"]),
                 "low": float(last["Low"]),
-                "high14": high14, "low14": low14,
             })
         except Exception as e:
             rows.append({"tk": tk, "name": name, "err": str(e)[:40]})
@@ -70,18 +81,16 @@ def pull_snapshot() -> list[dict]:
 
 
 def fmt_price(v: float) -> str:
-    if abs(v) > 1000:
-        return f"{v:,.0f}"
-    if abs(v) > 10:
-        return f"{v:.2f}"
+    if abs(v) > 1000: return f"{v:,.0f}"
+    if abs(v) > 10:   return f"{v:.2f}"
     return f"{v:.4f}"
 
 
 def fmt_chg_arrow(pct: float) -> str:
-    if pct > 0.3: return "🟢▲"
-    if pct > 0:   return "🟢↗"
+    if pct > 0.3:  return "🟢▲"
+    if pct > 0:    return "🟢↗"
     if pct < -0.3: return "🔴▼"
-    if pct < 0:   return "🔴↘"
+    if pct < 0:    return "🔴↘"
     return "🟡→"
 
 
@@ -91,13 +100,7 @@ def bias_from_pct(pct: float) -> str:
     return "NEUTRAL"
 
 
-# --- Daily news (USD high impact) ---
 def daily_news_block(date_str: str) -> str:
-    """Return a curated list of expected US data releases today.
-    Falls back to a generic note when not in a known window.
-    """
-    # Static reference — replace with real calendar integration later
-    # (e.g., forexfactory API, investing.com scraper, or Finnhub calendar)
     weekday = datetime.strptime(date_str, "%Y-%m-%d").strftime("%a")
     typical = {
         "Mon": ["No major US data expected pre-market"],
@@ -112,18 +115,17 @@ def daily_news_block(date_str: str) -> str:
     return "\n".join(f"  • {x}" for x in items)
 
 
-# --- Build the reminder message ---
-def build_reminder(snapshot: list[dict], today_hkt: str, weekday: str) -> str:
-    """Construct the full daily reminder text."""
-    # --- Snapshot table ---
-    snap_lines = []
-    snap_lines.append(f"📊 **當前快照** (Last close, change vs prior day)")
-    snap_lines.append("```")
-    snap_lines.append(f"{'Ticker':<8} {'Name':<20} {'Last':>10}  {'%Chg':>7}  Bias")
+# --- Build reminder message ---
+def build_reminder(
+    snapshot: list[dict], today_hkt: str, weekday: str,
+    grades: list[dict],
+) -> str:
+    snap_lines = ["📊 **當前快照** (Last close, change vs prior day)", "```"]
+    snap_lines.append(f"{'Ticker':<8} {'Name':<20} {'Last':>10}  {'%Chg':>8}  Bias")
     snap_lines.append("-" * 64)
     for s in snapshot:
         if "err" in s:
-            snap_lines.append(f"{s['tk']:<8} {s['name']:<20} {'n/a':>10}  {'-':>7}  ?")
+            snap_lines.append(f"{s['tk']:<8} {s['name']:<20} {'n/a':>10}  {'-':>8}  ?")
             continue
         arrow = fmt_chg_arrow(s["pct"])
         bias = bias_from_pct(s["pct"])
@@ -134,19 +136,29 @@ def build_reminder(snapshot: list[dict], today_hkt: str, weekday: str) -> str:
     snap_lines.append("```")
     snap_text = "\n".join(snap_lines)
 
-    # --- Bias summary ---
     long_tickers = [s["tk"] for s in snapshot if "err" not in s and bias_from_pct(s["pct"]) == "LONG"]
     short_tickers = [s["tk"] for s in snapshot if "err" not in s and bias_from_pct(s["pct"]) == "SHORT"]
     bias_summary = (
-        f"📈 **HTF Bias (multi-ticker consensus)**: "
+        f"📈 **HTF Bias consensus**: "
         f"LONG: {', '.join(long_tickers) if long_tickers else '(none)'}  |  "
         f"SHORT: {', '.join(short_tickers) if short_tickers else '(none)'}"
     )
 
-    # --- News block ---
     news = daily_news_block(today_hkt)
 
-    # --- Build full message ---
+    # LLM A/B/C grades
+    grade_lines = ["🎯 **LLM A/B/C 等級 (chart + levels 評估)**", "```"]
+    grade_lines.append(f"{'Ticker':<8} {'Grade':<6} Reason")
+    grade_lines.append("-" * 60)
+    for g in grades:
+        if g["grade"] == "?":
+            grade_lines.append(f"{g['ticker']:<8} {'?':<6} {g['reason'][:50]}")
+        else:
+            emoji = {"A": "🟢 A", "B": "🟡 B", "C": "🔴 C"}.get(g["grade"], g["grade"])
+            grade_lines.append(f"{g['ticker']:<8} {emoji:<6} {g['reason'][:50]}")
+    grade_lines.append("```")
+    grade_text = "\n".join(grade_lines)
+
     msg = f"""🚨 **A 皮盤房 v2.6 — 每日執行提醒** 🚨
 📅 {today_hkt} ({weekday})  ⏰ 20:30 HKT / 12:30 UTC / 08:30 ET (T-30min)
 🔥 **核心重點：A 級優先執行 → B 級減倉 → C 級直接跳過**
@@ -165,66 +177,48 @@ def build_reminder(snapshot: list[dict], today_hkt: str, weekday: str) -> str:
 {bias_summary}
 
 ### 📅 Daily Bias & DOL (Day-of-Level)
-- 確認今日 Higher TF Bias（above ↑ / below ↓）
+- 確認今日 Higher TF Bias (above ↑ / below ↓)
 - 標註 **DOL (PDH / PDC / PDL / ONH / ONL / PMH / PML)**
-- 對齊昨日 / 上週結構，識別 **Asia / London 預期方向**
+- 對齊昨日 / 上週結構
 
 ### ⏰ Session Killzone 時間
 - **NY AM Killzone**：09:00-11:00 ET (核心進場窗口)
 - **NY PM Killzone**：13:30-15:00 ET (減倉或觀察)
-- **Asia / London**：僅用於 HTF 結構確認，不主動進場
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-## 2️⃣ 風險規則檢查 (Apex 50K Hard Limits)
+## 2️⃣ 風險規則檢查
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-- ✅ **單倉限制**：嚴格 **1 張 Micro 合約**（無論任何 setup）
-- ✅ **Daily SL Kill-switch**：**-$100** → 即停當日所有交易
-- ✅ **Intraday Trail Drawdown**：累計 **-$2,000** → 觸發即停
-- ✅ **合格獲利日進度**：單日 **≥ $250**（half of $500 target）
-- ✅ **Max TP / Trade**：單 trade TP **$200-500**，RR 鎖定 **2:1 ~ 5:1**
-- ✅ **Same-day exit**：未平倉部位 EOD 強制平倉，不持倉過夜
+- ✅ **1 張 Micro 合約** 嚴格限制
+- ✅ **Daily SL Kill-switch**: -$100 → 即停
+- ✅ **Intraday Trail DD**: -$2,000 → 觸發即停
+- ✅ **合格獲利日進度**: ≥$250 (half of $500 target)
+- ✅ **TP/Trade**: $200-500, RR 2-5
+- ✅ **Same-day exit**: EOD 強制平倉
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-## 3️⃣ 規則初篩 + LLM 二次判斷流程
+## 3️⃣ LLM A/B/C 判定 (3-chart standard)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-**流程 (v2.6)**：
-```
-[1] 程式初篩 (apex_scan.py)
-    ↓ A/B/C grade + Det 引擎判斷
-[2] LLM 自動拉圖 (WeBull/TV 3 張)
-    ↓ HTF-D / H4 / H1
-[3] 填模板給 LLM (MiniMax-M3)
-    ↓ 多週期驗證 + HTF alignment
-[4] 最終 grade
-    ↓
-[5] 執行 (A 滿倉) / (B 半倉) / (C 跳過)
-```
+{grade_text}
 
 **執行守則**：
-- **A 級 (2+2)**：**滿倉 1 micro**，嚴守 SL，不加碼
-- **B 級 (1+1)**：**減倉 0.5 micro** (or 觀察)，等 A 級確認再進
-- **C 級 (0+0)**：**直接跳過**，唔好 chase
-- **A→C 衝突**：以 Det 引擎為準，LLM 唔可以 override Det
+- 🟢 **A 級**：滿倉 1 micro，嚴守 SL
+- 🟡 **B 級**：減倉 0.5 micro (or 觀察)
+- 🔴 **C 級**：直接跳過，唔 chase
+
+**注意**：3 張 chart 附喺 message 後 (HTF-D / H4 / H1 各 ticker)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-## 4️⃣ 圖表標準 (3 張必備)
+## 4️⃣ 圖表標準
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-- 📊 **HTF Daily**：週 / 月結構 + 關鍵 S/R
-- 📊 **H4**：當日趨勢 + 中繼結構
-- 📊 **H1 / 5m**：進場 K 線形態 + Killzone 標記
+每張 chart 包含：
+- 📊 **HTF-D** (1D, 90d) — 週 / 月結構
+- 📊 **H4** (4-hour, 30d) — 中繼結構
+- 📊 **H1** (1-hour, 5d) — 進場 TF
 
-**標記要求**：
-- ✅ 標注 PDH/PDL/PDC、ONH/ONL、PMH/PML
-- ✅ 標注進場點、SL、TP
-- ✅ 標注 Risk / Reward ratio
-- ✅ 標注 killzone 窗口
-
-**交易記錄**：
-- 入場後即時更新 **Equity / 合格日 / PnL / Win Rate / RR**
-- 每 trade 結束後檢討：**有無違反機械化規則？**
+標記：PDH/PDL/PDC、ONH/ONL、Volume、Killzone 窗口
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 💪 **今日口號**：
@@ -235,8 +229,8 @@ def build_reminder(snapshot: list[dict], today_hkt: str, weekday: str) -> str:
     return msg
 
 
-def send_telegram(text: str) -> int:
-    """Send a message to Telegram. Returns HTTP code."""
+# --- Telegram send ---
+def send_telegram_text(text: str) -> int:
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
     payload = {
         "chat_id": TELEGRAM_CHAT_ID,
@@ -248,6 +242,38 @@ def send_telegram(text: str) -> int:
     return r.status_code
 
 
+def send_telegram_photos(photo_paths: list[Path], caption: str = "") -> int:
+    """Send multiple photos as a media group."""
+    if not photo_paths:
+        return 0
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMediaGroup"
+    # Build media group payload
+    media = []
+    files = []
+    for i, p in enumerate(photo_paths):
+        attach_id = f"attach_{i}"
+        media.append({
+            "type": "photo",
+            "media": f"attach://{attach_id}",
+            **({"caption": caption} if i == 0 and caption else {}),
+        })
+        files.append((attach_id, (p.name, open(p, "rb"), "image/png")))
+    payload = {
+        "chat_id": TELEGRAM_CHAT_ID,
+        "media": json.dumps(media),
+    }
+    r = requests.post(url, data=payload, files=files, timeout=60)
+    for f_tuple in files:
+        # f_tuple structure: (attach_id, (filename, fileobj, mimetype))
+        fh = f_tuple[1][1]
+        fh.close()
+    return r.status_code
+
+
+# Need json for media group
+import json
+
+# --- Main ---
 def main() -> int:
     if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
         print("FATAL: TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID not set", file=sys.stderr)
@@ -257,17 +283,50 @@ def main() -> int:
     today_str = now_hkt.strftime("%Y-%m-%d")
     weekday = now_hkt.strftime("%a")
 
-    # Skip weekends
     if weekday in ("Sat", "Sun"):
         print(f"[daily_reminder] {weekday} - skipping (weekend)")
         return 0
 
     print(f"[daily_reminder] Generating reminder for {today_str} ({weekday})")
+
+    # Step 1: 11-ticker snapshot
+    print("[daily_reminder] Pulling 11-ticker snapshot...")
     snapshot = pull_snapshot()
-    msg = build_reminder(snapshot, today_str, weekday)
-    code = send_telegram(msg)
-    print(f"[daily_reminder] Telegram HTTP {code}")
-    return 0 if code == 200 else 1
+
+    # Step 2: Generate charts for top 4
+    print("[daily_reminder] Generating 3-panel charts for top 4 tickers...")
+    from chart_gen import generate_for_ticker
+    chart_dir = Path(os.environ.get("APEX_CHART_OUT", "/tmp/apex-charts"))
+    chart_dir.mkdir(parents=True, exist_ok=True)
+    chart_paths = []
+    for tk, name in CHART_TICKERS:
+        p, _ = generate_for_ticker(tk, name, chart_dir)
+        if p:
+            chart_paths.append(p)
+            print(f"  ✓ {tk} → {p.name}")
+
+    # Step 3: LLM A/B/C grading
+    print("[daily_reminder] Running LLM A/B/C grading...")
+    from llm_grader import grade_ticker
+    grades = [grade_ticker(tk) for tk, _ in CHART_TICKERS]
+    for g in grades:
+        print(f"  {g['ticker']:6s} → {g['grade']}  {g['reason'][:60]}")
+
+    # Step 4: Build message
+    msg = build_reminder(snapshot, today_str, weekday, grades)
+
+    # Step 5: Send text message
+    print("[daily_reminder] Sending text message to Telegram...")
+    code1 = send_telegram_text(msg)
+    print(f"[daily_reminder] Text message HTTP {code1}")
+
+    # Step 6: Send charts as media group
+    if chart_paths:
+        print(f"[daily_reminder] Sending {len(chart_paths)} charts as media group...")
+        code2 = send_telegram_photos(chart_paths, caption="📊 3-Chart Standard (HTF-D / H4 / H1)")
+        print(f"[daily_reminder] Charts HTTP {code2}")
+
+    return 0 if code1 == 200 else 1
 
 
 if __name__ == "__main__":

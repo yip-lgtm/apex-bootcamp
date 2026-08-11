@@ -1,19 +1,6 @@
 {
   "date": "2026-08-11",
   "weekday": "Tue",
-<<<<<<< Updated upstream
-  "generated_hkt": "2026-08-11T20:46:50.814807+08:00",
-  "grades": [
-    {
-      "ticker": "MGC=F",
-      "grade": "C",
-      "reason": "漲幅過大且高位被拒絕,屬於追價區,結構不清"
-    },
-    {
-      "ticker": "MNQ=F",
-      "grade": "C",
-      "reason": "價格處83%當日範圍，屬追價區，雖HTF偏多但結構不利進場"
-=======
   "generated_hkt": "2026-08-11T20:57:11.313766+08:00",
   "grades": [
     {
@@ -25,49 +12,10 @@
       "ticker": "MNQ=F",
       "grade": "?",
       "reason": "http 429"
->>>>>>> Stashed changes
     },
     {
       "ticker": "MCL=F",
       "grade": "?",
-<<<<<<< Updated upstream
-      "reason": "2</think>"
-    },
-    {
-      "ticker": "MBT=F",
-      "grade": "C",
-      "reason": "77%位置近PDH/ONH阻力，HTF未確認且有追價風險"
-    },
-    {
-      "ticker": "MES=F",
-      "grade": "C",
-      "reason": "80% range高點追價，違反no chase規則"
-    },
-    {
-      "ticker": "M2K=F",
-      "grade": "C",
-      "reason": "HTF未確認且價格處中段，無乾淨結構入場"
-    },
-    {
-      "ticker": "MYM=F",
-      "grade": "C",
-      "reason": "價格處於今日區間80%屬於追價區，HTF無明確bias"
-    },
-    {
-      "ticker": "M6A=F",
-      "grade": "C",
-      "reason": "無HTF確認且結構壓縮平坦，追價風險高"
-    },
-    {
-      "ticker": "M6B=F",
-      "grade": "C",
-      "reason": "零波動無結構，HTF無法判斷，無交易機會"
-    },
-    {
-      "ticker": "6J=F",
-      "grade": "C",
-      "reason": "數據異常無HTF確認無法評估結構"
-=======
       "reason": "http 429"
     },
     {
@@ -206,52 +154,33 @@
       "backtest_avg": 0.0,
       "expected_value_usd": 0.0,
       "actionable": false
->>>>>>> Stashed changes
     }
   ],
   "snapshot": [
     {
       "tk": "MES=F",
       "name": "Micro S&P 500",
-<<<<<<< Updated upstream
-      "last": 7790.25,
-      "chg": 13.5,
-      "pct": 0.17359436782717716,
-=======
       "last": 7789.0,
       "chg": 12.25,
       "pct": 0.1575208152505867,
->>>>>>> Stashed changes
       "high": 7796.0,
       "low": 7766.75
     },
     {
       "tk": "MNQ=F",
       "name": "Micro Nasdaq",
-<<<<<<< Updated upstream
-      "last": 29847.5,
-      "chg": 110.5,
-      "pct": 0.3715909473047046,
-=======
       "last": 29848.5,
       "chg": 111.5,
       "pct": 0.3749537613074621,
->>>>>>> Stashed changes
       "high": 29887.0,
       "low": 29666.0
     },
     {
       "tk": "M2K=F",
       "name": "Micro Russell 2000",
-<<<<<<< Updated upstream
-      "last": 3029.0,
-      "chg": 4.0,
-      "pct": 0.1322314049586777,
-=======
       "last": 3028.800048828125,
       "chg": 3.800048828125,
       "pct": 0.12562144886363635,
->>>>>>> Stashed changes
       "high": 3037.0,
       "low": 3019.699951171875
     },
@@ -267,9 +196,9 @@
     {
       "tk": "M6E=F",
       "name": "Micro EUR/USD",
-      "last": 1.155500054359436,
-      "chg": -0.0003999471664428711,
-      "pct": -0.03460049882471748,
+      "last": 1.1556999683380127,
+      "chg": -0.00020003318786621094,
+      "pct": -0.017305405969560636,
       "high": 1.156599998474121,
       "low": 1.1547000408172607
     },
@@ -285,29 +214,25 @@
     {
       "tk": "M6B=F",
       "name": "Micro GBP/USD",
-      "last": 1.3495999574661255,
-      "chg": -0.0013000965118408203,
-      "pct": -0.09623928195224021,
+      "last": 1.3499000072479248,
+      "chg": -0.001000046730041504,
+      "pct": -0.074028180478392,
       "high": 1.3515000343322754,
       "low": 1.3493000268936157
     },
     {
       "tk": "6J=F",
       "name": "Micro JPY",
-      "last": 0.0062950002029538155,
-      "chg": 1.1000316590070724e-05,
-      "pct": 0.1750527814925867,
+      "last": 0.006295999977737665,
+      "chg": 1.200009137392044e-05,
+      "pct": 0.19096262875434789,
       "high": 0.006309499964118004,
       "low": 0.0062905000522732735
     },
     {
       "tk": "MCL=F",
       "name": "Micro Crude Oil",
-<<<<<<< Updated upstream
-      "last": 82.37000274658203,
-=======
       "last": 82.5,
->>>>>>> Stashed changes
       "chg": 0.0,
       "pct": 0.0,
       "high": 84.63999938964844,
@@ -325,11 +250,7 @@
     {
       "tk": "MET=F",
       "name": "Micro Ether",
-<<<<<<< Updated upstream
-      "last": 1894.0,
-=======
       "last": 1891.0,
->>>>>>> Stashed changes
       "chg": 0.0,
       "pct": 0.0,
       "high": 1900.5,
@@ -338,30 +259,18 @@
     {
       "tk": "MGC=F",
       "name": "Micro Gold",
-<<<<<<< Updated upstream
-      "last": 4450.39990234375,
-      "chg": 88.60009765625,
-      "pct": 2.031273823274375,
-=======
       "last": 4454.39990234375,
       "chg": 92.60009765625,
       "pct": 2.12297908667737,
->>>>>>> Stashed changes
       "high": 4495.10009765625,
       "low": 4415.7998046875
     },
     {
       "tk": "SI=F",
       "name": "Micro Silver",
-<<<<<<< Updated upstream
-      "last": 65.12000274658203,
-      "chg": 0.01399993896484375,
-      "pct": 0.021503299789748118,
-=======
       "last": 65.19499969482422,
       "chg": 0.08899688720703125,
       "pct": 0.13669536351357592,
->>>>>>> Stashed changes
       "high": 66.68499755859375,
       "low": 64.47000122070312
     }

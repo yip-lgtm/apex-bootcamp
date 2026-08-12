@@ -1,64 +1,123 @@
 {
   "date": "2026-08-11",
   "weekday": "Tue",
+<<<<<<< Updated upstream
   "generated_hkt": "2026-08-11T23:37:19.289608+08:00",
+=======
+  "generated_hkt": "2026-08-11T23:35:15.428477+08:00",
+>>>>>>> Stashed changes
   "grades": [
     {
       "ticker": "MGC=F",
       "grade": "C",
+<<<<<<< Updated upstream
       "reason": "HTF雖多但已漲1.88%屬追價區且結構凌亂"
+=======
+      "reason": "價格偏離PDH過遠，H1均線下方，追價風險高"
+>>>>>>> Stashed changes
     },
     {
       "ticker": "MNQ=F",
       "grade": "C",
+<<<<<<< Updated upstream
       "reason": "HTF偏空無LONG對齊，位置29%無乾淨結構"
+=======
+      "reason": "無HTF順向且位於區間低點追單不宜"
+>>>>>>> Stashed changes
     },
     {
       "ticker": "MCL=F",
       "grade": "C",
+<<<<<<< Updated upstream
       "reason": "日內已掃PDH/PDL結構混亂無HTF明確方向"
+=======
+      "reason": "無HTF確認且結構混亂，價格在區間中段不具優勢"
+>>>>>>> Stashed changes
     },
     {
       "ticker": "MBT=F",
       "grade": "C",
+<<<<<<< Updated upstream
       "reason": "價格卡PDC無HTF bias且H1均線上方為阻力"
+=======
+      "reason": "收盤持平無方向，HTF未確認，結構混亂兩側掃，skip。"
+>>>>>>> Stashed changes
     },
     {
       "ticker": "MES=F",
       "grade": "C",
+<<<<<<< Updated upstream
       "reason": "價格於當日低點缺乏HTF順向確認，結構模糊不宜進場"
     },
     {
       "ticker": "M2K=F",
       "grade": "C",
       "reason": "無HTF MA確認且價格貼H1均線結構混亂"
+=======
+      "reason": "價格已跌至前低區間，追空屬於chase zone"
+    },
+    {
+      "ticker": "M2K=F",
+      "grade": "B",
+      "reason": "1D偏多但價格回落H1均線,結構待確認"
+>>>>>>> Stashed changes
     },
     {
       "ticker": "MYM=F",
       "grade": "C",
+<<<<<<< Updated upstream
       "reason": "HTF偏空但處於區間25%追空，結構不一致易被反掃"
+=======
+      "reason": "結構混亂波幅過大，停損難設易追單"
+>>>>>>> Stashed changes
     },
     {
       "ticker": "M6A=F",
       "grade": "C",
+<<<<<<< Updated upstream
       "reason": "無HTF確認且結構壓縮無波動，skip"
+=======
+      "reason": "無HTF確認且結構全無波動難判方向"
+>>>>>>> Stashed changes
     },
     {
       "ticker": "M6B=F",
       "grade": "C",
+<<<<<<< Updated upstream
       "reason": "零波動無結構，無法達成風險報酬比。"
+=======
+      "reason": "完全無波動，無HTF訊號，無結構，無法交易"
+>>>>>>> Stashed changes
     },
     {
       "ticker": "6J=F",
       "grade": "C",
+<<<<<<< Updated upstream
       "reason": "價格完全持平無結構，HTF方向無法確認"
+=======
+      "reason": "價格全平無HTF結構資料不符進場條件"
+>>>>>>> Stashed changes
     }
   ],
   "candidates": [
     {
+      "ticker": "M2K=F",
+      "grade": "B",
+      "reason": "1D偏多但價格回落H1均線,結構待確認",
+      "priority_score": 21.0,
+      "size_micro": 0.5,
+      "backtest_avg": 0.0,
+      "expected_value_usd": 0.0,
+      "actionable": true
+    },
+    {
       "ticker": "MBT=F",
       "grade": "C",
+<<<<<<< Updated upstream
       "reason": "價格卡PDC無HTF bias且H1均線上方為阻力",
+=======
+      "reason": "收盤持平無方向，HTF未確認，結構混亂兩側掃，skip。",
+>>>>>>> Stashed changes
       "priority_score": 15.0,
       "size_micro": 0.0,
       "backtest_avg": 466.0,
@@ -68,7 +127,11 @@
     {
       "ticker": "MGC=F",
       "grade": "C",
+<<<<<<< Updated upstream
       "reason": "HTF雖多但已漲1.88%屬追價區且結構凌亂",
+=======
+      "reason": "價格偏離PDH過遠，H1均線下方，追價風險高",
+>>>>>>> Stashed changes
       "priority_score": 13.85,
       "size_micro": 0.0,
       "backtest_avg": 224.29,
@@ -78,7 +141,11 @@
     {
       "ticker": "MNQ=F",
       "grade": "C",
+<<<<<<< Updated upstream
       "reason": "HTF偏空無LONG對齊，位置29%無乾淨結構",
+=======
+      "reason": "無HTF順向且位於區間低點追單不宜",
+>>>>>>> Stashed changes
       "priority_score": 7.57,
       "size_micro": 0.0,
       "backtest_avg": 90.0,
@@ -88,6 +155,7 @@
     {
       "ticker": "MES=F",
       "grade": "C",
+<<<<<<< Updated upstream
       "reason": "價格於當日低點缺乏HTF順向確認，結構模糊不宜進場",
       "priority_score": 6.0,
       "size_micro": 0.0,
@@ -99,6 +167,9 @@
       "ticker": "M2K=F",
       "grade": "C",
       "reason": "無HTF MA確認且價格貼H1均線結構混亂",
+=======
+      "reason": "價格已跌至前低區間，追空屬於chase zone",
+>>>>>>> Stashed changes
       "priority_score": 6.0,
       "size_micro": 0.0,
       "backtest_avg": 0.0,
@@ -108,7 +179,11 @@
     {
       "ticker": "MYM=F",
       "grade": "C",
+<<<<<<< Updated upstream
       "reason": "HTF偏空但處於區間25%追空，結構不一致易被反掃",
+=======
+      "reason": "結構混亂波幅過大，停損難設易追單",
+>>>>>>> Stashed changes
       "priority_score": 6.0,
       "size_micro": 0.0,
       "backtest_avg": 0.0,
@@ -118,7 +193,11 @@
     {
       "ticker": "M6A=F",
       "grade": "C",
+<<<<<<< Updated upstream
       "reason": "無HTF確認且結構壓縮無波動，skip",
+=======
+      "reason": "無HTF確認且結構全無波動難判方向",
+>>>>>>> Stashed changes
       "priority_score": 6.0,
       "size_micro": 0.0,
       "backtest_avg": 0.0,
@@ -128,7 +207,11 @@
     {
       "ticker": "M6B=F",
       "grade": "C",
+<<<<<<< Updated upstream
       "reason": "零波動無結構，無法達成風險報酬比。",
+=======
+      "reason": "完全無波動，無HTF訊號，無結構，無法交易",
+>>>>>>> Stashed changes
       "priority_score": 6.0,
       "size_micro": 0.0,
       "backtest_avg": 0.0,
@@ -138,7 +221,11 @@
     {
       "ticker": "6J=F",
       "grade": "C",
+<<<<<<< Updated upstream
       "reason": "價格完全持平無結構，HTF方向無法確認",
+=======
+      "reason": "價格全平無HTF結構資料不符進場條件",
+>>>>>>> Stashed changes
       "priority_score": 6.0,
       "size_micro": 0.0,
       "backtest_avg": 0.0,
@@ -148,7 +235,11 @@
     {
       "ticker": "MCL=F",
       "grade": "C",
+<<<<<<< Updated upstream
       "reason": "日內已掃PDH/PDL結構混亂無HTF明確方向",
+=======
+      "reason": "無HTF確認且結構混亂，價格在區間中段不具優勢",
+>>>>>>> Stashed changes
       "priority_score": 5.0,
       "size_micro": 0.0,
       "backtest_avg": 0.0,
@@ -169,27 +260,45 @@
     {
       "tk": "MNQ=F",
       "name": "Micro Nasdaq",
+<<<<<<< Updated upstream
       "last": 29712.75,
       "chg": -24.25,
       "pct": -0.08154823956686956,
+=======
+      "last": 29706.75,
+      "chg": -30.25,
+      "pct": -0.10172512358341461,
+>>>>>>> Stashed changes
       "high": 29887.0,
       "low": 29636.0
     },
     {
       "tk": "M2K=F",
       "name": "Micro Russell 2000",
+<<<<<<< Updated upstream
       "last": 3034.800048828125,
       "chg": 9.800048828125,
       "pct": 0.3239685563016529,
+=======
+      "last": 3035.699951171875,
+      "chg": 10.699951171875,
+      "pct": 0.35371739411157027,
+>>>>>>> Stashed changes
       "high": 3047.300048828125,
       "low": 3019.699951171875
     },
     {
       "tk": "MYM=F",
       "name": "Micro Dow",
+<<<<<<< Updated upstream
       "last": 54051.0,
       "chg": -12.0,
       "pct": -0.02219632650796293,
+=======
+      "last": 54065.0,
+      "chg": 2.0,
+      "pct": 0.0036993877513271556,
+>>>>>>> Stashed changes
       "high": 54336.0,
       "low": 53951.0
     },
@@ -223,16 +332,26 @@
     {
       "tk": "6J=F",
       "name": "Micro JPY",
+<<<<<<< Updated upstream
       "last": 0.006295499857515097,
       "chg": 1.1499971151351929e-05,
       "pct": 0.1830039999890328,
+=======
+      "last": 0.006296500097960234,
+      "chg": 1.2500211596488953e-05,
+      "pct": 0.19892125751966297,
+>>>>>>> Stashed changes
       "high": 0.006309499964118004,
       "low": 0.0062905000522732735
     },
     {
       "tk": "MCL=F",
       "name": "Micro Crude Oil",
+<<<<<<< Updated upstream
       "last": 82.5,
+=======
+      "last": 82.52999877929688,
+>>>>>>> Stashed changes
       "chg": 0.0,
       "pct": 0.0,
       "high": 84.63999938964844,
@@ -241,7 +360,11 @@
     {
       "tk": "MBT=F",
       "name": "Micro Bitcoin",
+<<<<<<< Updated upstream
       "last": 63885.0,
+=======
+      "last": 63890.0,
+>>>>>>> Stashed changes
       "chg": 0.0,
       "pct": 0.0,
       "high": 64610.0,
@@ -250,7 +373,11 @@
     {
       "tk": "MET=F",
       "name": "Micro Ether",
+<<<<<<< Updated upstream
       "last": 1877.5,
+=======
+      "last": 1878.0,
+>>>>>>> Stashed changes
       "chg": 0.0,
       "pct": 0.0,
       "high": 1900.5,
@@ -259,9 +386,15 @@
     {
       "tk": "MGC=F",
       "name": "Micro Gold",
+<<<<<<< Updated upstream
       "last": 4442.7001953125,
       "chg": 80.900390625,
       "pct": 1.8547479079177063,
+=======
+      "last": 4443.2001953125,
+      "chg": 81.400390625,
+      "pct": 1.8662110658430806,
+>>>>>>> Stashed changes
       "high": 4495.10009765625,
       "low": 4415.7998046875
     },

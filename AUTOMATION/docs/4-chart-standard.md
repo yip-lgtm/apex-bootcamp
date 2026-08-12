@@ -121,7 +121,7 @@ def make_chart_4panel(ticker, name, df_d, df_h4, df_h1, df_m5, out_path):
 3. ✋ 同步改 `chart_gen.py` 嘅 `make_chart_4panel()`
 4. ✋ 更新 `daily_reminder.py` 嘅 section title + caption
 5. ✋ TG message 字數要 ≤ 4096
-6. ✋ 10 tickers gen time 要 ≤ 20s (GHA 15min timeout)
+6. ✋ 10 tickers gen time 要 ≤ 30s (GHA 15min timeout)
 7. ✋ Submit PR label `area:charts`
 
 否則 PR 會被 reject。

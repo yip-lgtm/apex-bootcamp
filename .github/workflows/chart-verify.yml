@@ -1,0 +1,114 @@
+name: '4-Chart Standard Verification'
+
+# Auto-runs the 7-item contract on PRs that touch chart-related files.
+# See AUTOMATION/docs/4-chart-standard.md and
+# AUTOMATION/scripts/verify_4chart_standard.py
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened, labeled]
+    # Only trigger on PRs that touch chart files OR have area:charts label
+    paths:
+      - 'AUTOMATION/src/chart_gen.py'
+      - 'AUTOMATION/src/daily_reminder.py'
+      - 'AUTOMATION/docs/4-chart-standard.md'
+      - 'AUTOMATION/scripts/verify_4chart_standard.py'
+  push:
+    branches: [main]
+    paths:
+      - 'AUTOMATION/src/chart_gen.py'
+      - 'AUTOMATION/src/daily_reminder.py'
+      - 'AUTOMATION/docs/4-chart-standard.md'
+
+permissions:
+  contents: read
+  pull-requests: read
+  issues: read
+
+jobs:
+  verify-4chart:
+    name: Verify 4-Chart Standard (7-Item Contract)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.event_name == 'pull_request' || github.event_name == 'push'
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: AUTOMATION/requirements.txt
+
+      - name: Install deps
+        working-directory: AUTOMATION
+        run: |
+          python -m venv .venv
+          .venv/bin/pip install -q -r requirements.txt
+
+      # ---------- Items 2-6: auto-checked by verify script ----------
+      - name: Run verify_4chart_standard.py (items 2-6)
+        id: verify-auto
+        working-directory: AUTOMATION
+        run: |
+          echo "## 4-Chart Standard Auto-Check" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          .venv/bin/python scripts/verify_4chart_standard.py 2>&1 | tee verify-output.txt
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ ${PIPESTATUS[0]} -eq 0 ]; then
+            echo "✅ ALL AUTO-CHECKS PASSED" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ AUTO-CHECKS FAILED — see output above" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+      # ---------- Item 1: PR body must link an issue ----------
+      - name: Item 1 — Check PR body links an issue
+        if: github.event_name == 'pull_request'
+        id: check-issue
+        run: |
+          PR_BODY=$(jq -r .pull_request.body "$GITHUB_EVENT_PATH")
+          echo "PR body length: ${#PR_BODY} chars"
+          # Look for "Related issue: #N" or just "#N" pattern
+          ISSUE_REF=$(echo "$PR_BODY" | grep -oE '#[0-9]+' | head -1 | tr -d '#')
+          if [ -n "$ISSUE_REF" ]; then
+            echo "✅ Found issue reference: #$ISSUE_REF"
+            echo "issue_ref=$ISSUE_REF" >> $GITHUB_OUTPUT
+          else
+            echo "❌ No issue reference found in PR body"
+            echo "::error::PR body 必須包含 'Related issue: #N' (linking 一個解釋改動 rationale 嘅 issue)"
+            exit 1
+          fi
+
+      # ---------- Item 7: PR must have area:charts label ----------
+      - name: Item 7 — Check PR has 'area:charts' label
+        if: github.event_name == 'pull_request'
+        id: check-label
+        run: |
+          LABELS=$(gh pr view ${{ github.event.pull_request.number }} --json labels -q '.labels[].name')
+          echo "PR labels: $LABELS"
+          if echo "$LABELS" | grep -q "area:charts"; then
+            echo "✅ 'area:charts' label present"
+          else
+            echo "❌ 'area:charts' label MISSING"
+            echo "::error::PR 必須有 'area:charts' label. 用 'gh pr edit --add-label area:charts' 加."
+            exit 1
+          fi
+
+      # ---------- Final summary ----------
+      - name: Summary
+        if: always()
+        run: |
+          echo "## 🎯 4-Chart Standard Verification Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Item | Description | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|-------------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 1 | Issue reference in PR body | ${{ steps.check-issue.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 2-6 | Auto-checks (verify_4chart_standard.py) | ${{ steps.verify-auto.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 7 | 'area:charts' label | ${{ steps.check-label.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "詳見 [4-chart-standard.md](AUTOMATION/docs/4-chart-standard.md)" >> $GITHUB_STEP_SUMMARY

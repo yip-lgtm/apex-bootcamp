@@ -7,7 +7,10 @@ on:
   schedule:
     # 12:30 UTC = 20:30 HKT = 08:30 EDT (summer) / 07:30 EST (winter)
     # Run only weekdays (Mon-Fri)
-    - cron: '30 12 * * 1-5'
+    # 3 attempts spaced 5 min apart in case GHA scheduler misses one
+    - cron: '30 12 * * 1-5'  # primary
+    - cron: '35 12 * * 1-5'  # backup 1
+    - cron: '40 12 * * 1-5'  # backup 2
   workflow_dispatch:
 
 permissions:
@@ -53,5 +56,11 @@ jobs:
         env:
           GITHUB_PAT: ${{ secrets.GITHUB_APEX_PAT }}
         run: |
+          # Skip if today's artifact already exists (avoid double-send from 3 cron slots)
+          today=$(date -u +%Y-%m-%d)
+          if [ -f "reports/daily/${today}/reminder-${today}.md" ]; then
+            echo "⏭️  Today's reminder (${today}) already exists, skipping"
+            exit 0
+          fi
           .venv/bin/python src/daily_reminder.py
           echo "✅ daily reminder sent + artifacts pushed"

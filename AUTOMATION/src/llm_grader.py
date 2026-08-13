@@ -120,8 +120,10 @@ def grade_ticker(ticker: str) -> dict:
         # Look ONLY in the part after </think>, OR anywhere if not found
         after_think = re.split(r"</think>", content, maxsplit=1)
         search_text = after_think[-1] if len(after_think) > 1 else content
-        # Strip leading whitespace
+        # Strip leading whitespace + common noise (---, etc)
         search_text = search_text.strip()
+        # Remove leading dashes / bullets that LLM sometimes leaves
+        search_text = re.sub(r"^[-\s]+", "", search_text)
 
         m = re.search(
             r"GRADE:\s*([ABC])\s*\|\s*REASON:\s*(.+?)(?:\n|$)",
@@ -131,14 +133,18 @@ def grade_ticker(ticker: str) -> dict:
             grade = m.group(1).upper()
             reason = m.group(2).strip()[:80]
         else:
-            m2 = re.search(r"GRADE:\s*([ABC])", search_text, re.IGNORECASE)
-            grade = m2.group(1).upper() if m2 else "?"
-            # Use full search text as reason
-            reason = search_text[:80] if search_text else "—"
-            if not reason or reason == "—":
-                # Take first 80 chars of content (last paragraph likely)
-                lines = [l.strip() for l in content.split("\n") if l.strip()]
-                reason = lines[-1][:80] if lines else "—"
+            # No GRADE found — check if response is incomplete (just thinking leaked)
+            has_think = "<think>" in content
+            after_len = len(search_text)
+            if after_len < 5 or search_text in ("", "—", "-"):
+                # LLM only output thinking block, no real answer
+                grade = "?"
+                reason = "LLM incomplete response (only thinking, no GRADE)"
+            else:
+                # Has some text but no GRADE pattern — try loose match
+                m2 = re.search(r"GRADE:\s*([ABC])", search_text, re.IGNORECASE)
+                grade = m2.group(1).upper() if m2 else "?"
+                reason = search_text[:80] if search_text else "no grade pattern"
         return {"ticker": ticker, "grade": grade, "reason": reason, "summary": s}
     except Exception as e:
         return {"ticker": ticker, "grade": "?", "reason": str(e)[:60]}

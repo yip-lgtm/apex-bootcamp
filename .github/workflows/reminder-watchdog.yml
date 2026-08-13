@@ -1,16 +1,14 @@
 name: 'Reminder Watchdog — auto-trigger if missing'
 
-# This watchdog ensures daily reminder NEVER misses.
-# Runs every 30 min, checks if today's reminder exists.
-# If missing AND it's past 20:30 HKT, triggers daily-reminder.yml.
-# Also posts TG alert on consecutive misses.
+# Backup watchdog: only runs ONCE per day, 15 min after the main cron.
+# If the 21:00 HKT daily-reminder run missed for any reason, the watchdog
+# auto-triggers it. Posts TG alert so we know the safety net fired.
 
 on:
   schedule:
-    # Every 30 min on weekdays, 12:00-14:00 UTC (20:00-22:00 HKT)
-    - cron: '*/30 12-14 * * 1-5'
-    # Also every hour on weekends for sanity check
-    - cron: '0 13 * * 6,0'
+    # 13:15 UTC = 21:15 HKT = 15 min after main 21:00 HKT run
+    # Mon-Fri only (markets closed weekends)
+    - cron: '15 13 * * 1-5'
   workflow_dispatch:
 
 permissions:

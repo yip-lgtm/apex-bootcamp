@@ -1,16 +1,14 @@
-name: 'Daily Reminder — Apex 50K v2.6 (20:30 HKT / 12:30 UTC)'
+name: 'Daily Reminder — Apex 50K v2.6 (21:00 HKT / 13:00 UTC)'
 
-# Weekdays only, 30 min before US market open
-# HKT 20:30 = 12:30 UTC = 08:30 ET (summer) / 07:30 ET (winter)
+# ONCE per day, weekdays only, at 21:00 HKT = 13:00 UTC
+# = 09:00 EDT (summer) / 08:00 EST (winter) = US market open
+# 21:00 HKT chosen so reminder arrives at T+0 of US session
 
 on:
   schedule:
-    # 12:30 UTC = 20:30 HKT = 08:30 EDT (summer) / 07:30 EST (winter)
-    # Run only weekdays (Mon-Fri)
-    # 3 attempts spaced 5 min apart in case GHA scheduler misses one
-    - cron: '30 12 * * 1-5'  # primary
-    - cron: '35 12 * * 1-5'  # backup 1
-    - cron: '40 12 * * 1-5'  # backup 2
+    # 13:00 UTC = 21:00 HKT = 09:00 EDT
+    # Mon-Fri only (markets closed weekends)
+    - cron: '0 13 * * 1-5'
   workflow_dispatch:
 
 permissions:

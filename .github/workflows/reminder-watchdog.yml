@@ -1,0 +1,109 @@
+name: 'Reminder Watchdog — auto-trigger if missing'
+
+# This watchdog ensures daily reminder NEVER misses.
+# Runs every 30 min, checks if today's reminder exists.
+# If missing AND it's past 20:30 HKT, triggers daily-reminder.yml.
+# Also posts TG alert on consecutive misses.
+
+on:
+  schedule:
+    # Every 30 min on weekdays, 12:00-14:00 UTC (20:00-22:00 HKT)
+    - cron: '*/30 12-14 * * 1-5'
+    # Also every hour on weekends for sanity check
+    - cron: '0 13 * * 6,0'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  watchdog:
+    name: Check + auto-trigger daily reminder
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Check if today's reminder exists
+        id: check
+        run: |
+          # Use HKT date (UTC+8) for "today" — matches user's local day
+          TODAY_HKT=$(TZ=Asia/Shanghai date +%Y-%m-%d)
+          TODAY_UTC=$(date -u +%Y-%m-%d)
+          echo "TODAY_HKT=$TODAY_HKT"
+          echo "TODAY_UTC=$TODAY_UTC"
+
+          # Check both HKT and UTC dates
+          HKT_FILE="AUTOMATION/reports/daily/${TODAY_HKT}/reminder-${TODAY_HKT}.md"
+          UTC_FILE="AUTOMATION/reports/daily/${TODAY_UTC}/reminder-${TODAY_UTC}.md"
+
+          if [ -f "$HKT_FILE" ] || [ -f "$UTC_FILE" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "✅ Today's reminder exists: HKT=$HKT_FILE or UTC=$UTC_FILE"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "❌ Today's reminder MISSING"
+          fi
+
+      - name: Check current HKT time
+        id: time-check
+        run: |
+          HKT_HOUR=$(TZ=Asia/Shanghai date +%H)
+          HKT_MIN=$(TZ=Asia/Shanghai date +%M)
+          HKT_DOW=$(TZ=Asia/Shanghai date +%u)  # 1-7, 1=Mon
+          echo "HKT_HOUR=$HKT_HOUR"
+          echo "HKT_MIN=$HKT_MIN"
+          echo "HKT_DOW=$HKT_DOW (1=Mon, 6=Sat, 7=Sun)"
+
+          # Only auto-trigger if:
+          # - Weekday (Mon-Fri)
+          # - Past 20:30 HKT (so we don't spam before scheduled time)
+          # - Before 23:59 HKT (don't trigger at midnight)
+          if [ "$HKT_DOW" -ge 1 ] && [ "$HKT_DOW" -le 5 ]; then
+            if [ "$HKT_HOUR" -ge 21 ] || ([ "$HKT_HOUR" -eq 20 ] && [ "$HKT_MIN" -ge 35 ]); then
+              if [ "$HKT_HOUR" -lt 24 ]; then
+                echo "in_window=true" >> $GITHUB_OUTPUT
+                echo "✅ In auto-trigger window (20:30-23:59 HKT weekday)"
+              else
+                echo "in_window=false" >> $GITHUB_OUTPUT
+                echo "⏭️  Past 23:59 HKT — too late to trigger"
+              fi
+            else
+              echo "in_window=false" >> $GITHUB_OUTPUT
+              echo "⏭️  Before 20:35 HKT — let scheduled cron handle it"
+            fi
+          else
+            echo "in_window=false" >> $GITHUB_OUTPUT
+            echo "⏭️  Weekend — markets closed"
+          fi
+
+      - name: Auto-trigger daily-reminder if missing
+        if: steps.check.outputs.exists == 'false' && steps.time-check.outputs.in_window == 'true'
+        run: |
+          echo "🚨 WATCHDOG: Triggering daily-reminder.yml..."
+          gh workflow run daily-reminder.yml --ref main
+          echo "✅ Workflow dispatched"
+
+      - name: Post TG alert on consecutive misses
+        if: steps.check.outputs.exists == 'false' && steps.time-check.outputs.in_window == 'true'
+        run: |
+          TODAY_HKT=$(TZ=Asia/Shanghai date +%Y-%m-%d)
+          HKT_TIME=$(TZ=Asia/Shanghai date +%H:%M)
+          MSG="🚨 *Reminder Watchdog Alert*\n\nToday's daily reminder (${TODAY_HKT}) MISSING at ${HKT_TIME} HKT.\n\nAuto-triggered daily-reminder.yml. Should appear in ~3-5 min.\n\n如果連續 3 次 miss 請 ping @yip-lgtm"
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d "chat_id=${TELEGRAM_CHAT_ID}" \
+            -d "parse_mode=Markdown" \
+            -d "text=${MSG}" > /dev/null
+          echo "✅ TG alert sent"
+
+      - name: All good
+        if: steps.check.outputs.exists == 'true'
+        run: |
+          TODAY=$(TZ=Asia/Shanghai date +%Y-%m-%d)
+          echo "✅ Watchdog: Today's reminder (${TODAY}) already exists. All good."

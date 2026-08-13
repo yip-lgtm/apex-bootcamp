@@ -386,6 +386,26 @@ def git_push_artifacts(repo_dir: Path, paths: list[Path], commit_msg: str) -> in
         return 1
 
 
+# --- Error-resilient TG alert ---
+def send_tg_alert(text: str) -> None:
+    """Best-effort TG alert. Never raises."""
+    try:
+        if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+            return
+        requests.post(
+            f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
+            json={
+                "chat_id": TELEGRAM_CHAT_ID,
+                "text": text,
+                "parse_mode": "Markdown",
+                "disable_web_page_preview": True,
+            },
+            timeout=10,
+        )
+    except Exception:
+        pass
+
+
 # --- Main ---
 def main() -> int:
     if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
@@ -402,6 +422,28 @@ def main() -> int:
 
     print(f"[daily_reminder] Generating reminder for {today_str} ({weekday})")
 
+    try:
+        _run_pipeline(today_str, weekday, now_hkt)
+        return 0
+    except Exception as e:
+        import traceback
+        err = traceback.format_exc(limit=10)
+        print(f"FATAL: {e}", file=sys.stderr)
+        print(err, file=sys.stderr)
+        # Send a TG alert so we know something broke
+        send_tg_alert(
+            f"🚨 *Daily Reminder FAILED*\n\n"
+            f"📅 {today_str} ({weekday})\n"
+            f"⏰ {now_hkt.strftime('%H:%M')} HKT\n"
+            f"❌ Error: `{str(e)[:200]}`\n\n"
+            f"Pipeline crashed mid-run. Charts/text may be partial.\n"
+            f"Stack:\n```\n{err[-600:]}\n```"
+        )
+        return 1
+
+
+def _run_pipeline(today_str: str, weekday: str, now_hkt) -> None:
+    """Inner pipeline — wrapped in try/except by main()."""
     # Step 1: 11-ticker snapshot
     print("[daily_reminder] Pulling 11-ticker snapshot...")
     snapshot = pull_snapshot()
@@ -417,31 +459,42 @@ def main() -> int:
     tracked_chart_dir = ARTIFACTS_DIR / today_str
     tracked_chart_dir.mkdir(parents=True, exist_ok=True)
 
-    def _gen_and_copy(tk_name):
-        tk, name = tk_name
-        p_tmp, _ = generate_for_ticker(tk, name, tg_chart_dir)
-        if p_tmp:
-            p_track = tracked_chart_dir / p_tmp.name
-            try:
-                shutil.copy2(p_tmp, p_track)
-                return p_tmp, p_track
-            except Exception as e:
-                return p_tmp, None
-        return None, None
-
     chart_paths = []   # paths to send via TG (from /tmp)
     tracked_charts = []  # paths to commit to git
+    failed_charts = []
+
+    def _gen_and_copy(tk_name):
+        tk, name = tk_name
+        try:
+            p_tmp, _ = generate_for_ticker(tk, name, tg_chart_dir)
+            if p_tmp:
+                p_track = tracked_chart_dir / p_tmp.name
+                try:
+                    shutil.copy2(p_tmp, p_track)
+                    return p_tmp, p_track, None
+                except Exception as e:
+                    return p_tmp, None, f"copy fail: {e}"
+            return None, None, "gen fail"
+        except Exception as e:
+            return None, None, f"exception: {e}"
+
     # v2.6.8: 4 panels per chart, more data fetch. Use 6 workers to fit GHA timeout.
     with ThreadPoolExecutor(max_workers=6) as pool:
         futs = {pool.submit(_gen_and_copy, (tk, name)): tk for tk, name in CHART_TICKERS}
         for fut in as_completed(futs):
             tk = futs[fut]
-            p_tmp, p_track = fut.result()
+            p_tmp, p_track, err = fut.result()
             if p_tmp:
                 chart_paths.append(p_tmp)
                 if p_track:
                     tracked_charts.append(p_track)
                 print(f"  ✓ {tk:7s} → {p_tmp.name}")
+            else:
+                failed_charts.append((tk, err))
+                print(f"  ✗ {tk:7s} failed: {err}")
+
+    if failed_charts:
+        print(f"[daily_reminder] ⚠️  {len(failed_charts)} chart(s) failed: {[tk for tk,_ in failed_charts]}")
 
     # Step 3: LLM A/B/C grading (parallel for speed)
     print("[daily_reminder] Running LLM A/B/C grading on all 10 tickers...")

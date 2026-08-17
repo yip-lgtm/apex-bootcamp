@@ -18,7 +18,7 @@ permissions:
 jobs:
   daily-scan:
     runs-on: ubuntu-latest
-    timeout-minutes: 20  # Allow for slow LLM calls (MGC/MNQ can take 8-10 min in cold env)
+    timeout-minutes: 25  # Scan (LLM) + forward (det-only); cold env can be slow
     env:
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -67,14 +67,15 @@ jobs:
           # Scanner now saves to $APEX_SCAN_OUT_DIR (set above to AUTOMATION/reports)
           ls -la reports/ 2>&1 | head -5
 
-      - name: Run forward test (10 min max)
+      - name: Run forward test (15 min max, det-only)
         working-directory: AUTOMATION
-        timeout-minutes: 10
+        timeout-minutes: 15
         env:
           APEX_SCAN_OUT_DIR: ${{ github.workspace }}/AUTOMATION/reports
         run: |
           TODAY_ET=$(TZ=America/New_York date +%Y-%m-%d)
-          .venv/bin/python -u src/apex_forward.py --mode=combined "$TODAY_ET" 2>&1 | tail -20 || \
+          # CI uses det-only to avoid LLM latency / timeout; local or manual can use --mode=combined
+          .venv/bin/python -u src/apex_forward.py --mode=det-only "$TODAY_ET" 2>&1 | tail -30 || \
             echo "forward test failed (non-fatal)"
           # Forward log is written to $APEX_SCAN_OUT_DIR via env var
           ls -la "${APEX_SCAN_OUT_DIR}/apex-forward-log.jsonl" 2>&1 | head -2

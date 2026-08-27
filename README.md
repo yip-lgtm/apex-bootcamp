@@ -28,7 +28,7 @@ Apex Trader Funding **50K** 帳戶機械化交易系統。
 - **Trade candidate ranking** — `priority_score()` 將 A/B/C grade + backtest PF 合成單一 priority 分數
 - **Position sizing** — A 級 1.0µ / B 級 0.5µ / C 級 skip
 - **7-Item 4-Chart Standard contract** — PR/Issue templates + `verify_4chart_standard.py` + GHA `chart-verify.yml` 自動 check
-- **GHA workflows** — `chart-verify.yml` (PR), `daily-reminder.yml` (20:30 HKT), `backtest.yml` (CI)
+- **GHA workflows** — `chart-verify.yml` (PR), `daily-reminder.yml` (21:00 HKT), `backtest.yml` (CI)
 
 ---
 
@@ -84,7 +84,7 @@ pip install -r requirements.txt
 cp .env.example .env  # 填入 LLM API key
 python src/apex_scan.py        # 今日 setup
 python src/apex_backtest.py    # 60 日回測
-python src/daily_reminder.py   # 20:30 HKT 預先提醒 (Telegram)
+python src/daily_reminder.py   # 21:00 HKT 預先提醒 (Telegram)
 ```
 
 ---
@@ -101,7 +101,8 @@ python src/daily_reminder.py   # 20:30 HKT 預先提醒 (Telegram)
 
 GHA workflows:
 - `chart-verify.yml` — PR 自動 check 4-Chart Standard (badge 喺頂)
-- `daily-reminder.yml` — 每日 20:30 HKT 自動 reminder (badge 喺頂)
+- `daily-reminder.yml` — 每日 21:00 HKT 自動 reminder (badge 喺頂)
+- `reminder-watchdog.yml` — 21:15 HKT 自動 backup, 漏跑即 trigger + TG alert
 - `backtest.yml` — 每次 push 自動回測 (badge 喺頂)
 
 ---

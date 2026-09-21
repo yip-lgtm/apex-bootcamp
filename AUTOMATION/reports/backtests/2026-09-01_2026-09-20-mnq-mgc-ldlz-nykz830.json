@@ -1,0 +1,1236 @@
+{
+  "window": {
+    "start": "2026-09-01",
+    "end": "2026-09-20"
+  },
+  "rules": {
+    "risk_usd": 100,
+    "tp_min": 200,
+    "tp_max": 500,
+    "rr_min": 2.0,
+    "rr_max": 5.0,
+    "daily_kill_switch": 100
+  },
+  "tickers": [
+    "MNQ=F",
+    "MGC=F"
+  ],
+  "per_ticker": [
+    {
+      "ticker": "MNQ=F",
+      "n_trades": 15,
+      "n_wins": 4,
+      "n_losses": 11,
+      "hit_rate": 26.7,
+      "tp_only_hit_rate": 26.7,
+      "n_tp": 4,
+      "n_sl": 11,
+      "n_eod": 0,
+      "pnl_total": 508.5,
+      "pnl_avg": 33.9,
+      "avg_win": 402.12,
+      "avg_loss": -100.0,
+      "profit_factor": 1.46,
+      "expectancy": 33.9,
+      "max_drawdown": 400.0,
+      "sharpe": 2.38
+    },
+    {
+      "ticker": "MGC=F",
+      "n_trades": 9,
+      "n_wins": 3,
+      "n_losses": 6,
+      "hit_rate": 33.3,
+      "tp_only_hit_rate": 33.3,
+      "n_tp": 3,
+      "n_sl": 6,
+      "n_eod": 0,
+      "pnl_total": 241.01,
+      "pnl_avg": 26.78,
+      "avg_win": 280.34,
+      "avg_loss": -100.0,
+      "profit_factor": 1.4,
+      "expectancy": 26.78,
+      "max_drawdown": 300.0,
+      "sharpe": 2.31
+    }
+  ],
+  "portfolio": {
+    "pnl": 749.51,
+    "trades": 24,
+    "wins": 7,
+    "hit_rate": 29.2
+  },
+  "raw": {
+    "MNQ=F": {
+      "trades": [
+        {
+          "bias": "LONG",
+          "pattern": "orb_break_long",
+          "trigger_close": 29774.0,
+          "trigger_time": "2026-07-14 10:55:00-04:00",
+          "natural_sl": 29884.575,
+          "session_high": 30019.5,
+          "session_low": 29891.0,
+          "day_range": 128.5,
+          "trigger_volume_ratio": 0.5574788019884472,
+          "structure_tp": 29998.5,
+          "killzone": "NYKZ",
+          "grade": "B",
+          "entry": 29774.0,
+          "sl": 29723.75,
+          "tp": 29998.25,
+          "sl_dist": 50.0,
+          "tp_dist": 224.5,
+          "rr": 4.49,
+          "risk_usd": 100.0,
+          "reward_usd": 449.0,
+          "contracts": 1,
+          "day": "2026-07-14",
+          "htf_score": 1,
+          "trig_score": 2,
+          "entry_fill": 29773.75,
+          "exit_price": 29723.75,
+          "exit_reason": "sl",
+          "pnl_usd": -100.0,
+          "exit_time": "2026-07-14 12:00:00-04:00"
+        },
+        {
+          "bias": "SHORT",
+          "pattern": "mss_down",
+          "trigger_close": 28891.75,
+          "trigger_time": "2026-07-20 10:55:00-04:00",
+          "natural_sl": 29088.675,
+          "session_high": 29077.75,
+          "session_low": 28859.25,
+          "day_range": 218.5,
+          "trigger_volume_ratio": 0.8694020520971932,
+          "structure_tp": 28706.5,
+          "killzone": "NYKZ",
+          "grade": "A",
+          "entry": 28891.75,
+          "sl": 28941.5,
+          "tp": 28706.25,
+          "sl_dist": 50.0,
+          "tp_dist": 185.25,
+          "rr": 3.705,
+          "risk_usd": 100.0,
+          "reward_usd": 370.5,
+          "contracts": 1,
+          "day": "2026-07-20",
+          "htf_score": 2,
+          "trig_score": 2,
+          "entry_fill": 28891.5,
+          "exit_price": 28941.5,
+          "exit_reason": "sl",
+          "pnl_usd": -100.0,
+          "exit_time": "2026-07-20 11:00:00-04:00"
+        },
+        {
+          "bias": "SHORT",
+          "pattern": "orb_break_short",
+          "trigger_close": 27802.5,
+          "trigger_time": "2026-07-28 10:55:00-04:00",
+          "natural_sl": 27996.5625,
+          "session_high": 27982.5,
+          "session_low": 27701.25,
+          "day_range": 281.25,
+          "trigger_volume_ratio": 0.8347521642166854,
+          "structure_tp": 27650.25,
+          "killzone": "NYKZ",
+          "grade": "A",
+          "entry": 27802.5,
+          "sl": 27852.75,
+          "tp": 27650.5,
+          "sl_dist": 50.0,
+          "tp_dist": 152.25,
+          "rr": 3.045,
+          "risk_usd": 100.0,
+          "reward_usd": 304.5,
+          "contracts": 1,
+          "day": "2026-07-28",
+          "htf_score": 2,
+          "trig_score": 2,
+          "entry_fill": 27802.75,
+          "exit_price": 27852.75,
+          "exit_reason": "sl",
+          "pnl_usd": -100.0,
+          "exit_time": "2026-07-28 11:10:00-04:00"
+        },
+        {
+          "bias": "LONG",
+          "pattern": "pin_bar_long",
+          "trigger_close": 28307.75,
+          "trigger_time": "2026-07-31 10:55:00-04:00",
+          "natural_sl": 28253.075,
+          "session_high": 28524.5,
+          "session_low": 28266.0,
+          "day_range": 258.5,
+          "trigger_volume_ratio": 0.7087866303465079,
+          "structure_tp": 28629.75,
+          "killzone": "NYKZ",
+          "grade": "B",
+          "entry": 28307.75,
+          "sl": 28258.5,
+          "tp": 28558.5,
+          "sl_dist": 50.0,
+          "tp_dist": 250.0,
+          "rr": 5.0,
+          "risk_usd": 100.0,
+          "reward_usd": 500.0,
+          "contracts": 1,
+          "day": "2026-07-31",
+          "htf_score": 2,
+          "trig_score": 1,
+          "entry_fill": 28308.5,
+          "exit_price": 28258.5,
+          "exit_reason": "sl",
+          "pnl_usd": -100.0,
+          "exit_time": "2026-07-31 11:05:00-04:00"
+        },
+        {
+          "bias": "LONG",
+          "pattern": "mss_up",
+          "trigger_close": 28802.0,
+          "trigger_time": "2026-08-03 10:55:00-04:00",
+          "natural_sl": 28891.4875,
+          "session_high": 29049.25,
+          "session_low": 28899.0,
+          "day_range": 150.25,
+          "trigger_volume_ratio": 0.5897573779569063,
+          "structure_tp": 29008.0,
+          "killzone": "NYKZ",
+          "grade": "A",
+          "entry": 28802.0,
+          "sl": 28751.25,
+          "tp": 29007.25,
+          "sl_dist": 50.0,
+          "tp_dist": 206.0,
+          "rr": 4.12,
+          "risk_usd": 100.0,
+          "reward_usd": 412.0,
+          "contracts": 1,
+          "day": "2026-08-03",
+          "htf_score": 2,
+          "trig_score": 2,
+          "entry_fill": 28801.25,
+          "exit_price": 28751.25,
+          "exit_reason": "sl",
+          "pnl_usd": -100.0,
+          "exit_time": "2026-08-03 11:10:00-04:00"
+        },
+        {
+          "bias": "LONG",
+          "pattern": "pin_bar_long",
+          "trigger_close": 29549.5,
+          "trigger_time": "2026-08-04 10:55:00-04:00",
+          "natural_sl": 29806.575,
+          "session_high": 29894.25,
+          "session_low": 29810.75,
+          "day_range": 83.5,
+          "trigger_volume_ratio": 0.6100427350427351,
+          "structure_tp": 29943.25,
+          "killzone": "NYKZ",
+          "grade": "B",
+          "entry": 29549.5,
+          "sl": 29499.5,
+          "tp": 29799.5,
+          "sl_dist": 50.0,
+          "tp_dist": 250.0,
+          "rr": 5.0,
+          "risk_usd": 100.0,
+          "reward_usd": 500.0,
+          "contracts": 1,
+          "day": "2026-08-04",
+          "htf_score": 2,
+          "trig_score": 1,
+          "entry_fill": 29549.5,
+          "exit_price": 29799.5,
+          "exit_reason": "tp",
+          "pnl_usd": 500.0,
+          "exit_time": "2026-08-04 13:10:00-04:00"
+        },
+        {
+          "bias": "LONG",
+          "pattern": "bullish_engulfing",
+          "trigger_close": 29720.25,
+          "trigger_time": "2026-08-07 10:55:00-04:00",
+          "natural_sl": 29667.5625,
+          "session_high": 29860.5,
+          "session_low": 29676.75,
+          "day_range": 183.75,
+          "trigger_volume_ratio": 0.4639837196479606,
+          "structure_tp": 29851.25,
+          "killzone": "NYKZ",
+          "grade": "B",
+          "entry": 29720.25,
+          "sl": 29671.0,
+          "tp": 29852.0,
+          "sl_dist": 50.0,
+          "tp_dist": 131.0,
+          "rr": 2.62,
+          "risk_usd": 100.0,
+          "reward_usd": 262.0,
+          "contracts": 1,
+          "day": "2026-08-07",
+          "htf_score": 2,
+          "trig_score": 1,
+          "entry_fill": 29721.0,
+          "exit_price": 29852.0,
+          "exit_reason": "tp",
+          "pnl_usd": 262.0,
+          "exit_time": "2026-08-07 11:30:00-04:00"
+        },
+        {
+          "bias": "LONG",
+          "pattern": "mss_up",
+          "trigger_close": 29623.25,
+          "trigger_time": "2026-08-19 10:55:00-04:00",
+          "natural_sl": 29590.5625,
+          "session_high": 29683.75,
+          "session_low": 29595.0,
+          "day_range": 88.75,
+          "trigger_volume_ratio": 0.7252384116270757,
+          "structure_tp": 29742.25,
+          "killzone": "NYKZ",
+          "grade": "B",
+          "entry": 29623.25,
+          "sl": 29573.25,
+          "tp": 29742.25,
+          "sl_dist": 50.0,
+          "tp_dist": 119.0,
+          "rr": 2.38,
+          "risk_usd": 100.0,
+          "reward_usd": 238.0,
+          "contracts": 1,
+          "day": "2026-08-19",
+          "htf_score": 1,
+          "trig_score": 2,
+          "entry_fill": 29623.25,
+          "exit_price": 29573.25,
+          "exit_reason": "sl",
+          "pnl_usd": -100.0,
+          "exit_time": "2026-08-19 11:35:00-04:00"
+        },
+        {
+          "bias": "SHORT",
+          "pattern": "orb_break_short",
+          "trigger_close": 29083.0,
+          "trigger_time": "2026-08-24 10:55:00-04:00",
+          "natural_sl": 29194.8375,
+          "session_high": 29190.0,
+          "session_low": 29093.25,
+          "day_range": 96.75,
+          "trigger_volume_ratio": 0.6032624392402185,
+          "structure_tp": 28962.75,
+          "killzone": "NYKZ",
+          "grade": "A",
+          "entry": 29083.0,
+          "sl": 29133.0,
+          "tp": 28962.75,
+          "sl_dist": 50.0,
+          "tp_dist": 120.25,
+          "rr": 2.405,
+          "risk_usd": 100.0,
+          "reward_usd": 240.5,
+          "contracts": 1,
+          "day": "2026-08-24",
+          "htf_score": 2,
+          "trig_score": 2,
+          "entry_fill": 29083.0,
+          "exit_price": 29133.0,
+          "exit_reason": "sl",
+          "pnl_usd": -100.0,
+          "exit_time": "2026-08-24 11:25:00-04:00"
+        },
+        {
+          "bias": "LONG",
+          "pattern": "orb_break_long",
+          "trigger_close": 29252.25,
+          "trigger_time": "2026-08-26 10:55:00-04:00",
+          "natural_sl": 29486.25,
+          "session_high": 29575.5,
+          "session_low": 29490.5,
+          "day_range": 85.0,
+          "trigger_volume_ratio": 0.5958530658476048,
+          "structure_tp": 29626.75,
+          "killzone": "NYKZ",
+          "grade": "B",
+          "entry": 29252.25,
+          "sl": 29202.25,
+          "tp": 29502.25,
+          "sl_dist": 50.0,
+          "tp_dist": 250.0,
+          "rr": 5.0,
+          "risk_usd": 100.0,
+          "reward_usd": 500.0,
+          "contracts": 1,
+          "day": "2026-08-26",
+          "htf_score": 1,
+          "trig_score": 2,
+          "entry_fill": 29252.25,
+          "exit_price": 29202.25,
+          "exit_reason": "sl",
+          "pnl_usd": -100.0,
+          "exit_time": "2026-08-26 12:00:00-04:00"
+        },
+        {
+          "bias": "LONG",
+          "pattern": "orb_break_long",
+          "trigger_close": 29601.25,
+          "trigger_time": "2026-08-27 10:55:00-04:00",
+          "natural_sl": 29636.1125,
+          "session_high": 29707.25,
+          "session_low": 29639.5,
+          "day_range": 67.75,
+          "trigger_volume_ratio": 0.6858820585283731,
+          "structure_tp": 29704.0,
+          "killzone": "NYKZ",
+          "grade": "A",
+          "entry": 29601.25,
+          "sl": 29551.25,
+          "tp": 29704.0,
+          "sl_dist": 50.0,
+          "tp_dist": 102.75,
+          "rr": 2.055,
+          "risk_usd": 100.0,
+          "reward_usd": 205.5,
+          "contracts": 1,
+          "day": "2026-08-27",
+          "htf_score": 2,
+          "trig_score": 2,
+          "entry_fill": 29601.25,
+          "exit_price": 29551.25,
+          "exit_reason": "sl",
+          "pnl_usd": -100.0,
+          "exit_time": "2026-08-27 11:35:00-04:00"
+        },
+        {
+          "bias": "LONG",
+          "pattern": "orb_break_long",
+          "trigger_close": 29363.25,
+          "trigger_time": "2026-09-03 10:55:00-04:00",
+          "natural_sl": 29520.4375,
+          "session_high": 29579.5,
+          "session_low": 29523.25,
+          "day_range": 56.25,
+          "trigger_volume_ratio": 1.4397091071950363,
+          "structure_tp": 29579.5,
+          "killzone": "NYKZ",
+          "grade": "A",
+          "entry": 29363.25,
+          "sl": 29313.5,
+          "tp": 29579.75,
+          "sl_dist": 50.0,
+          "tp_dist": 216.25,
+          "rr": 4.325,
+          "risk_usd": 100.0,
+          "reward_usd": 432.5,
+          "contracts": 1,
+          "day": "2026-09-03",
+          "htf_score": 2,
+          "trig_score": 2,
+          "entry_fill": 29363.5,
+          "exit_price": 29579.75,
+          "exit_reason": "tp",
+          "pnl_usd": 432.5,
+          "exit_time": "2026-09-03 14:15:00-04:00"
+        },
+        {
+          "bias": "LONG",
+          "pattern": "pin_bar_long",
+          "trigger_close": 29520.75,
+          "trigger_time": "2026-09-04 10:55:00-04:00",
+          "natural_sl": 29500.375,
+          "session_high": 29587.0,
+          "session_low": 29504.5,
+          "day_range": 82.5,
+          "trigger_volume_ratio": 0.865733755626769,
+          "structure_tp": 29691.25,
+          "killzone": "NYKZ",
+          "grade": "B",
+          "entry": 29520.75,
+          "sl": 29470.5,
+          "tp": 29691.0,
+          "sl_dist": 50.0,
+          "tp_dist": 170.5,
+          "rr": 3.41,
+          "risk_usd": 100.0,
+          "reward_usd": 341.0,
+          "contracts": 1,
+          "day": "2026-09-04",
+          "htf_score": 2,
+          "trig_score": 1,
+          "entry_fill": 29520.5,
+          "exit_price": 29470.5,
+          "exit_reason": "sl",
+          "pnl_usd": -100.0,
+          "exit_time": "2026-09-04 13:45:00-04:00"
+        },
+        {
+          "bias": "LONG",
+          "pattern": "mss_up",
+          "trigger_close": 29562.5,
+          "trigger_time": "2026-09-08 10:55:00-04:00",
+          "natural_sl": 29556.9875,
+          "session_high": 29625.5,
+          "session_low": 29560.25,
+          "day_range": 65.25,
+          "trigger_volume_ratio": 0.6957531288457519,
+          "structure_tp": 29753.25,
+          "killzone": "NYKZ",
+          "grade": "A",
+          "entry": 29562.5,
+          "sl": 29513.0,
+          "tp": 29753.75,
+          "sl_dist": 50.0,
+          "tp_dist": 190.75,
+          "rr": 3.815,
+          "risk_usd": 100.0,
+          "reward_usd": 381.5,
+          "contracts": 1,
+          "day": "2026-09-08",
+          "htf_score": 2,
+          "trig_score": 2,
+          "entry_fill": 29563.0,
+          "exit_price": 29513.0,
+          "exit_reason": "sl",
+          "pnl_usd": -100.0,
+          "exit_time": "2026-09-08 15:50:00-04:00"
+        },
+        {
+          "bias": "LONG",
+          "pattern": "orb_break_long",
+          "trigger_close": 29240.0,
+          "trigger_time": "2026-09-15 10:55:00-04:00",
+          "natural_sl": 29219.175,
+          "session_high": 29357.25,
+          "session_low": 29225.75,
+          "day_range": 131.5,
+          "trigger_volume_ratio": 0.8819290445447031,
+          "structure_tp": 29447.0,
+          "killzone": "NYKZ",
+          "grade": "B",
+          "entry": 29240.0,
+          "sl": 29190.0,
+          "tp": 29447.0,
+          "sl_dist": 50.0,
+          "tp_dist": 207.0,
+          "rr": 4.14,
+          "risk_usd": 100.0,
+          "reward_usd": 414.0,
+          "contracts": 1,
+          "day": "2026-09-15",
+          "htf_score": 1,
+          "trig_score": 2,
+          "entry_fill": 29240.0,
+          "exit_price": 29447.0,
+          "exit_reason": "tp",
+          "pnl_usd": 414.0,
+          "exit_time": "2026-09-16 09:45:00-04:00"
+        }
+      ],
+      "skipped": [
+        {
+          "day": "2026-07-13",
+          "reason": "grade_C (tp_too_tight)",
+          "bias": "LONG"
+        },
+        {
+          "day": "2026-07-15",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-07-16",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-07-17",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-07-19",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-07-21",
+          "reason": "grade_C (tp_envelope_fail)",
+          "bias": "LONG"
+        },
+        {
+          "day": "2026-07-22",
+          "reason": "grade_C (tp_too_tight)",
+          "bias": "LONG"
+        },
+        {
+          "day": "2026-07-23",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-07-24",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-07-26",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-07-27",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-07-29",
+          "reason": "grade_C (tp_envelope_fail)",
+          "bias": "LONG"
+        },
+        {
+          "day": "2026-07-30",
+          "reason": "grade_C (tp_envelope_fail)",
+          "bias": "LONG"
+        },
+        {
+          "day": "2026-08-02",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-08-05",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-08-06",
+          "reason": "grade_C (tp_too_tight)",
+          "bias": "LONG"
+        },
+        {
+          "day": "2026-08-09",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-08-10",
+          "reason": "grade_C (tp_too_tight)",
+          "bias": "SHORT"
+        },
+        {
+          "day": "2026-08-11",
+          "reason": "grade_C (tp_envelope_fail)",
+          "bias": "SHORT"
+        },
+        {
+          "day": "2026-08-12",
+          "reason": "grade_C (tp_too_tight)",
+          "bias": "LONG"
+        },
+        {
+          "day": "2026-08-13",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-08-14",
+          "reason": "grade_C (tp_too_tight)",
+          "bias": "SHORT"
+        },
+        {
+          "day": "2026-08-16",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-08-17",
+          "reason": "grade_C (tp_too_tight)",
+          "bias": "LONG"
+        },
+        {
+          "day": "2026-08-18",
+          "reason": "grade_C (tp_too_tight)",
+          "bias": "SHORT"
+        },
+        {
+          "day": "2026-08-20",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-08-21",
+          "reason": "grade_C (tp_envelope_fail)",
+          "bias": "LONG"
+        },
+        {
+          "day": "2026-08-23",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-08-25",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-08-28",
+          "reason": "grade_C (tp_too_tight)",
+          "bias": "LONG"
+        },
+        {
+          "day": "2026-08-30",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-08-31",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-09-01",
+          "reason": "grade_C (tp_envelope_fail)",
+          "bias": "LONG"
+        },
+        {
+          "day": "2026-09-02",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-09-09",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-09-10",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-09-11",
+          "reason": "grade_C (tp_envelope_fail)",
+          "bias": "LONG"
+        },
+        {
+          "day": "2026-09-13",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-09-14",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-09-16",
+          "reason": "grade_C (tp_too_tight)",
+          "bias": "LONG"
+        },
+        {
+          "day": "2026-09-17",
+          "reason": "grade_C (tp_too_tight)",
+          "bias": "LONG"
+        },
+        {
+          "day": "2026-09-18",
+          "reason": "grade_C (tp_too_tight)",
+          "bias": "SHORT"
+        },
+        {
+          "day": "2026-09-20",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-09-21",
+          "reason": "no_5m_trigger"
+        }
+      ]
+    },
+    "MGC=F": {
+      "trades": [
+        {
+          "bias": "LONG",
+          "pattern": "mss_up",
+          "trigger_close": 4105.60009765625,
+          "trigger_time": "2026-07-31 10:55:00-04:00",
+          "natural_sl": 4096.679907226562,
+          "session_high": 4111.7998046875,
+          "session_low": 4097.39990234375,
+          "day_range": 14.39990234375,
+          "trigger_volume_ratio": 0.8337869822485208,
+          "structure_tp": 4141.10009765625,
+          "killzone": "NYKZ",
+          "grade": "B",
+          "entry": 4105.60009765625,
+          "sl": 4095.60009765625,
+          "tp": 4141.10009765625,
+          "sl_dist": 10.0,
+          "tp_dist": 35.5,
+          "rr": 3.55,
+          "risk_usd": 100.0,
+          "reward_usd": 355.0,
+          "contracts": 1,
+          "day": "2026-07-31",
+          "htf_score": 1,
+          "trig_score": 2,
+          "entry_fill": 4105.60009765625,
+          "exit_price": 4095.60009765625,
+          "exit_reason": "sl",
+          "pnl_usd": -100.0,
+          "exit_time": "2026-07-31 11:30:00-04:00"
+        },
+        {
+          "bias": "LONG",
+          "pattern": "orb_break_long",
+          "trigger_close": 4304.39990234375,
+          "trigger_time": "2026-08-05 10:55:00-04:00",
+          "natural_sl": 4316.8651123046875,
+          "session_high": 4363.7998046875,
+          "session_low": 4319.10009765625,
+          "day_range": 44.69970703125,
+          "trigger_volume_ratio": 0.5925600468658465,
+          "structure_tp": 4359.7001953125,
+          "killzone": "NYKZ",
+          "grade": "A",
+          "entry": 4304.39990234375,
+          "sl": 4294.2001953125,
+          "tp": 4354.2001953125,
+          "sl_dist": 10.0,
+          "tp_dist": 50.0,
+          "rr": 5.0,
+          "risk_usd": 100.0,
+          "reward_usd": 500.0,
+          "contracts": 1,
+          "day": "2026-08-05",
+          "htf_score": 2,
+          "trig_score": 2,
+          "entry_fill": 4304.2001953125,
+          "exit_price": 4294.2001953125,
+          "exit_reason": "sl",
+          "pnl_usd": -100.0,
+          "exit_time": "2026-08-05 11:55:00-04:00"
+        },
+        {
+          "bias": "SHORT",
+          "pattern": "mss_down",
+          "trigger_close": 4422.0,
+          "trigger_time": "2026-08-18 10:55:00-04:00",
+          "natural_sl": 4416.685205078125,
+          "session_high": 4415.7001953125,
+          "session_low": 4396.0,
+          "day_range": 19.7001953125,
+          "trigger_volume_ratio": 1.9495194774103082,
+          "structure_tp": 4382.2001953125,
+          "killzone": "NYKZ",
+          "grade": "B",
+          "entry": 4422.0,
+          "sl": 4432.60009765625,
+          "tp": 4382.80029296875,
+          "sl_dist": 10.0,
+          "tp_dist": 39.7998046875,
+          "rr": 3.97998046875,
+          "risk_usd": 100.0,
+          "reward_usd": 397.998046875,
+          "contracts": 1,
+          "day": "2026-08-18",
+          "htf_score": 1,
+          "trig_score": 2,
+          "entry_fill": 4422.60009765625,
+          "exit_price": 4432.60009765625,
+          "exit_reason": "sl",
+          "pnl_usd": -100.0,
+          "exit_time": "2026-08-18 11:00:00-04:00"
+        },
+        {
+          "bias": "LONG",
+          "pattern": "orb_break_long",
+          "trigger_close": 4546.89990234375,
+          "trigger_time": "2026-08-19 10:55:00-04:00",
+          "natural_sl": 4541.260107421875,
+          "session_high": 4558.89990234375,
+          "session_low": 4542.10009765625,
+          "day_range": 16.7998046875,
+          "trigger_volume_ratio": 0.5751481795088907,
+          "structure_tp": 4581.5,
+          "killzone": "NYKZ",
+          "grade": "A",
+          "entry": 4546.89990234375,
+          "sl": 4537.0,
+          "tp": 4581.60009765625,
+          "sl_dist": 10.0,
+          "tp_dist": 34.60009765625,
+          "rr": 3.460009765625,
+          "risk_usd": 100.0,
+          "reward_usd": 346.0009765625,
+          "contracts": 1,
+          "day": "2026-08-19",
+          "htf_score": 2,
+          "trig_score": 2,
+          "entry_fill": 4547.0,
+          "exit_price": 4537.0,
+          "exit_reason": "sl",
+          "pnl_usd": -100.0,
+          "exit_time": "2026-08-19 11:25:00-04:00"
+        },
+        {
+          "bias": "LONG",
+          "pattern": "mss_up",
+          "trigger_close": 4571.60009765625,
+          "trigger_time": "2026-08-20 10:55:00-04:00",
+          "natural_sl": 4572.365209960937,
+          "session_high": 4600.39990234375,
+          "session_low": 4573.7001953125,
+          "day_range": 26.69970703125,
+          "trigger_volume_ratio": 1.2034294328245712,
+          "structure_tp": 4597.10009765625,
+          "killzone": "NYKZ",
+          "grade": "A",
+          "entry": 4571.60009765625,
+          "sl": 4561.7998046875,
+          "tp": 4597.2998046875,
+          "sl_dist": 10.0,
+          "tp_dist": 25.5,
+          "rr": 2.55,
+          "risk_usd": 100.0,
+          "reward_usd": 255.0,
+          "contracts": 1,
+          "day": "2026-08-20",
+          "htf_score": 2,
+          "trig_score": 2,
+          "entry_fill": 4571.7998046875,
+          "exit_price": 4597.2998046875,
+          "exit_reason": "tp",
+          "pnl_usd": 255.0,
+          "exit_time": "2026-08-20 11:20:00-04:00"
+        },
+        {
+          "bias": "LONG",
+          "pattern": "bullish_engulfing",
+          "trigger_close": 4648.39990234375,
+          "trigger_time": "2026-08-21 10:55:00-04:00",
+          "natural_sl": 4659.644799804688,
+          "session_high": 4683.89990234375,
+          "session_low": 4660.7998046875,
+          "day_range": 23.10009765625,
+          "trigger_volume_ratio": 0.8583962542708905,
+          "structure_tp": 4686.2001953125,
+          "killzone": "NYKZ",
+          "grade": "B",
+          "entry": 4648.39990234375,
+          "sl": 4638.5,
+          "tp": 4686.30029296875,
+          "sl_dist": 10.0,
+          "tp_dist": 37.80029296875,
+          "rr": 3.780029296875,
+          "risk_usd": 100.0,
+          "reward_usd": 378.0029296875,
+          "contracts": 1,
+          "day": "2026-08-21",
+          "htf_score": 2,
+          "trig_score": 1,
+          "entry_fill": 4648.5,
+          "exit_price": 4686.30029296875,
+          "exit_reason": "tp",
+          "pnl_usd": 378.0029296875,
+          "exit_time": "2026-08-21 12:55:00-04:00"
+        },
+        {
+          "bias": "LONG",
+          "pattern": "orb_break_long",
+          "trigger_close": 4727.60009765625,
+          "trigger_time": "2026-08-24 10:55:00-04:00",
+          "natural_sl": 4667.910009765625,
+          "session_high": 4732.7998046875,
+          "session_low": 4671.0,
+          "day_range": 61.7998046875,
+          "trigger_volume_ratio": 1.040466207639343,
+          "structure_tp": 4750.7998046875,
+          "killzone": "NYKZ",
+          "grade": "A",
+          "entry": 4727.60009765625,
+          "sl": 4717.60009765625,
+          "tp": 4750.7998046875,
+          "sl_dist": 10.0,
+          "tp_dist": 23.19970703125,
+          "rr": 2.319970703125,
+          "risk_usd": 100.0,
+          "reward_usd": 231.9970703125,
+          "contracts": 1,
+          "day": "2026-08-24",
+          "htf_score": 2,
+          "trig_score": 2,
+          "entry_fill": 4727.60009765625,
+          "exit_price": 4717.60009765625,
+          "exit_reason": "sl",
+          "pnl_usd": -100.0,
+          "exit_time": "2026-08-24 11:40:00-04:00"
+        },
+        {
+          "bias": "LONG",
+          "pattern": "mss_up",
+          "trigger_close": 4531.7998046875,
+          "trigger_time": "2026-09-03 10:55:00-04:00",
+          "natural_sl": 4511.260107421875,
+          "session_high": 4528.89990234375,
+          "session_low": 4512.10009765625,
+          "day_range": 16.7998046875,
+          "trigger_volume_ratio": 1.621388465399918,
+          "structure_tp": 4552.60009765625,
+          "killzone": "NYKZ",
+          "grade": "A",
+          "entry": 4531.7998046875,
+          "sl": 4522.2001953125,
+          "tp": 4553.00048828125,
+          "sl_dist": 10.0,
+          "tp_dist": 20.80029296875,
+          "rr": 2.080029296875,
+          "risk_usd": 100.0,
+          "reward_usd": 208.0029296875,
+          "contracts": 1,
+          "day": "2026-09-03",
+          "htf_score": 2,
+          "trig_score": 2,
+          "entry_fill": 4532.2001953125,
+          "exit_price": 4553.00048828125,
+          "exit_reason": "tp",
+          "pnl_usd": 208.0029296875,
+          "exit_time": "2026-09-03 11:15:00-04:00"
+        },
+        {
+          "bias": "SHORT",
+          "pattern": "mss_down",
+          "trigger_close": 4394.60009765625,
+          "trigger_time": "2026-09-17 10:55:00-04:00",
+          "natural_sl": 4401.1251953125,
+          "session_high": 4399.7001953125,
+          "session_low": 4371.2001953125,
+          "day_range": 28.5,
+          "trigger_volume_ratio": 1.1339887640449438,
+          "structure_tp": 4328.60009765625,
+          "killzone": "NYKZ",
+          "grade": "B",
+          "entry": 4394.60009765625,
+          "sl": 4404.60009765625,
+          "tp": 4344.60009765625,
+          "sl_dist": 10.0,
+          "tp_dist": 50.0,
+          "rr": 5.0,
+          "risk_usd": 100.0,
+          "reward_usd": 500.0,
+          "contracts": 1,
+          "day": "2026-09-17",
+          "htf_score": 1,
+          "trig_score": 2,
+          "entry_fill": 4394.60009765625,
+          "exit_price": 4404.60009765625,
+          "exit_reason": "sl",
+          "pnl_usd": -100.0,
+          "exit_time": "2026-09-17 11:15:00-04:00"
+        }
+      ],
+      "skipped": [
+        {
+          "day": "2026-07-13",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-07-14",
+          "reason": "grade_C (tp_too_tight)",
+          "bias": "LONG"
+        },
+        {
+          "day": "2026-07-15",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-07-16",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-07-17",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-07-19",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-07-20",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-07-21",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-07-22",
+          "reason": "grade_C (tp_too_tight)",
+          "bias": "LONG"
+        },
+        {
+          "day": "2026-07-23",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-07-24",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-07-26",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-07-27",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-07-28",
+          "reason": "grade_C (tp_too_tight)",
+          "bias": "SHORT"
+        },
+        {
+          "day": "2026-07-29",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-07-30",
+          "reason": "grade_C (tp_too_tight)",
+          "bias": "LONG"
+        },
+        {
+          "day": "2026-08-02",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-08-03",
+          "reason": "grade_C (tp_too_tight)",
+          "bias": "SHORT"
+        },
+        {
+          "day": "2026-08-04",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-08-06",
+          "reason": "grade_C (tp_too_tight)",
+          "bias": "LONG"
+        },
+        {
+          "day": "2026-08-07",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-08-09",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-08-10",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-08-11",
+          "reason": "grade_C (tp_envelope_fail)",
+          "bias": "SHORT"
+        },
+        {
+          "day": "2026-08-12",
+          "reason": "grade_C (tp_envelope_fail)",
+          "bias": "SHORT"
+        },
+        {
+          "day": "2026-08-13",
+          "reason": "grade_C (tp_envelope_fail)",
+          "bias": "SHORT"
+        },
+        {
+          "day": "2026-08-14",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-08-16",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-08-17",
+          "reason": "grade_C (tp_too_tight)",
+          "bias": "LONG"
+        },
+        {
+          "day": "2026-08-23",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-08-25",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-08-26",
+          "reason": "grade_C (tp_too_tight)",
+          "bias": "SHORT"
+        },
+        {
+          "day": "2026-08-27",
+          "reason": "grade_C (tp_envelope_fail)",
+          "bias": "LONG"
+        },
+        {
+          "day": "2026-08-28",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-08-30",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-08-31",
+          "reason": "grade_C (tp_too_tight)",
+          "bias": "SHORT"
+        },
+        {
+          "day": "2026-09-01",
+          "reason": "grade_C (tp_envelope_fail)",
+          "bias": "LONG"
+        },
+        {
+          "day": "2026-09-02",
+          "reason": "grade_C (tp_envelope_fail)",
+          "bias": "LONG"
+        },
+        {
+          "day": "2026-09-04",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-09-08",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-09-09",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-09-10",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-09-11",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-09-13",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-09-14",
+          "reason": "grade_C (tp_envelope_fail)",
+          "bias": "LONG"
+        },
+        {
+          "day": "2026-09-15",
+          "reason": "grade_C (tp_too_tight)",
+          "bias": "SHORT"
+        },
+        {
+          "day": "2026-09-16",
+          "reason": "grade_C (tp_too_tight)",
+          "bias": "LONG"
+        },
+        {
+          "day": "2026-09-18",
+          "reason": "grade_C (tp_too_tight)",
+          "bias": "SHORT"
+        },
+        {
+          "day": "2026-09-20",
+          "reason": "no_5m_trigger"
+        },
+        {
+          "day": "2026-09-21",
+          "reason": "no_5m_trigger"
+        }
+      ]
+    }
+  }
+}

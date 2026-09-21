@@ -1,3 +1,55 @@
+# Apex Bootcamp EA (MNQ / MGC)
+
+Mechanical port of the Apex 50K **setup / backtest policy** for MetaTrader 5.
+
+| File | Purpose |
+|------|---------|
+| `Apex_Bootcamp_EA.mq5` | Killzone + trigger + A/B grade + bracket orders |
+
+## What it encodes
+
+- **A + B enter, C skip** (same as current CT auto-trade / backtest policy)
+- **Daily kill-switch** `$DailyKillUSD` (default 100)
+- **Bracket SL+TP** on every entry (never naked)
+- Killzones (NY local via `BrokerToNYOffsetH`):
+  - **LDLZ** 02:00–05:00
+  - **NYKZ** 08:30–11:00 (indices-style)
+- Triggers (M5): engulfing, MSS, sweep+reject, pin bar, ORB break
+- HTF filter: D1 MA5/MA10 alignment for A/B scoring
+- Optional flat at NY 16:00 (`FlatBySessionEnd`)
+
+This is a **deterministic proxy** — it does **not** run the LLM grader or full 4-chart narrative.
+
+## Install
+
+1. Copy `Apex_Bootcamp_EA.mq5` → MT5 `MQL5/Experts/`
+2. MetaEditor → Compile (`F7`)
+3. Attach to **MNQ** or **MGC** (or broker equivalent) **M5** chart
+4. Set `PointValuePerLot` correctly for that symbol (MNQ≈2, MGC≈10 per 1.0 price × 1.0 lot — verify with your broker)
+5. Set `BrokerToNYOffsetH` so EA “NY local” matches real New York time
+6. Enable AutoTrading
+
+## Suggested inputs
+
+```
+RiskUSD = 100
+DailyKillUSD = 100
+PointValuePerLot = 2     // MNQ; use 10 for MGC
+MagicNumber = 260901
+UseLDLZ = true
+UseNYKZ = true
+MaxOpenTrades = 1
+FixedLots = 0            // auto-size from RiskUSD
+```
+
+## Limitations
+
+- Needs a working MT5 terminal (Windows / Wine). Live Apex flow on this project has also used Tradovate sim.
+- Broker symbol names, contract specs, and session offsets vary — validate on demo first.
+- Not identical to Python `apex_backtest.py` bar-for-bar (data feed / time model differ).
+
+---
+
 # CRT BTC MT5 Expert Advisor
 
 Apex Bootcamp v2.6 - Crypto Trading EA

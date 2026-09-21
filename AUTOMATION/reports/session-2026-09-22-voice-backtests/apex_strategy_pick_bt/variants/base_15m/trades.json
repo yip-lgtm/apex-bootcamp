@@ -1,0 +1,681 @@
+{
+  "summary": {
+    "symbol_key": "mnq",
+    "ticker": "MNQ=F",
+    "symbol_name": "Micro Nasdaq",
+    "ticker_note": null,
+    "point_value": 2.0,
+    "contracts": 1,
+    "variant": "base_15m",
+    "variant_label": "15m ORB + VWAP (opposite-OR SL, mid fallback)",
+    "or_window": "09:30\u201309:45 America/New_York",
+    "tp_rr": 1.5,
+    "period_end": "2026-09-21",
+    "n_trading_days_requested": 30,
+    "n_trading_days_used": 30,
+    "first_day": "2026-08-10",
+    "last_day": "2026-09-21",
+    "data_first_bar": "2026-07-13T00:00:00-04:00",
+    "data_last_bar": "2026-09-21T13:15:00-04:00",
+    "total_net_pnl": 150.0,
+    "max_dd_usd": 0.0,
+    "win_rate_pct": 100.0,
+    "avg_r": 1.5,
+    "expectancy_usd": 150.0,
+    "n_trades": 1,
+    "n_wins": 1,
+    "n_losses": 0,
+    "n_flats": 0,
+    "best_day": {
+      "date": "2026-09-18",
+      "pnl": 150.0
+    },
+    "worst_day": {
+      "date": "2026-08-10",
+      "pnl": 0.0
+    },
+    "qualified_days_ge_250": 0,
+    "cumulative_ge_3000": false,
+    "max_dd_vs_2000_trail_breach": false,
+    "session_breakdown": {
+      "LDLZ": {
+        "n": 0,
+        "pnl": 0.0,
+        "win_rate": 0.0,
+        "avg_r": 0.0
+      },
+      "NYKZ": {
+        "n": 1,
+        "pnl": 150.0,
+        "win_rate": 100.0,
+        "avg_r": 1.5
+      },
+      "other": {
+        "n": 0,
+        "pnl": 0.0,
+        "win_rate": 0.0,
+        "avg_r": 0.0
+      }
+    },
+    "status_counts": {
+      "skip_c_too_wide": 29,
+      "traded": 1
+    },
+    "verdict": "drop",
+    "verdict_why": "only 1 trades / 29 C-wide days; net $150.00"
+  },
+  "trades": [
+    {
+      "date": "2026-09-18",
+      "direction": "SHORT",
+      "entry_time": "2026-09-18T09:45:00-04:00",
+      "entry": 29795.25,
+      "sl": 29845.25,
+      "tp": 29720.25,
+      "risk_pts": 50.0,
+      "risk_usd": 100.0,
+      "orh": 29845.25,
+      "orl": 29798.75,
+      "or_mid": 29822.0,
+      "sl_mode": "opposite_or",
+      "vwap_at_entry": 29817.958566485693,
+      "exit_time": "2026-09-18T10:05:00-04:00",
+      "exit": 29720.25,
+      "exit_reason": "TP",
+      "pnl_usd": 150.0,
+      "r_multiple": 1.5,
+      "session_tag": "NYKZ",
+      "grade": "A",
+      "variant": "base_15m"
+    }
+  ],
+  "days": [
+    {
+      "date": "2026-08-10",
+      "status": "skip_c_too_wide",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "or_too_wide",
+          "or_width": 122.25,
+          "c_risk_usd": 244.5,
+          "c_skip_mode": "full_or"
+        }
+      ],
+      "orh": 29841.25,
+      "orl": 29719.0,
+      "or_width": 122.25,
+      "grade": "C",
+      "variant": "base_15m"
+    },
+    {
+      "date": "2026-08-11",
+      "status": "skip_c_too_wide",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "or_too_wide",
+          "or_width": 164.0,
+          "c_risk_usd": 328.0,
+          "c_skip_mode": "full_or"
+        }
+      ],
+      "orh": 29842.75,
+      "orl": 29678.75,
+      "or_width": 164.0,
+      "grade": "C",
+      "variant": "base_15m"
+    },
+    {
+      "date": "2026-08-12",
+      "status": "skip_c_too_wide",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "or_too_wide",
+          "or_width": 148.25,
+          "c_risk_usd": 296.5,
+          "c_skip_mode": "full_or"
+        }
+      ],
+      "orh": 30001.5,
+      "orl": 29853.25,
+      "or_width": 148.25,
+      "grade": "C",
+      "variant": "base_15m"
+    },
+    {
+      "date": "2026-08-13",
+      "status": "skip_c_too_wide",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "or_too_wide",
+          "or_width": 191.0,
+          "c_risk_usd": 382.0,
+          "c_skip_mode": "full_or"
+        }
+      ],
+      "orh": 30053.75,
+      "orl": 29862.75,
+      "or_width": 191.0,
+      "grade": "C",
+      "variant": "base_15m"
+    },
+    {
+      "date": "2026-08-14",
+      "status": "skip_c_too_wide",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "or_too_wide",
+          "or_width": 99.5,
+          "c_risk_usd": 199.0,
+          "c_skip_mode": "full_or"
+        }
+      ],
+      "orh": 30269.5,
+      "orl": 30170.0,
+      "or_width": 99.5,
+      "grade": "C",
+      "variant": "base_15m"
+    },
+    {
+      "date": "2026-08-17",
+      "status": "skip_c_too_wide",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "or_too_wide",
+          "or_width": 100.5,
+          "c_risk_usd": 201.0,
+          "c_skip_mode": "full_or"
+        }
+      ],
+      "orh": 30265.75,
+      "orl": 30165.25,
+      "or_width": 100.5,
+      "grade": "C",
+      "variant": "base_15m"
+    },
+    {
+      "date": "2026-08-18",
+      "status": "skip_c_too_wide",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "or_too_wide",
+          "or_width": 139.0,
+          "c_risk_usd": 278.0,
+          "c_skip_mode": "full_or"
+        }
+      ],
+      "orh": 29770.0,
+      "orl": 29631.0,
+      "or_width": 139.0,
+      "grade": "C",
+      "variant": "base_15m"
+    },
+    {
+      "date": "2026-08-19",
+      "status": "skip_c_too_wide",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "or_too_wide",
+          "or_width": 181.5,
+          "c_risk_usd": 363.0,
+          "c_skip_mode": "full_or"
+        }
+      ],
+      "orh": 29742.0,
+      "orl": 29560.5,
+      "or_width": 181.5,
+      "grade": "C",
+      "variant": "base_15m"
+    },
+    {
+      "date": "2026-08-20",
+      "status": "skip_c_too_wide",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "or_too_wide",
+          "or_width": 131.75,
+          "c_risk_usd": 263.5,
+          "c_skip_mode": "full_or"
+        }
+      ],
+      "orh": 29470.25,
+      "orl": 29338.5,
+      "or_width": 131.75,
+      "grade": "C",
+      "variant": "base_15m"
+    },
+    {
+      "date": "2026-08-21",
+      "status": "skip_c_too_wide",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "or_too_wide",
+          "or_width": 160.25,
+          "c_risk_usd": 320.5,
+          "c_skip_mode": "full_or"
+        }
+      ],
+      "orh": 29472.5,
+      "orl": 29312.25,
+      "or_width": 160.25,
+      "grade": "C",
+      "variant": "base_15m"
+    },
+    {
+      "date": "2026-08-24",
+      "status": "skip_c_too_wide",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "or_too_wide",
+          "or_width": 267.5,
+          "c_risk_usd": 535.0,
+          "c_skip_mode": "full_or"
+        }
+      ],
+      "orh": 29243.75,
+      "orl": 28976.25,
+      "or_width": 267.5,
+      "grade": "C",
+      "variant": "base_15m"
+    },
+    {
+      "date": "2026-08-25",
+      "status": "skip_c_too_wide",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "or_too_wide",
+          "or_width": 97.75,
+          "c_risk_usd": 195.5,
+          "c_skip_mode": "full_or"
+        }
+      ],
+      "orh": 29377.0,
+      "orl": 29279.25,
+      "or_width": 97.75,
+      "grade": "C",
+      "variant": "base_15m"
+    },
+    {
+      "date": "2026-08-26",
+      "status": "skip_c_too_wide",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "or_too_wide",
+          "or_width": 139.25,
+          "c_risk_usd": 278.5,
+          "c_skip_mode": "full_or"
+        }
+      ],
+      "orh": 29313.0,
+      "orl": 29173.75,
+      "or_width": 139.25,
+      "grade": "C",
+      "variant": "base_15m"
+    },
+    {
+      "date": "2026-08-27",
+      "status": "skip_c_too_wide",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "or_too_wide",
+          "or_width": 146.75,
+          "c_risk_usd": 293.5,
+          "c_skip_mode": "full_or"
+        }
+      ],
+      "orh": 29589.5,
+      "orl": 29442.75,
+      "or_width": 146.75,
+      "grade": "C",
+      "variant": "base_15m"
+    },
+    {
+      "date": "2026-08-28",
+      "status": "skip_c_too_wide",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "or_too_wide",
+          "or_width": 138.75,
+          "c_risk_usd": 277.5,
+          "c_skip_mode": "full_or"
+        }
+      ],
+      "orh": 29701.25,
+      "orl": 29562.5,
+      "or_width": 138.75,
+      "grade": "C",
+      "variant": "base_15m"
+    },
+    {
+      "date": "2026-08-31",
+      "status": "skip_c_too_wide",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "or_too_wide",
+          "or_width": 127.0,
+          "c_risk_usd": 254.0,
+          "c_skip_mode": "full_or"
+        }
+      ],
+      "orh": 29517.0,
+      "orl": 29390.0,
+      "or_width": 127.0,
+      "grade": "C",
+      "variant": "base_15m"
+    },
+    {
+      "date": "2026-09-01",
+      "status": "skip_c_too_wide",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "or_too_wide",
+          "or_width": 100.5,
+          "c_risk_usd": 201.0,
+          "c_skip_mode": "full_or"
+        }
+      ],
+      "orh": 29140.5,
+      "orl": 29040.0,
+      "or_width": 100.5,
+      "grade": "C",
+      "variant": "base_15m"
+    },
+    {
+      "date": "2026-09-02",
+      "status": "skip_c_too_wide",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "or_too_wide",
+          "or_width": 82.25,
+          "c_risk_usd": 164.5,
+          "c_skip_mode": "full_or"
+        }
+      ],
+      "orh": 29119.0,
+      "orl": 29036.75,
+      "or_width": 82.25,
+      "grade": "C",
+      "variant": "base_15m"
+    },
+    {
+      "date": "2026-09-03",
+      "status": "skip_c_too_wide",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "or_too_wide",
+          "or_width": 160.5,
+          "c_risk_usd": 321.0,
+          "c_skip_mode": "full_or"
+        }
+      ],
+      "orh": 29359.75,
+      "orl": 29199.25,
+      "or_width": 160.5,
+      "grade": "C",
+      "variant": "base_15m"
+    },
+    {
+      "date": "2026-09-04",
+      "status": "skip_c_too_wide",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "or_too_wide",
+          "or_width": 91.5,
+          "c_risk_usd": 183.0,
+          "c_skip_mode": "full_or"
+        }
+      ],
+      "orh": 29645.25,
+      "orl": 29553.75,
+      "or_width": 91.5,
+      "grade": "C",
+      "variant": "base_15m"
+    },
+    {
+      "date": "2026-09-08",
+      "status": "skip_c_too_wide",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "or_too_wide",
+          "or_width": 220.5,
+          "c_risk_usd": 441.0,
+          "c_skip_mode": "full_or"
+        }
+      ],
+      "orh": 29686.75,
+      "orl": 29466.25,
+      "or_width": 220.5,
+      "grade": "C",
+      "variant": "base_15m"
+    },
+    {
+      "date": "2026-09-09",
+      "status": "skip_c_too_wide",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "or_too_wide",
+          "or_width": 89.5,
+          "c_risk_usd": 179.0,
+          "c_skip_mode": "full_or"
+        }
+      ],
+      "orh": 29506.5,
+      "orl": 29417.0,
+      "or_width": 89.5,
+      "grade": "C",
+      "variant": "base_15m"
+    },
+    {
+      "date": "2026-09-10",
+      "status": "skip_c_too_wide",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "or_too_wide",
+          "or_width": 142.25,
+          "c_risk_usd": 284.5,
+          "c_skip_mode": "full_or"
+        }
+      ],
+      "orh": 29200.0,
+      "orl": 29057.75,
+      "or_width": 142.25,
+      "grade": "C",
+      "variant": "base_15m"
+    },
+    {
+      "date": "2026-09-11",
+      "status": "skip_c_too_wide",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "or_too_wide",
+          "or_width": 93.0,
+          "c_risk_usd": 186.0,
+          "c_skip_mode": "full_or"
+        }
+      ],
+      "orh": 29440.25,
+      "orl": 29347.25,
+      "or_width": 93.0,
+      "grade": "C",
+      "variant": "base_15m"
+    },
+    {
+      "date": "2026-09-14",
+      "status": "skip_c_too_wide",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "or_too_wide",
+          "or_width": 73.5,
+          "c_risk_usd": 147.0,
+          "c_skip_mode": "full_or"
+        }
+      ],
+      "orh": 28954.0,
+      "orl": 28880.5,
+      "or_width": 73.5,
+      "grade": "C",
+      "variant": "base_15m"
+    },
+    {
+      "date": "2026-09-15",
+      "status": "skip_c_too_wide",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "or_too_wide",
+          "or_width": 70.0,
+          "c_risk_usd": 140.0,
+          "c_skip_mode": "full_or"
+        }
+      ],
+      "orh": 29441.75,
+      "orl": 29371.75,
+      "or_width": 70.0,
+      "grade": "C",
+      "variant": "base_15m"
+    },
+    {
+      "date": "2026-09-16",
+      "status": "skip_c_too_wide",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "or_too_wide",
+          "or_width": 50.25,
+          "c_risk_usd": 100.5,
+          "c_skip_mode": "full_or"
+        }
+      ],
+      "orh": 29423.25,
+      "orl": 29373.0,
+      "or_width": 50.25,
+      "grade": "C",
+      "variant": "base_15m"
+    },
+    {
+      "date": "2026-09-17",
+      "status": "skip_c_too_wide",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "or_too_wide",
+          "or_width": 132.0,
+          "c_risk_usd": 264.0,
+          "c_skip_mode": "full_or"
+        }
+      ],
+      "orh": 29737.75,
+      "orl": 29605.75,
+      "or_width": 132.0,
+      "grade": "C",
+      "variant": "base_15m"
+    },
+    {
+      "date": "2026-09-18",
+      "status": "traded",
+      "trades": [
+        {
+          "date": "2026-09-18",
+          "direction": "SHORT",
+          "entry_time": "2026-09-18T09:45:00-04:00",
+          "entry": 29795.25,
+          "sl": 29845.25,
+          "tp": 29720.25,
+          "risk_pts": 50.0,
+          "risk_usd": 100.0,
+          "orh": 29845.25,
+          "orl": 29798.75,
+          "or_mid": 29822.0,
+          "sl_mode": "opposite_or",
+          "vwap_at_entry": 29817.958566485693,
+          "exit_time": "2026-09-18T10:05:00-04:00",
+          "exit": 29720.25,
+          "exit_reason": "TP",
+          "pnl_usd": 150.0,
+          "r_multiple": 1.5,
+          "session_tag": "NYKZ",
+          "grade": "A",
+          "variant": "base_15m"
+        }
+      ],
+      "day_pnl": 150.0,
+      "skips": [],
+      "orh": 29845.25,
+      "orl": 29798.75,
+      "or_width": 46.5,
+      "grade": "A",
+      "variant": "base_15m"
+    },
+    {
+      "date": "2026-09-21",
+      "status": "skip_c_too_wide",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "or_too_wide",
+          "or_width": 124.25,
+          "c_risk_usd": 248.5,
+          "c_skip_mode": "full_or"
+        }
+      ],
+      "orh": 30340.75,
+      "orl": 30216.5,
+      "or_width": 124.25,
+      "grade": "C",
+      "variant": "base_15m"
+    }
+  ]
+}

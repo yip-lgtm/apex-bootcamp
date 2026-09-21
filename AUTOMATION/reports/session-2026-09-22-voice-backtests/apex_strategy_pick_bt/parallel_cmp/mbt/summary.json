@@ -1,0 +1,198 @@
+{
+  "symbol_key": "mbt",
+  "ticker": "MBT=F",
+  "symbol_name": "Micro Bitcoin",
+  "point_value": 0.1,
+  "point_value_verified": true,
+  "contracts": 1,
+  "variant": "apex_v26_kz",
+  "variant_label": "Apex v2.6 LDLZ+NYKZ (HTF+structure TP, risk $100, TP cap $300)",
+  "constraints": {
+    "contracts": 1,
+    "bracket_only": true,
+    "daily_kill": -100.0,
+    "daily_tp": 300.0,
+    "skip_t1_chase": true,
+    "no_scale_average": true,
+    "ldlz": "02:00\u201305:00 NY",
+    "nykz": "08:30\u201311:00 NY"
+  },
+  "period_end": "2026-09-21",
+  "n_trading_days_requested": 90,
+  "n_trading_days_used": 60,
+  "trading_days_covered": 60,
+  "earliest_bar_timestamp": "2026-07-13T00:00:00-04:00",
+  "latest_bar_timestamp": "2026-09-21T13:35:00-04:00",
+  "first_day": "2026-07-13",
+  "last_day": "2026-09-21",
+  "data_first_bar": "2026-07-13T00:00:00-04:00",
+  "data_last_bar": "2026-09-21T13:35:00-04:00",
+  "n_5m_bars": 16112,
+  "calendar_span_days": 71,
+  "yfinance_5m_note": "yfinance 5m returned 16112 bars spanning ~71 calendar days (2026-07-13T00:00:00-04:00 \u2192 2026-09-21T13:35:00-04:00). Requested \u226590 trading days; got 60. 5m history is capped (~60 calendar days); could not invent bars before earliest.",
+  "goes_before_aug_17": true,
+  "total_net_pnl": 600.0,
+  "max_dd_usd": 0.0,
+  "win_rate_pct": 100.0,
+  "avg_r": 3.0,
+  "expectancy_usd": 300.0,
+  "n_trades": 2,
+  "n_wins": 2,
+  "n_losses": 0,
+  "n_flats": 0,
+  "best_day": {
+    "date": "2026-08-19",
+    "pnl": 300.0
+  },
+  "worst_day": {
+    "date": "2026-07-13",
+    "pnl": 0.0
+  },
+  "qualified_days_ge_250": 2,
+  "cumulative_ge_3000": false,
+  "max_dd_vs_2000_trail_breach": false,
+  "session_breakdown": {
+    "LDLZ": {
+      "n": 0,
+      "pnl": 0.0,
+      "win_rate": 0.0,
+      "avg_r": 0.0
+    },
+    "NYKZ": {
+      "n": 2,
+      "pnl": 600.0,
+      "win_rate": 100.0,
+      "avg_r": 3.0
+    },
+    "other": {
+      "n": 0,
+      "pnl": 0.0,
+      "win_rate": 0.0,
+      "avg_r": 0.0
+    }
+  },
+  "month_breakdown": [
+    {
+      "month": "2026-07",
+      "pnl": 0.0,
+      "n_trades": 0,
+      "n_days": 17
+    },
+    {
+      "month": "2026-08",
+      "pnl": 600.0,
+      "n_trades": 2,
+      "n_days": 26
+    },
+    {
+      "month": "2026-09",
+      "pnl": 0.0,
+      "n_trades": 0,
+      "n_days": 17
+    }
+  ],
+  "week_breakdown": [
+    {
+      "week": "2026-W29",
+      "pnl": 0.0,
+      "n_trades": 0,
+      "n_days": 6
+    },
+    {
+      "week": "2026-W30",
+      "pnl": 0.0,
+      "n_trades": 0,
+      "n_days": 6
+    },
+    {
+      "week": "2026-W31",
+      "pnl": 0.0,
+      "n_trades": 0,
+      "n_days": 6
+    },
+    {
+      "week": "2026-W32",
+      "pnl": 0.0,
+      "n_trades": 0,
+      "n_days": 6
+    },
+    {
+      "week": "2026-W33",
+      "pnl": 0.0,
+      "n_trades": 0,
+      "n_days": 6
+    },
+    {
+      "week": "2026-W34",
+      "pnl": 600.0,
+      "n_trades": 2,
+      "n_days": 6
+    },
+    {
+      "week": "2026-W35",
+      "pnl": 0.0,
+      "n_trades": 0,
+      "n_days": 6
+    },
+    {
+      "week": "2026-W36",
+      "pnl": 0.0,
+      "n_trades": 0,
+      "n_days": 6
+    },
+    {
+      "week": "2026-W37",
+      "pnl": 0.0,
+      "n_trades": 0,
+      "n_days": 5
+    },
+    {
+      "week": "2026-W38",
+      "pnl": 0.0,
+      "n_trades": 0,
+      "n_days": 6
+    },
+    {
+      "week": "2026-W39",
+      "pnl": 0.0,
+      "n_trades": 0,
+      "n_days": 1
+    }
+  ],
+  "status_counts": {
+    "grade_C": 29,
+    "no_trigger": 29,
+    "traded": 2
+  },
+  "verdict": "tweak",
+  "verdict_why": "net $600.00, WR 100.0%, n=2, qual_days=2, expectancy=$300.00/trade \u2014 positive but shy of keep gates (\u2265$3k / \u22653 qual days)",
+  "small_n_comparison": {
+    "small_n_source": "/workspace/apex_strategy_pick_bt/mbt/summary.json",
+    "small_n_trading_days": 30,
+    "small_n_net": 600.0,
+    "small_n_n_trades": 2,
+    "small_n_wr": 100.0,
+    "small_n_qual_days": 2,
+    "small_n_max_dd": 0.0,
+    "scale_trading_days": 60,
+    "scale_net": 600.0,
+    "scale_n_trades": 2,
+    "scale_wr": 100.0,
+    "scale_qual_days": 2,
+    "scale_max_dd": 0.0,
+    "extra_trades_outside_small_n_window": null,
+    "edge_holds_at_scale": true,
+    "facts": [
+      "small-n (30d pick): net=$600.00, n=2, WR=100.00%, qual\u2265$250=2, maxDD=$0.00, days=30",
+      "scale (max 5m): net=$600.00, n=2, WR=100.00%, qual\u2265$250=2, maxDD=$0.00, days=60",
+      "Incremental P&L outside the small-n window: $0.00; no additional fills. Observed edge is the same 2 NYKZ wins; does not strengthen with more history."
+    ],
+    "days_ratio_vs_small_n": 2.0,
+    "same_net_as_small_n": true,
+    "same_n_trades_as_small_n": true,
+    "same_wr_as_small_n": true,
+    "edge_strengthens_at_scale": false,
+    "edge_note": "Metrics unchanged at ~2\u00d7 days (edge numerically holds) but n remains 2 \u2014 not validated by additional independent trades."
+  },
+  "scale_edge_holds": true
+}

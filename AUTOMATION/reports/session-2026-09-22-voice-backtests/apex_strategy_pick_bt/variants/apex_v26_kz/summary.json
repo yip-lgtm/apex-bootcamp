@@ -1,0 +1,66 @@
+{
+  "symbol_key": "mnq",
+  "ticker": "MNQ=F",
+  "symbol_name": "Micro Nasdaq",
+  "ticker_note": null,
+  "point_value": 2.0,
+  "contracts": 1,
+  "variant": "apex_v26_kz",
+  "variant_label": "Apex v2.6 LDLZ+NYKZ (HTF+structure TP, risk $100, TP cap $300)",
+  "or_window": "N/A (pattern/KZ trigger)",
+  "tp_rr": "structure/RR 2-5 capped @$300",
+  "period_end": "2026-09-21",
+  "n_trading_days_requested": 30,
+  "n_trading_days_used": 30,
+  "first_day": "2026-08-10",
+  "last_day": "2026-09-21",
+  "data_first_bar": "2026-07-13T00:00:00-04:00",
+  "data_last_bar": "2026-09-21T13:15:00-04:00",
+  "total_net_pnl": 166.5,
+  "max_dd_usd": 400.0,
+  "win_rate_pct": 33.33,
+  "avg_r": 0.185,
+  "expectancy_usd": 18.5,
+  "n_trades": 9,
+  "n_wins": 3,
+  "n_losses": 6,
+  "n_flats": 0,
+  "best_day": {
+    "date": "2026-09-03",
+    "pnl": 300.0
+  },
+  "worst_day": {
+    "date": "2026-08-19",
+    "pnl": -100.0
+  },
+  "qualified_days_ge_250": 2,
+  "cumulative_ge_3000": false,
+  "max_dd_vs_2000_trail_breach": false,
+  "session_breakdown": {
+    "LDLZ": {
+      "n": 0,
+      "pnl": 0.0,
+      "win_rate": 0.0,
+      "avg_r": 0.0
+    },
+    "NYKZ": {
+      "n": 9,
+      "pnl": 166.5,
+      "win_rate": 33.33,
+      "avg_r": 0.185
+    },
+    "other": {
+      "n": 0,
+      "pnl": 0.0,
+      "win_rate": 0.0,
+      "avg_r": 0.0
+    }
+  },
+  "status_counts": {
+    "grade_C": 13,
+    "no_trigger": 8,
+    "traded": 9
+  },
+  "verdict": "tweak",
+  "verdict_why": "net $166.50, WR 33.3%, n=9, qual_days=2, expectancy=$18.50/trade \u2014 positive but shy of keep gates (\u2265$3k / \u22653 qual days)"
+}

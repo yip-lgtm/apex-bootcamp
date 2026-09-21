@@ -1,0 +1,641 @@
+{
+  "summary": {
+    "symbol_key": "mgc",
+    "ticker": "MGC=F",
+    "symbol_name": "Micro Gold",
+    "ticker_note": null,
+    "point_value": 10.0,
+    "contracts": 1,
+    "variant": "apex_v26_kz",
+    "variant_label": "Apex v2.6 LDLZ+NYKZ (HTF+structure TP, risk $100, TP cap $300)",
+    "or_window": "N/A (pattern/KZ trigger)",
+    "tp_rr": "structure/RR 2-5 capped @$300",
+    "period_end": "2026-09-21",
+    "n_trading_days_requested": 30,
+    "n_trading_days_used": 30,
+    "first_day": "2026-08-10",
+    "last_day": "2026-09-21",
+    "data_first_bar": "2026-07-13T00:00:00-04:00",
+    "data_last_bar": "2026-09-21T13:15:00-04:00",
+    "total_net_pnl": 363.0,
+    "max_dd_usd": 200.0,
+    "win_rate_pct": 42.86,
+    "avg_r": 0.5186,
+    "expectancy_usd": 51.8576,
+    "n_trades": 7,
+    "n_wins": 3,
+    "n_losses": 4,
+    "n_flats": 0,
+    "best_day": {
+      "date": "2026-08-21",
+      "pnl": 300.0
+    },
+    "worst_day": {
+      "date": "2026-08-18",
+      "pnl": -100.0
+    },
+    "qualified_days_ge_250": 2,
+    "cumulative_ge_3000": false,
+    "max_dd_vs_2000_trail_breach": false,
+    "session_breakdown": {
+      "LDLZ": {
+        "n": 0,
+        "pnl": 0.0,
+        "win_rate": 0.0,
+        "avg_r": 0.0
+      },
+      "NYKZ": {
+        "n": 7,
+        "pnl": 363.0,
+        "win_rate": 42.86,
+        "avg_r": 0.5186
+      },
+      "other": {
+        "n": 0,
+        "pnl": 0.0,
+        "win_rate": 0.0,
+        "avg_r": 0.0
+      }
+    },
+    "status_counts": {
+      "grade_C": 14,
+      "no_trigger": 9,
+      "traded": 7
+    },
+    "verdict": "tweak",
+    "verdict_why": "net $363.00, WR 42.9%, n=7, qual_days=2, expectancy=$51.86/trade \u2014 positive but shy of keep gates (\u2265$3k / \u22653 qual days)"
+  },
+  "trades": [
+    {
+      "date": "2026-08-18",
+      "direction": "SHORT",
+      "entry_time": "2026-08-18T11:00:00-04:00",
+      "entry": 4422.60009765625,
+      "sl": 4432.60009765625,
+      "tp": 4392.60009765625,
+      "risk_usd": 100.0,
+      "exit": 4432.60009765625,
+      "exit_time": "2026-08-18T11:05:00-04:00",
+      "exit_reason": "SL",
+      "pnl_usd": -100.0,
+      "r_multiple": -1.0,
+      "session_tag": "NYKZ",
+      "killzone": "NYKZ",
+      "pattern": "mss_down",
+      "grade": "B",
+      "variant": "apex_v26_kz"
+    },
+    {
+      "date": "2026-08-19",
+      "direction": "LONG",
+      "entry_time": "2026-08-19T11:00:00-04:00",
+      "entry": 4547.0,
+      "sl": 4537.0,
+      "tp": 4577.0,
+      "risk_usd": 100.0,
+      "exit": 4537.0,
+      "exit_time": "2026-08-19T11:25:00-04:00",
+      "exit_reason": "SL",
+      "pnl_usd": -100.0,
+      "r_multiple": -1.0,
+      "session_tag": "NYKZ",
+      "killzone": "NYKZ",
+      "pattern": "orb_break_long",
+      "grade": "A",
+      "variant": "apex_v26_kz"
+    },
+    {
+      "date": "2026-08-20",
+      "direction": "LONG",
+      "entry_time": "2026-08-20T11:00:00-04:00",
+      "entry": 4571.7998046875,
+      "sl": 4561.7998046875,
+      "tp": 4597.2998046875,
+      "risk_usd": 100.0,
+      "exit": 4597.2998046875,
+      "exit_time": "2026-08-20T11:20:00-04:00",
+      "exit_reason": "TP",
+      "pnl_usd": 255.0,
+      "r_multiple": 2.55,
+      "session_tag": "NYKZ",
+      "killzone": "NYKZ",
+      "pattern": "mss_up",
+      "grade": "A",
+      "variant": "apex_v26_kz"
+    },
+    {
+      "date": "2026-08-21",
+      "direction": "LONG",
+      "entry_time": "2026-08-21T11:00:00-04:00",
+      "entry": 4648.5,
+      "sl": 4638.5,
+      "tp": 4678.5,
+      "risk_usd": 100.0,
+      "exit": 4678.5,
+      "exit_time": "2026-08-21T12:20:00-04:00",
+      "exit_reason": "TP",
+      "pnl_usd": 300.0,
+      "r_multiple": 3.0,
+      "session_tag": "NYKZ",
+      "killzone": "NYKZ",
+      "pattern": "bullish_engulfing",
+      "grade": "B",
+      "variant": "apex_v26_kz"
+    },
+    {
+      "date": "2026-08-24",
+      "direction": "LONG",
+      "entry_time": "2026-08-24T11:00:00-04:00",
+      "entry": 4727.60009765625,
+      "sl": 4717.60009765625,
+      "tp": 4750.7998046875,
+      "risk_usd": 100.0,
+      "exit": 4717.60009765625,
+      "exit_time": "2026-08-24T11:40:00-04:00",
+      "exit_reason": "SL",
+      "pnl_usd": -100.0,
+      "r_multiple": -1.0,
+      "session_tag": "NYKZ",
+      "killzone": "NYKZ",
+      "pattern": "orb_break_long",
+      "grade": "A",
+      "variant": "apex_v26_kz"
+    },
+    {
+      "date": "2026-09-03",
+      "direction": "LONG",
+      "entry_time": "2026-09-03T11:00:00-04:00",
+      "entry": 4532.2001953125,
+      "sl": 4522.2001953125,
+      "tp": 4553.00048828125,
+      "risk_usd": 100.0,
+      "exit": 4553.00048828125,
+      "exit_time": "2026-09-03T11:15:00-04:00",
+      "exit_reason": "TP",
+      "pnl_usd": 208.0029,
+      "r_multiple": 2.08,
+      "session_tag": "NYKZ",
+      "killzone": "NYKZ",
+      "pattern": "mss_up",
+      "grade": "A",
+      "variant": "apex_v26_kz"
+    },
+    {
+      "date": "2026-09-17",
+      "direction": "SHORT",
+      "entry_time": "2026-09-17T11:00:00-04:00",
+      "entry": 4394.60009765625,
+      "sl": 4404.60009765625,
+      "tp": 4364.60009765625,
+      "risk_usd": 100.0,
+      "exit": 4404.60009765625,
+      "exit_time": "2026-09-17T11:15:00-04:00",
+      "exit_reason": "SL",
+      "pnl_usd": -100.0,
+      "r_multiple": -1.0,
+      "session_tag": "NYKZ",
+      "killzone": "NYKZ",
+      "pattern": "mss_down",
+      "grade": "B",
+      "variant": "apex_v26_kz"
+    }
+  ],
+  "days": [
+    {
+      "date": "2026-08-10",
+      "status": "no_trigger",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [],
+      "grade": null
+    },
+    {
+      "date": "2026-08-11",
+      "status": "grade_C",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "tp_envelope_fail"
+        }
+      ],
+      "grade": "C"
+    },
+    {
+      "date": "2026-08-12",
+      "status": "grade_C",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "tp_envelope_fail"
+        }
+      ],
+      "grade": "C"
+    },
+    {
+      "date": "2026-08-13",
+      "status": "grade_C",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "tp_envelope_fail"
+        }
+      ],
+      "grade": "C"
+    },
+    {
+      "date": "2026-08-14",
+      "status": "no_trigger",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [],
+      "grade": null
+    },
+    {
+      "date": "2026-08-17",
+      "status": "grade_C",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "tp_too_tight"
+        }
+      ],
+      "grade": "C"
+    },
+    {
+      "date": "2026-08-18",
+      "status": "traded",
+      "trades": [
+        {
+          "date": "2026-08-18",
+          "direction": "SHORT",
+          "entry_time": "2026-08-18T11:00:00-04:00",
+          "entry": 4422.60009765625,
+          "sl": 4432.60009765625,
+          "tp": 4392.60009765625,
+          "risk_usd": 100.0,
+          "exit": 4432.60009765625,
+          "exit_time": "2026-08-18T11:05:00-04:00",
+          "exit_reason": "SL",
+          "pnl_usd": -100.0,
+          "r_multiple": -1.0,
+          "session_tag": "NYKZ",
+          "killzone": "NYKZ",
+          "pattern": "mss_down",
+          "grade": "B",
+          "variant": "apex_v26_kz"
+        }
+      ],
+      "day_pnl": -100.0,
+      "skips": [],
+      "grade": "B"
+    },
+    {
+      "date": "2026-08-19",
+      "status": "traded",
+      "trades": [
+        {
+          "date": "2026-08-19",
+          "direction": "LONG",
+          "entry_time": "2026-08-19T11:00:00-04:00",
+          "entry": 4547.0,
+          "sl": 4537.0,
+          "tp": 4577.0,
+          "risk_usd": 100.0,
+          "exit": 4537.0,
+          "exit_time": "2026-08-19T11:25:00-04:00",
+          "exit_reason": "SL",
+          "pnl_usd": -100.0,
+          "r_multiple": -1.0,
+          "session_tag": "NYKZ",
+          "killzone": "NYKZ",
+          "pattern": "orb_break_long",
+          "grade": "A",
+          "variant": "apex_v26_kz"
+        }
+      ],
+      "day_pnl": -100.0,
+      "skips": [],
+      "grade": "A"
+    },
+    {
+      "date": "2026-08-20",
+      "status": "traded",
+      "trades": [
+        {
+          "date": "2026-08-20",
+          "direction": "LONG",
+          "entry_time": "2026-08-20T11:00:00-04:00",
+          "entry": 4571.7998046875,
+          "sl": 4561.7998046875,
+          "tp": 4597.2998046875,
+          "risk_usd": 100.0,
+          "exit": 4597.2998046875,
+          "exit_time": "2026-08-20T11:20:00-04:00",
+          "exit_reason": "TP",
+          "pnl_usd": 255.0,
+          "r_multiple": 2.55,
+          "session_tag": "NYKZ",
+          "killzone": "NYKZ",
+          "pattern": "mss_up",
+          "grade": "A",
+          "variant": "apex_v26_kz"
+        }
+      ],
+      "day_pnl": 255.0,
+      "skips": [],
+      "grade": "A"
+    },
+    {
+      "date": "2026-08-21",
+      "status": "traded",
+      "trades": [
+        {
+          "date": "2026-08-21",
+          "direction": "LONG",
+          "entry_time": "2026-08-21T11:00:00-04:00",
+          "entry": 4648.5,
+          "sl": 4638.5,
+          "tp": 4678.5,
+          "risk_usd": 100.0,
+          "exit": 4678.5,
+          "exit_time": "2026-08-21T12:20:00-04:00",
+          "exit_reason": "TP",
+          "pnl_usd": 300.0,
+          "r_multiple": 3.0,
+          "session_tag": "NYKZ",
+          "killzone": "NYKZ",
+          "pattern": "bullish_engulfing",
+          "grade": "B",
+          "variant": "apex_v26_kz"
+        }
+      ],
+      "day_pnl": 300.0,
+      "skips": [],
+      "grade": "B"
+    },
+    {
+      "date": "2026-08-24",
+      "status": "traded",
+      "trades": [
+        {
+          "date": "2026-08-24",
+          "direction": "LONG",
+          "entry_time": "2026-08-24T11:00:00-04:00",
+          "entry": 4727.60009765625,
+          "sl": 4717.60009765625,
+          "tp": 4750.7998046875,
+          "risk_usd": 100.0,
+          "exit": 4717.60009765625,
+          "exit_time": "2026-08-24T11:40:00-04:00",
+          "exit_reason": "SL",
+          "pnl_usd": -100.0,
+          "r_multiple": -1.0,
+          "session_tag": "NYKZ",
+          "killzone": "NYKZ",
+          "pattern": "orb_break_long",
+          "grade": "A",
+          "variant": "apex_v26_kz"
+        }
+      ],
+      "day_pnl": -100.0,
+      "skips": [],
+      "grade": "A"
+    },
+    {
+      "date": "2026-08-25",
+      "status": "no_trigger",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [],
+      "grade": null
+    },
+    {
+      "date": "2026-08-26",
+      "status": "grade_C",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "tp_too_tight"
+        }
+      ],
+      "grade": "C"
+    },
+    {
+      "date": "2026-08-27",
+      "status": "grade_C",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "tp_envelope_fail"
+        }
+      ],
+      "grade": "C"
+    },
+    {
+      "date": "2026-08-28",
+      "status": "no_trigger",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [],
+      "grade": null
+    },
+    {
+      "date": "2026-08-31",
+      "status": "grade_C",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "tp_too_tight"
+        }
+      ],
+      "grade": "C"
+    },
+    {
+      "date": "2026-09-01",
+      "status": "grade_C",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "tp_envelope_fail"
+        }
+      ],
+      "grade": "C"
+    },
+    {
+      "date": "2026-09-02",
+      "status": "grade_C",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "tp_envelope_fail"
+        }
+      ],
+      "grade": "C"
+    },
+    {
+      "date": "2026-09-03",
+      "status": "traded",
+      "trades": [
+        {
+          "date": "2026-09-03",
+          "direction": "LONG",
+          "entry_time": "2026-09-03T11:00:00-04:00",
+          "entry": 4532.2001953125,
+          "sl": 4522.2001953125,
+          "tp": 4553.00048828125,
+          "risk_usd": 100.0,
+          "exit": 4553.00048828125,
+          "exit_time": "2026-09-03T11:15:00-04:00",
+          "exit_reason": "TP",
+          "pnl_usd": 208.0029,
+          "r_multiple": 2.08,
+          "session_tag": "NYKZ",
+          "killzone": "NYKZ",
+          "pattern": "mss_up",
+          "grade": "A",
+          "variant": "apex_v26_kz"
+        }
+      ],
+      "day_pnl": 208.0029,
+      "skips": [],
+      "grade": "A"
+    },
+    {
+      "date": "2026-09-04",
+      "status": "no_trigger",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [],
+      "grade": null
+    },
+    {
+      "date": "2026-09-08",
+      "status": "no_trigger",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [],
+      "grade": null
+    },
+    {
+      "date": "2026-09-09",
+      "status": "no_trigger",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [],
+      "grade": null
+    },
+    {
+      "date": "2026-09-10",
+      "status": "no_trigger",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [],
+      "grade": null
+    },
+    {
+      "date": "2026-09-11",
+      "status": "no_trigger",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [],
+      "grade": null
+    },
+    {
+      "date": "2026-09-14",
+      "status": "grade_C",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "tp_envelope_fail"
+        }
+      ],
+      "grade": "C"
+    },
+    {
+      "date": "2026-09-15",
+      "status": "grade_C",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "tp_too_tight"
+        }
+      ],
+      "grade": "C"
+    },
+    {
+      "date": "2026-09-16",
+      "status": "grade_C",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "tp_too_tight"
+        }
+      ],
+      "grade": "C"
+    },
+    {
+      "date": "2026-09-17",
+      "status": "traded",
+      "trades": [
+        {
+          "date": "2026-09-17",
+          "direction": "SHORT",
+          "entry_time": "2026-09-17T11:00:00-04:00",
+          "entry": 4394.60009765625,
+          "sl": 4404.60009765625,
+          "tp": 4364.60009765625,
+          "risk_usd": 100.0,
+          "exit": 4404.60009765625,
+          "exit_time": "2026-09-17T11:15:00-04:00",
+          "exit_reason": "SL",
+          "pnl_usd": -100.0,
+          "r_multiple": -1.0,
+          "session_tag": "NYKZ",
+          "killzone": "NYKZ",
+          "pattern": "mss_down",
+          "grade": "B",
+          "variant": "apex_v26_kz"
+        }
+      ],
+      "day_pnl": -100.0,
+      "skips": [],
+      "grade": "B"
+    },
+    {
+      "date": "2026-09-18",
+      "status": "grade_C",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "tp_too_tight"
+        }
+      ],
+      "grade": "C"
+    },
+    {
+      "date": "2026-09-21",
+      "status": "grade_C",
+      "trades": [],
+      "day_pnl": 0.0,
+      "skips": [
+        {
+          "reason": "tp_too_tight"
+        }
+      ],
+      "grade": "C"
+    }
+  ]
+}

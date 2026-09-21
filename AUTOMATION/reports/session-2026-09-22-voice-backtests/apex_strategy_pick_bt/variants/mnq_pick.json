@@ -1,0 +1,42 @@
+{
+  "best_variant": "apex_v26_kz",
+  "best_label": "Apex v2.6 LDLZ+NYKZ (HTF+structure TP, risk $100, TP cap $300)",
+  "ranking": [
+    {
+      "variant": "apex_v26_kz",
+      "qualified_days_ge_250": 2,
+      "trail_breach": false,
+      "total_net_pnl": 166.5,
+      "expectancy_usd": 18.5,
+      "n_trades": 9,
+      "verdict": "tweak"
+    },
+    {
+      "variant": "base_15m",
+      "qualified_days_ge_250": 0,
+      "trail_breach": false,
+      "total_net_pnl": 150.0,
+      "expectancy_usd": 150.0,
+      "n_trades": 1,
+      "verdict": "drop"
+    },
+    {
+      "variant": "variant_A_5m",
+      "qualified_days_ge_250": 0,
+      "trail_breach": false,
+      "total_net_pnl": 140.25,
+      "expectancy_usd": 140.25,
+      "n_trades": 1,
+      "verdict": "drop"
+    },
+    {
+      "variant": "variant_B_30m_mid",
+      "qualified_days_ge_250": 0,
+      "trail_breach": false,
+      "total_net_pnl": 0.0,
+      "expectancy_usd": 0.0,
+      "n_trades": 0,
+      "verdict": "drop"
+    }
+  ]
+}

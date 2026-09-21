@@ -1,0 +1,221 @@
+{
+  "prior_15m": {
+    "variant": "base_15m",
+    "label": "15m ORB + VWAP (full-OR C-skip if risk>$100)",
+    "total_net_pnl": 150.0,
+    "max_dd_usd": 0.0,
+    "win_rate_pct": 100.0,
+    "n_trades": 1,
+    "qualified_days_ge_250": 0,
+    "c_skips": 29,
+    "verdict": "drop"
+  },
+  "variants": [
+    {
+      "ticker": "MNQ=F",
+      "symbol_name": "Micro Nasdaq",
+      "point_value": 2.0,
+      "contracts": 1,
+      "variant": "or_5m_dyn",
+      "variant_label": "5m ORB + VWAP (dyn risk: opp\u2192mid, mid-cap C-skip)",
+      "or_window": "09:30\u201309:35 America/New_York",
+      "risk_mode": "dynamic: opposite-OR if \u2264$100 else mid; C-skip only if mid>$100",
+      "tp_rr": 1.5,
+      "period_end": "2026-09-21",
+      "n_trading_days_requested": 30,
+      "n_trading_days_used": 30,
+      "first_day": "2026-08-10",
+      "last_day": "2026-09-21",
+      "data_first_bar": "2026-07-13T00:00:00-04:00",
+      "data_last_bar": "2026-09-21T13:35:00-04:00",
+      "total_net_pnl": -166.62,
+      "max_dd_usd": 377.25,
+      "win_rate_pct": 28.57,
+      "avg_r": -0.2857,
+      "expectancy_usd": -23.8036,
+      "n_trades": 7,
+      "n_wins": 2,
+      "n_losses": 5,
+      "n_flats": 0,
+      "best_day": {
+        "date": "2026-09-18",
+        "pnl": 140.25
+      },
+      "worst_day": {
+        "date": "2026-08-17",
+        "pnl": -98.75
+      },
+      "qualified_days_ge_250": 0,
+      "cumulative_ge_3000": false,
+      "max_dd_vs_2000_trail_breach": false,
+      "session_breakdown": {
+        "LDLZ": {
+          "n": 0,
+          "pnl": 0.0,
+          "win_rate": 0.0,
+          "avg_r": 0.0
+        },
+        "NYKZ": {
+          "n": 7,
+          "pnl": -166.62,
+          "win_rate": 28.57,
+          "avg_r": -0.2857
+        },
+        "other": {
+          "n": 0,
+          "pnl": 0.0,
+          "win_rate": 0.0,
+          "avg_r": 0.0
+        }
+      },
+      "status_counts": {
+        "skip_c_too_wide": 9,
+        "skipped": 14,
+        "traded": 7
+      },
+      "c_skips": 9,
+      "n_mid_sl": 6,
+      "n_opp_sl": 1,
+      "verdict": "drop",
+      "verdict_why": "net $-166.62 \u2014 no edge"
+    },
+    {
+      "ticker": "MNQ=F",
+      "symbol_name": "Micro Nasdaq",
+      "point_value": 2.0,
+      "contracts": 1,
+      "variant": "or_10m_dyn",
+      "variant_label": "10m ORB + VWAP (dyn risk: opp\u2192mid, mid-cap C-skip)",
+      "or_window": "09:30\u201309:40 America/New_York",
+      "risk_mode": "dynamic: opposite-OR if \u2264$100 else mid; C-skip only if mid>$100",
+      "tp_rr": 1.5,
+      "period_end": "2026-09-21",
+      "n_trading_days_requested": 30,
+      "n_trading_days_used": 30,
+      "first_day": "2026-08-10",
+      "last_day": "2026-09-21",
+      "data_first_bar": "2026-07-13T00:00:00-04:00",
+      "data_last_bar": "2026-09-21T13:35:00-04:00",
+      "total_net_pnl": 18.12,
+      "max_dd_usd": 254.5,
+      "win_rate_pct": 40.0,
+      "avg_r": 0.0,
+      "expectancy_usd": 3.625,
+      "n_trades": 5,
+      "n_wins": 2,
+      "n_losses": 3,
+      "n_flats": 0,
+      "best_day": {
+        "date": "2026-09-18",
+        "pnl": 140.25
+      },
+      "worst_day": {
+        "date": "2026-09-11",
+        "pnl": -89.0
+      },
+      "qualified_days_ge_250": 0,
+      "cumulative_ge_3000": false,
+      "max_dd_vs_2000_trail_breach": false,
+      "session_breakdown": {
+        "LDLZ": {
+          "n": 0,
+          "pnl": 0.0,
+          "win_rate": 0.0,
+          "avg_r": 0.0
+        },
+        "NYKZ": {
+          "n": 5,
+          "pnl": 18.12,
+          "win_rate": 40.0,
+          "avg_r": 0.0
+        },
+        "other": {
+          "n": 0,
+          "pnl": 0.0,
+          "win_rate": 0.0,
+          "avg_r": 0.0
+        }
+      },
+      "status_counts": {
+        "skip_c_too_wide": 17,
+        "skipped": 8,
+        "traded": 5
+      },
+      "c_skips": 17,
+      "n_mid_sl": 4,
+      "n_opp_sl": 1,
+      "verdict": "tweak",
+      "verdict_why": "net $18.12, WR 40.0%, n=5, qual_days=0, expectancy=$3.62/trade, C-skips=17"
+    }
+  ],
+  "best_variant": "or_10m_dyn",
+  "best": {
+    "ticker": "MNQ=F",
+    "symbol_name": "Micro Nasdaq",
+    "point_value": 2.0,
+    "contracts": 1,
+    "variant": "or_10m_dyn",
+    "variant_label": "10m ORB + VWAP (dyn risk: opp\u2192mid, mid-cap C-skip)",
+    "or_window": "09:30\u201309:40 America/New_York",
+    "risk_mode": "dynamic: opposite-OR if \u2264$100 else mid; C-skip only if mid>$100",
+    "tp_rr": 1.5,
+    "period_end": "2026-09-21",
+    "n_trading_days_requested": 30,
+    "n_trading_days_used": 30,
+    "first_day": "2026-08-10",
+    "last_day": "2026-09-21",
+    "data_first_bar": "2026-07-13T00:00:00-04:00",
+    "data_last_bar": "2026-09-21T13:35:00-04:00",
+    "total_net_pnl": 18.12,
+    "max_dd_usd": 254.5,
+    "win_rate_pct": 40.0,
+    "avg_r": 0.0,
+    "expectancy_usd": 3.625,
+    "n_trades": 5,
+    "n_wins": 2,
+    "n_losses": 3,
+    "n_flats": 0,
+    "best_day": {
+      "date": "2026-09-18",
+      "pnl": 140.25
+    },
+    "worst_day": {
+      "date": "2026-09-11",
+      "pnl": -89.0
+    },
+    "qualified_days_ge_250": 0,
+    "cumulative_ge_3000": false,
+    "max_dd_vs_2000_trail_breach": false,
+    "session_breakdown": {
+      "LDLZ": {
+        "n": 0,
+        "pnl": 0.0,
+        "win_rate": 0.0,
+        "avg_r": 0.0
+      },
+      "NYKZ": {
+        "n": 5,
+        "pnl": 18.12,
+        "win_rate": 40.0,
+        "avg_r": 0.0
+      },
+      "other": {
+        "n": 0,
+        "pnl": 0.0,
+        "win_rate": 0.0,
+        "avg_r": 0.0
+      }
+    },
+    "status_counts": {
+      "skip_c_too_wide": 17,
+      "skipped": 8,
+      "traded": 5
+    },
+    "c_skips": 17,
+    "n_mid_sl": 4,
+    "n_opp_sl": 1,
+    "verdict": "tweak",
+    "verdict_why": "net $18.12, WR 40.0%, n=5, qual_days=0, expectancy=$3.62/trade, C-skips=17"
+  },
+  "generated": "2026-09-21T13:48:23.209583-04:00"
+}

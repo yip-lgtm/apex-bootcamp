@@ -1,0 +1,278 @@
+{
+  "date": "2026-10-15",
+  "weekday": "Thu",
+  "generated_hkt": "2026-10-15T01:53:34.766443+08:00",
+  "grades": [
+    {
+      "ticker": "MGC=F",
+      "grade": "C",
+      "reason": "開高暴跌近低點，HTF順向不明確且為追價區"
+    },
+    {
+      "ticker": "MNQ=F",
+      "grade": "C",
+      "reason": "3%位置極端低點，-1.99%大跌後追單，無乾淨結構"
+    },
+    {
+      "ticker": "MCL=F",
+      "grade": "C",
+      "reason": "88%位置追價PDH/O NH雙重壓力，HTF未確認順勢"
+    },
+    {
+      "ticker": "MBT=F",
+      "grade": "C",
+      "reason": "價格低於H1均線無長勢對齊,日內已大跌處於低檔無確認結構"
+    },
+    {
+      "ticker": "MES=F",
+      "grade": "C",
+      "reason": "4%位置極低屬chase zone結構已崩無乾淨進場"
+    },
+    {
+      "ticker": "M2K=F",
+      "grade": "C",
+      "reason": "HTF方向不明確，價格在ONL支撐區風險高"
+    },
+    {
+      "ticker": "MYM=F",
+      "grade": "C",
+      "reason": "無HTF多頭對齊且價格於區間底部3%屬追價區"
+    },
+    {
+      "ticker": "M6A=F",
+      "grade": "C",
+      "reason": "無HTF確認價格卡PDH阻力區無空間進場"
+    },
+    {
+      "ticker": "M6B=F",
+      "grade": "C",
+      "reason": "HTF未確認對齊且結構混亂，ON區間過窄無明確OR"
+    },
+    {
+      "ticker": "6J=F",
+      "grade": "C",
+      "reason": "數據異常無結構HTF無法確認"
+    }
+  ],
+  "candidates": [
+    {
+      "ticker": "MBT=F",
+      "grade": "C",
+      "reason": "價格低於H1均線無長勢對齊,日內已大跌處於低檔無確認結構",
+      "priority_score": 15.0,
+      "size_micro": 0.0,
+      "backtest_avg": 466.0,
+      "expected_value_usd": 0.0,
+      "actionable": false
+    },
+    {
+      "ticker": "MGC=F",
+      "grade": "C",
+      "reason": "開高暴跌近低點，HTF順向不明確且為追價區",
+      "priority_score": 13.85,
+      "size_micro": 0.0,
+      "backtest_avg": 224.29,
+      "expected_value_usd": 0.0,
+      "actionable": false
+    },
+    {
+      "ticker": "MNQ=F",
+      "grade": "C",
+      "reason": "3%位置極端低點，-1.99%大跌後追單，無乾淨結構",
+      "priority_score": 7.57,
+      "size_micro": 0.0,
+      "backtest_avg": 90.0,
+      "expected_value_usd": 0.0,
+      "actionable": false
+    },
+    {
+      "ticker": "MES=F",
+      "grade": "C",
+      "reason": "4%位置極低屬chase zone結構已崩無乾淨進場",
+      "priority_score": 6.0,
+      "size_micro": 0.0,
+      "backtest_avg": 0.0,
+      "expected_value_usd": 0.0,
+      "actionable": false
+    },
+    {
+      "ticker": "M2K=F",
+      "grade": "C",
+      "reason": "HTF方向不明確，價格在ONL支撐區風險高",
+      "priority_score": 6.0,
+      "size_micro": 0.0,
+      "backtest_avg": 0.0,
+      "expected_value_usd": 0.0,
+      "actionable": false
+    },
+    {
+      "ticker": "MYM=F",
+      "grade": "C",
+      "reason": "無HTF多頭對齊且價格於區間底部3%屬追價區",
+      "priority_score": 6.0,
+      "size_micro": 0.0,
+      "backtest_avg": 0.0,
+      "expected_value_usd": 0.0,
+      "actionable": false
+    },
+    {
+      "ticker": "M6A=F",
+      "grade": "C",
+      "reason": "無HTF確認價格卡PDH阻力區無空間進場",
+      "priority_score": 6.0,
+      "size_micro": 0.0,
+      "backtest_avg": 0.0,
+      "expected_value_usd": 0.0,
+      "actionable": false
+    },
+    {
+      "ticker": "M6B=F",
+      "grade": "C",
+      "reason": "HTF未確認對齊且結構混亂，ON區間過窄無明確OR",
+      "priority_score": 6.0,
+      "size_micro": 0.0,
+      "backtest_avg": 0.0,
+      "expected_value_usd": 0.0,
+      "actionable": false
+    },
+    {
+      "ticker": "6J=F",
+      "grade": "C",
+      "reason": "數據異常無結構HTF無法確認",
+      "priority_score": 6.0,
+      "size_micro": 0.0,
+      "backtest_avg": 0.0,
+      "expected_value_usd": 0.0,
+      "actionable": false
+    },
+    {
+      "ticker": "MCL=F",
+      "grade": "C",
+      "reason": "88%位置追價PDH/O NH雙重壓力，HTF未確認順勢",
+      "priority_score": 5.0,
+      "size_micro": 0.0,
+      "backtest_avg": 0.0,
+      "expected_value_usd": 0.0,
+      "actionable": false
+    }
+  ],
+  "snapshot": [
+    {
+      "tk": "MES=F",
+      "name": "Micro S&P 500",
+      "last": 7757.5,
+      "chg": -98.25,
+      "pct": -1.2506762562454252,
+      "high": 7879.75,
+      "low": 7753.25
+    },
+    {
+      "tk": "MNQ=F",
+      "name": "Micro Nasdaq",
+      "last": 30180.25,
+      "chg": -611.25,
+      "pct": -1.9851257652274166,
+      "high": 30891.5,
+      "low": 30156.0
+    },
+    {
+      "tk": "M2K=F",
+      "name": "Micro Russell 2000",
+      "last": 2741.10009765625,
+      "chg": -59.0,
+      "pct": -2.1070675312423437,
+      "high": 2816.0,
+      "low": 2739.89990234375
+    },
+    {
+      "tk": "MYM=F",
+      "name": "Micro Dow",
+      "last": 51700.0,
+      "chg": -235.0,
+      "pct": -0.4524886877828055,
+      "high": 52179.0,
+      "low": 51678.0
+    },
+    {
+      "tk": "M6E=F",
+      "name": "Micro EUR/USD",
+      "last": 1.1168999671936035,
+      "chg": -0.006100058555603027,
+      "pct": -0.5431930913388349,
+      "high": 1.1239999532699585,
+      "low": 1.1140999794006348
+    },
+    {
+      "tk": "M6A=F",
+      "name": "Micro AUD/USD",
+      "last": 0.6956999897956848,
+      "chg": -0.0020999908447265625,
+      "pct": -0.30094452608027866,
+      "high": 0.7006999850273132,
+      "low": 0.6944000124931335
+    },
+    {
+      "tk": "M6B=F",
+      "name": "Micro GBP/USD",
+      "last": 1.3173999786376953,
+      "chg": -0.008499979972839355,
+      "pct": -0.641072497034153,
+      "high": 1.3279999494552612,
+      "low": 1.3141000270843506
+    },
+    {
+      "tk": "6J=F",
+      "name": "Micro JPY",
+      "last": 0.006337500177323818,
+      "chg": 1.750001683831215e-05,
+      "pct": 0.2768989935748323,
+      "high": 0.0063554998487234116,
+      "low": 0.006322499830275774
+    },
+    {
+      "tk": "MCL=F",
+      "name": "Micro Crude Oil",
+      "last": 95.81999969482422,
+      "chg": 0.0,
+      "pct": 0.0,
+      "high": 96.06999969482422,
+      "low": 93.98999786376953
+    },
+    {
+      "tk": "MBT=F",
+      "name": "Micro Bitcoin",
+      "last": 81805.0,
+      "chg": 0.0,
+      "pct": 0.0,
+      "high": 84295.0,
+      "low": 81600.0
+    },
+    {
+      "tk": "MET=F",
+      "name": "Micro Ether",
+      "last": 2434.5,
+      "chg": 0.0,
+      "pct": 0.0,
+      "high": 2532.5,
+      "low": 2418.5
+    },
+    {
+      "tk": "MGC=F",
+      "name": "Micro Gold",
+      "last": 4107.60009765625,
+      "chg": -45.2998046875,
+      "pct": -1.0907993390819362,
+      "high": 4193.2998046875,
+      "low": 4094.800048828125
+    },
+    {
+      "tk": "SI=F",
+      "name": "Micro Silver",
+      "last": 55.80500030517578,
+      "chg": -3.355998992919922,
+      "pct": -5.672654337716615,
+      "high": 59.595001220703125,
+      "low": 55.650001525878906
+    }
+  ]
+}

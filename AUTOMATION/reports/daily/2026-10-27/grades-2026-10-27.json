@@ -1,0 +1,278 @@
+{
+  "date": "2026-10-27",
+  "weekday": "Tue",
+  "generated_hkt": "2026-10-27T03:05:35.256585+08:00",
+  "grades": [
+    {
+      "ticker": "MGC=F",
+      "grade": "?",
+      "reason": "http 429"
+    },
+    {
+      "ticker": "MNQ=F",
+      "grade": "?",
+      "reason": "http 429"
+    },
+    {
+      "ticker": "MCL=F",
+      "grade": "?",
+      "reason": "http 429"
+    },
+    {
+      "ticker": "MBT=F",
+      "grade": "?",
+      "reason": "http 429"
+    },
+    {
+      "ticker": "MES=F",
+      "grade": "?",
+      "reason": "http 429"
+    },
+    {
+      "ticker": "M2K=F",
+      "grade": "?",
+      "reason": "http 429"
+    },
+    {
+      "ticker": "MYM=F",
+      "grade": "?",
+      "reason": "http 429"
+    },
+    {
+      "ticker": "M6A=F",
+      "grade": "?",
+      "reason": "http 429"
+    },
+    {
+      "ticker": "M6B=F",
+      "grade": "?",
+      "reason": "http 429"
+    },
+    {
+      "ticker": "6J=F",
+      "grade": "?",
+      "reason": "http 429"
+    }
+  ],
+  "candidates": [
+    {
+      "ticker": "MBT=F",
+      "grade": "?",
+      "reason": "http 429",
+      "priority_score": 10.0,
+      "size_micro": 0.0,
+      "backtest_avg": 466.0,
+      "expected_value_usd": 0.0,
+      "actionable": false
+    },
+    {
+      "ticker": "MGC=F",
+      "grade": "?",
+      "reason": "http 429",
+      "priority_score": 8.85,
+      "size_micro": 0.0,
+      "backtest_avg": 224.29,
+      "expected_value_usd": 0.0,
+      "actionable": false
+    },
+    {
+      "ticker": "MNQ=F",
+      "grade": "?",
+      "reason": "http 429",
+      "priority_score": 2.57,
+      "size_micro": 0.0,
+      "backtest_avg": 90.0,
+      "expected_value_usd": 0.0,
+      "actionable": false
+    },
+    {
+      "ticker": "MES=F",
+      "grade": "?",
+      "reason": "http 429",
+      "priority_score": 1.0,
+      "size_micro": 0.0,
+      "backtest_avg": 0.0,
+      "expected_value_usd": 0.0,
+      "actionable": false
+    },
+    {
+      "ticker": "M2K=F",
+      "grade": "?",
+      "reason": "http 429",
+      "priority_score": 1.0,
+      "size_micro": 0.0,
+      "backtest_avg": 0.0,
+      "expected_value_usd": 0.0,
+      "actionable": false
+    },
+    {
+      "ticker": "MYM=F",
+      "grade": "?",
+      "reason": "http 429",
+      "priority_score": 1.0,
+      "size_micro": 0.0,
+      "backtest_avg": 0.0,
+      "expected_value_usd": 0.0,
+      "actionable": false
+    },
+    {
+      "ticker": "M6A=F",
+      "grade": "?",
+      "reason": "http 429",
+      "priority_score": 1.0,
+      "size_micro": 0.0,
+      "backtest_avg": 0.0,
+      "expected_value_usd": 0.0,
+      "actionable": false
+    },
+    {
+      "ticker": "M6B=F",
+      "grade": "?",
+      "reason": "http 429",
+      "priority_score": 1.0,
+      "size_micro": 0.0,
+      "backtest_avg": 0.0,
+      "expected_value_usd": 0.0,
+      "actionable": false
+    },
+    {
+      "ticker": "6J=F",
+      "grade": "?",
+      "reason": "http 429",
+      "priority_score": 1.0,
+      "size_micro": 0.0,
+      "backtest_avg": 0.0,
+      "expected_value_usd": 0.0,
+      "actionable": false
+    },
+    {
+      "ticker": "MCL=F",
+      "grade": "?",
+      "reason": "http 429",
+      "priority_score": 0.0,
+      "size_micro": 0.0,
+      "backtest_avg": 0.0,
+      "expected_value_usd": 0.0,
+      "actionable": false
+    }
+  ],
+  "snapshot": [
+    {
+      "tk": "MES=F",
+      "name": "Micro S&P 500",
+      "last": 7713.25,
+      "chg": 53.5,
+      "pct": 0.6984562159339405,
+      "high": 7739.5,
+      "low": 7651.75
+    },
+    {
+      "tk": "MNQ=F",
+      "name": "Micro Nasdaq",
+      "last": 29474.0,
+      "chg": 356.25,
+      "pct": 1.2234805230486558,
+      "high": 29571.75,
+      "low": 29024.0
+    },
+    {
+      "tk": "M2K=F",
+      "name": "Micro Russell 2000",
+      "last": 2798.199951171875,
+      "chg": 13.699951171875,
+      "pct": 0.4920075838346202,
+      "high": 2815.699951171875,
+      "low": 2784.89990234375
+    },
+    {
+      "tk": "MYM=F",
+      "name": "Micro Dow",
+      "last": 52521.0,
+      "chg": 127.0,
+      "pct": 0.24239416727106158,
+      "high": 52815.0,
+      "low": 52377.0
+    },
+    {
+      "tk": "M6E=F",
+      "name": "Micro EUR/USD",
+      "last": 1.1205999851226807,
+      "chg": -0.001000046730041504,
+      "pct": -0.08916250906212711,
+      "high": 1.124899983406067,
+      "low": 1.1196999549865723
+    },
+    {
+      "tk": "M6A=F",
+      "name": "Micro AUD/USD",
+      "last": 0.70169997215271,
+      "chg": -0.0012000203132629395,
+      "pct": -0.17072418923393742,
+      "high": 0.7034000158309937,
+      "low": 0.7006000280380249
+    },
+    {
+      "tk": "M6B=F",
+      "name": "Micro GBP/USD",
+      "last": 1.3351999521255493,
+      "chg": -0.002000093460083008,
+      "pct": -0.14957324199065958,
+      "high": 1.3387999534606934,
+      "low": 1.3324999809265137
+    },
+    {
+      "tk": "6J=F",
+      "name": "Micro JPY",
+      "last": 0.006378000136464834,
+      "chg": -8.00006091594696e-06,
+      "pct": -0.12527498698212047,
+      "high": 0.0064085000194609165,
+      "low": 0.006368500180542469
+    },
+    {
+      "tk": "MCL=F",
+      "name": "Micro Crude Oil",
+      "last": 102.16999816894531,
+      "chg": 0.0,
+      "pct": 0.0,
+      "high": 103.12999725341797,
+      "low": 100.33000183105469
+    },
+    {
+      "tk": "MBT=F",
+      "name": "Micro Bitcoin",
+      "last": 79910.0,
+      "chg": 0.0,
+      "pct": 0.0,
+      "high": 81425.0,
+      "low": 79225.0
+    },
+    {
+      "tk": "MET=F",
+      "name": "Micro Ether",
+      "last": 2310.0,
+      "chg": 0.0,
+      "pct": 0.0,
+      "high": 2405.5,
+      "low": 2289.5
+    },
+    {
+      "tk": "MGC=F",
+      "name": "Micro Gold",
+      "last": 4027.39990234375,
+      "chg": 36.2998046875,
+      "pct": 0.9095187742551695,
+      "high": 4043.800048828125,
+      "low": 3991.10009765625
+    },
+    {
+      "tk": "SI=F",
+      "name": "Micro Silver",
+      "last": 54.0,
+      "chg": 0.28900146484375,
+      "pct": 0.538067570377761,
+      "high": 54.474998474121094,
+      "low": 53.029998779296875
+    }
+  ]
+}
